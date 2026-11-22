@@ -42,6 +42,25 @@ window.fetchMatchResultsFromAPI = async function() {
 };
 
 /**
+ * Stuurt een uitslag naar de server, maar nooit twee keer tegelijk voor dezelfde match.
+ * Wordt dezelfde match op hetzelfde moment van twee kanten aangeboden (bv. bij het
+ * opstarten: wachtrij én Pi-back-up), dan delen beide aanroepen één verzending.
+ */
+const MATCH_RESULT_URL = "https://kpbc.pythonanywhere.com/api/match-result";
+const matchPostsInFlight = new Map();
+function postMatchResult(payload) {
+    const key = payload.match_id;
+    if (matchPostsInFlight.has(key)) return matchPostsInFlight.get(key);
+    const p = fetch(MATCH_RESULT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).finally(() => matchPostsInFlight.delete(key));
+    matchPostsInFlight.set(key, p);
+    return p;
+}
+
+/**
  * Synchroniseert een voltooide match naar de centrale server
  * met lokale fallback bij netwerkfouten.
  */
@@ -104,18 +123,10 @@ window.syncMatchToAPI = async function(match) {
         ]
     };
 
-    const API_URL = "https://kpbc.pythonanywhere.com/api/match-result";
-
     try {
         console.log("📤 Bezig met verzenden naar server...", payload);
         
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
+        const response = await postMatchResult(payload);
 
         if (response.ok) {
             console.log("✅ Match succesvol gesynchroniseerd met de server!");
@@ -175,7 +186,14 @@ function removeFromPendingQueue(matchId) {
 /**
  * Probeert alle opgeslagen matches alsnog te verzenden
  */
-window.syncPendingMatches = async function() {
+let syncPendingBezig = null;
+window.syncPendingMatches = function() {
+    // Loopt er al een ronde? Dan sluiten we daarbij aan in plaats van een tweede te starten.
+    if (syncPendingBezig) return syncPendingBezig;
+    syncPendingBezig = syncPendingMatchesEcht().finally(() => { syncPendingBezig = null; });
+    return syncPendingBezig;
+};
+async function syncPendingMatchesEcht() {
     let pending = JSON.parse(localStorage.getItem('pendingMatches') || '[]');
 
     // ✅ NIEUW: ook checken of er matchen in de LOKALE Pi-wachtrij staan
@@ -199,15 +217,9 @@ window.syncPendingMatches = async function() {
 
     console.log(`🔄 Bezig met het synchroniseren van ${pending.length} achterstallige match(es)...`);
     
-    const API_URL = "https://kpbc.pythonanywhere.com/api/match-result";
-
     for (const payload of pending) {
         try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            const response = await postMatchResult(payload);
 
             if (response.ok) {
                 console.log(`✅ Achterstallige match ${payload.match_id} succesvol verstuurd!`);
@@ -229,7 +241,7 @@ window.syncPendingMatches = async function() {
     if (remaining.length === 0) {
         console.log("🎉 Alle achterstallige matches zijn gesynchroniseerd!");
     }
-};
+}
 
 // ✅ Luister naar online status om automatisch te syncen
 window.addEventListener('online', () => {
