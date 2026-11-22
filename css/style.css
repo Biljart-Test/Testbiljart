@@ -29,9 +29,9 @@
         #page6.page {
             overflow-y: hidden !important;
             overflow: hidden !important;
-            overscroll-behavior: none !important;
+            overscroll-behavior: none;
             -webkit-overflow-scrolling: none !important;
-            touch-action: none !important;
+            touch-action: none;
         }
 
 
@@ -59,9 +59,9 @@
         #availablePlayers,
         #playersList > div,
         .matches-list-container {
-            overscroll-behavior: contain !important;
+            overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch !important;
-            touch-action: pan-y !important;
+            touch-action: pan-y;
         }
         
         /* Swipe warning animaties */
@@ -87,7 +87,6 @@
         
         .header h1 {
             font-size: 1.5em;
-            margin: 0;
         }
         
         .home-btn {
@@ -96,7 +95,6 @@
             border: none;
             padding: 8px 15px;
             border-radius: 5px;
-            cursor: pointer;
             font-size: 0.9em;
             margin-right: 10px;
         }
@@ -106,7 +104,6 @@
             border-radius: 10px;
             padding: 15px;
             margin: 10px 0;
-            cursor: pointer;
             position: relative;
         }
         
@@ -126,7 +123,6 @@
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            cursor: pointer;
             font-size: 14px;
             display: flex;
             align-items: center;
@@ -146,13 +142,11 @@
 
 	/* Plus knoppen (groen) */
 	.score-btn.plus-btn {
-	    background: #2ecc71;
 	    color: white;
 	}
 	
 	/* Min knop (rood) */
 	.score-btn.minus-btn {
-	    background: #e74c3c;
 	    color: white;
 	}
 	
@@ -181,7 +175,6 @@
         /* Password change button */
         
         .undo-btn {
-            background: #e74c3c;
             color: white;
             margin-left: auto;
         }
@@ -190,7 +183,6 @@
         
         .match-ended {
             background: #27ae60;
-            color: white;
             padding: 12px;
             border-radius: 8px;
             text-align: center;
@@ -198,10 +190,6 @@
             font-weight: bold;
         }
         
-        .stat-value {
-            font-weight: bold;
-            font-size: 1.1em;
-        }
         
         /* NIEUW: Scrollbare beurtenlijst */
         .turns-scroll-container {
@@ -227,7 +215,6 @@
             background: #2c3e50;
             border: none;
             color: #ecf0f1;
-            cursor: pointer;
             font-size: 1em;
             transition: all 0.3s;
             border-radius: 8px 8px 0 0;
@@ -271,18 +258,12 @@
             border: none;
             padding: 12px 25px;
             border-radius: 8px;
-            cursor: pointer;
             font-size: 16px;
             margin: 5px;
         }
         
-        /* NIEUW: Ball color selection simplified */
         
         
-        
-        .ball-circle.selected {
-            border-color: #e74c3c;
-        }
         
         /* NIEUW: Selection screens */
         .selection-container {
@@ -311,9 +292,7 @@
             background: #2c3e50;
             border-radius: 8px;
             padding: 20px;
-            cursor: pointer;
             transition: all 0.3s;
-            text-align: center;
         }
         
         .selection-option:hover {
@@ -334,18 +313,10 @@
         .selection-option p {
             font-size: 0.9em;
             color: #bdc3c7;
-            margin: 0;
         }
         
         .date-input {
             width: 100%;
-            padding: 15px;
-            font-size: 1.1em;
-            border-radius: 8px;
-            border: 2px solid #3498db;
-            background: #2c3e50;
-            color: white;
-            margin-bottom: 20px;
             text-align: center;
         }
         
@@ -356,7 +327,6 @@
             padding: 26px 60px;
             border-radius: 8px;
             font-size: 30px;
-            cursor: pointer;
             margin-top: 20px;
         }
         
@@ -370,7 +340,6 @@
             background: #2c3e50;
             border-radius: 8px;
             padding: 25px 15px;
-            cursor: pointer;
             font-size: 1.3em;
             font-weight: bold;
             transition: all 0.3s;
@@ -423,18 +392,15 @@
             padding: 3px 8px;
             border-radius: 12px;
             font-size: 0.75em;
-            font-weight: bold;
             margin-left: 10px;
         }
         
         .status-pending {
             background: #f39c12;
-            color: white;
         }
         
         .status-completed {
             background: #27ae60;
-            color: white;
         }
         
         .clear-all-btn {
@@ -443,7 +409,6 @@
             border: none;
             padding: 10px 20px;
             border-radius: 8px;
-            cursor: pointer;
             margin: 10px 0;
             font-size: 14px;
         }
@@ -467,8 +432,6 @@
             background: #2c3e50;
             border-radius: 8px;
             padding: 15px;
-            text-align: center;
-            cursor: pointer;
             transition: all 0.3s;
             border: 2px solid transparent;
         }
@@ -507,20 +470,17 @@
         }
         
         .create-match-btn {
-            background: #2ecc71;
             color: white;
             border: none;
             padding: 15px 30px;
             border-radius: 8px;
             font-size: 18px;
-            cursor: pointer;
             margin-top: 20px;
             width: 100%;
         }
         
         .create-match-btn:disabled {
             background: #7f8c8d;
-            cursor: not-allowed;
         }
         
         /* Tab content */
@@ -545,7 +505,6 @@
             border: none;
             border-radius: 5px;
             color: white;
-            cursor: pointer;
             font-size: 0.9em;
             transition: all 0.3s;
         }
@@ -558,16 +517,13 @@
         /* NIEUW: Export/Import knoppen */
         
 		.ball-option.selected .ball-circle.white {
-		    box-shadow: 0 0 0 4px #2ecc71, 0 0 20px rgba(46, 204, 113, 0.5);
 		    transform: scale(1.05);
 		}
 		.start-match-btn.disabled-btn {
 		    opacity: 0.5;
-		    cursor: not-allowed;
 		}
 		.start-match-btn:not(.disabled-btn) {
 		    background: #2ecc71;
-		    cursor: pointer;
 		    transition: all 0.2s;
 		}
 		.start-match-btn:not(.disabled-btn):hover {
@@ -594,8 +550,6 @@
 		.ball-option { 
 		    display: inline-block; 
 		    margin: 20px 30px; 
-		    cursor: pointer; 
-		    text-align: center; 
 		    vertical-align: top;
 		    transition: transform 0.2s;
 		}
@@ -605,14 +559,14 @@
 		}
 		
 		.ball-circle { 
-		    width: 180px !important;  /* ✅ ECHT GROOT (was 130px) */
-		    height: 180px !important; /* ✅ ECHT GROOT (was 130px) */
+		    width: 180px;  /* ✅ ECHT GROOT (was 130px) */
+		    height: 180px; /* ✅ ECHT GROOT (was 130px) */
 		    border-radius: 50%; 
 		    display: flex; 
 		    align-items: center; 
 		    justify-content: center; 
 		    font-size: 1.8rem !important; /* ✅ GROTE, LEESBARE TEKST */
-		    font-weight: 900 !important; 
+		    font-weight: 900;
 		    margin: 0 auto 20px; 
 		    border: 5px solid transparent; 
 		    transition: all 0.3s ease; 
@@ -621,17 +575,16 @@
 		
 		.ball-circle.white { 
 		    background: #ffffff !important; 
-		    color: #2c3e50 !important; 
+		    color: #2c3e50;
 		}
 		
 		.ball-circle.yellow { 
 		    background: #f1c40f !important; 
-		    color: #2c3e50 !important; 
 		}
 		
 		/* Geselecteerde bal (groeit iets en krijgt een gloed) */
 		.ball-circle.selected { 
-		    border: 5px solid #2ecc71 !important; 
+		    border: 5px solid #2ecc71;
 		    box-shadow: 0 0 30px rgba(46, 204, 113, 0.6), inset 0 -5px 15px rgba(0,0,0,0.1), inset 0 5px 15px rgba(255,255,255,0.5) !important; 
 		    transform: scale(1.08); 
 		}
@@ -645,7 +598,6 @@
 		    border-radius: 12px; 
 		    font-size: 1.4rem; /* Grotere tekst op knop */
 		    font-weight: bold;
-		    cursor: pointer; 
 		    margin-top: 40px; 
 		    transition: all 0.2s;
 		    box-shadow: 0 6px 15px rgba(46, 204, 113, 0.4);
@@ -678,22 +630,18 @@
 
 /* --- Header Spelers & Targets --- */
 .header-match-info {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    gap: 20px; padding: 0 10px; width: 100%;
+     display: flex; align-items: center;
+      width: 100%;
 }
-.header-player-side { display: flex; align-items: center; gap: 14px; }
+.header-player-side { display: flex; align-items: center;  }
 .header-target {
-    font-size: 4.5rem; font-weight: 800; line-height: 1;
+      line-height: 1;
     text-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
-#headerTarget1 { color: #ffffff !important; }
-#headerTarget2 { color: #f1c40f !important; }
 .header-name {
-    font-size: 3rem; color: #ecf0f1; font-weight: 700;
-    max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+     white-space: nowrap;
 }
-#headerName2 { color: #f1c40f !important; }
-.header-vs { font-size: 3rem; color: #bdc3c7; margin: 0 15px; }
+.header-vs {   margin: 0 15px; }
 
 /* --- Horizontale Score Rij --- */
 .scoring-row-container {
@@ -708,24 +656,24 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 .score-cell.center-info {
-    flex: 1.8; min-width: 270px; max-width: 450px;
+     min-width: 270px; max-width: 450px;
     background: rgba(52, 152, 219, 0.15); border-color: #3498db;
 }
-.cell-label { font-size: 1.2rem; color: #bdc3c7; margin-bottom: 6px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.75px; }
-.cell-value { font-size: 6rem; font-weight: 900; color: white; line-height: 1; display: flex; align-items: center; justify-content: center; width: 100%; }
+.cell-label {   margin-bottom: 6px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.75px; }
+.cell-value { font-size: 6rem; font-weight: 900;   display: flex; align-items: center; justify-content: center; width: 100%; }
 
 /* Actieve speler effecten */
 .score-cell.active-player { transform: scale(1.03); }
-#p1CurrentCell.active-player { background: white !important; border-color: #3182ce !important; box-shadow: 0 0 12px rgba(49, 130, 206, 0.4) !important; }
-#p1CurrentCell.active-player .cell-value { color: #000 !important; }
+#p1CurrentCell.active-player { background: white !important; border-color: #3182ce; box-shadow: 0 0 12px rgba(49, 130, 206, 0.4) !important; }
+#p1CurrentCell.active-player .cell-value { color: #000; }
 #p2CurrentCell.active-player { background: #f1c40f !important; border-color: #3182ce; box-shadow: 0 0 12px rgba(241, 196, 15, 0.5) !important; }
 #p2CurrentCell.active-player .cell-value { color: #000; }
 
-.score-cell.turn-hidden { visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; }
+.score-cell.turn-hidden { visibility: hidden; opacity: 0 !important; pointer-events: none; }
 
 /* Nog nodig cellen (met rode waarschuwing bij <= 5) */
-.needed-cell { background: rgba(46, 204, 113, 0.15) !important; border-color: #27ae60 !important; }
-.needed-cell .cell-value { color: #2ecc71 !important; }
+.needed-cell { background: rgba(46, 204, 113, 0.15) !important; border-color: #27ae60; }
+.needed-cell .cell-value { color: #2ecc71; }
 .needed-cell.dimmed { opacity: 0.4 !important; transform: scale(0.96) !important; filter: grayscale(0.3) !important; }
 .needed-cell.danger { border-color: #e74c3c !important; background: rgba(231, 76, 60, 0.15) !important; animation: danger-pulse 1.5s infinite; }
 .needed-cell.danger .cell-value { color: #e74c3c !important; }
@@ -738,15 +686,15 @@
 }
 
 /* Totaalpunten (altijd groot en zichtbaar) */
-#p1TotalCell { background: white !important; color: black !important; border: 3px solid #3182ce !important; }
-#p2TotalCell { background: #f1c40f !important; color: black !important; border: 3px solid #3182ce !important; }
-#p1TotalCell .cell-value, #p2TotalCell .cell-value { font-size: 6.5rem !important; color: #000 !important; }
+#p1TotalCell { background: white !important; color: black; border: 3px solid #3182ce; }
+#p2TotalCell { background: #f1c40f !important; color: black; border: 3px solid #3182ce; }
+#p1TotalCell .cell-value, #p2TotalCell .cell-value { font-size: 6.5rem; color: #000; }
 
 /* ✅ TOTAAL CELLEN: Sta dimming toe als speler NIET aan de beurt is */
 #p1TotalCell.dimmed, #p2TotalCell.dimmed {
     opacity: 0.4 !important;
     transform: scale(0.96) !important;
-    filter: grayscale(0.3) !important;
+    filter: grayscale(0.3);
     transition: all 0.3s ease !important;
 }
 
@@ -762,18 +710,18 @@
 /* --- Bedieningsknoppen & Statistieken --- */
 .score-controls {
     display: flex !important; align-items: center !important; width: 100% !important;
-    padding: 0 20px !important; margin: 35px 0 20px 0 !important; box-sizing: border-box !important;
+    padding: 0 20px; margin: 35px 0 20px 0;
 }
 .stat-group {
-    flex: 1 !important; display: flex !important; align-items: center !important;
-    justify-content: space-evenly !important; gap: 8px !important; min-width: 0 !important;
+    flex: 1; display: flex !important; align-items: center !important;
+    justify-content: space-evenly !important; gap: 8px; min-width: 0 !important;
 }
 .score-controls .score-btn {
-    width: 120px !important; height: 120px !important; border-radius: 50% !important;
-    font-size: 52px !important; font-weight: 900 !important;
+    width: 120px !important; height: 120px !important; border-radius: 50%;
+    font-size: 52px !important; font-weight: 900;
     display: flex !important; align-items: center !important; justify-content: center !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4); border-width: 3px !important; cursor: pointer !important;
-    flex-shrink: 0 !important; transition: transform 0.1s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);  cursor: pointer !important;
+     transition: transform 0.1s;
 }
 .score-controls .score-btn:active { transform: scale(0.95); }
 .plus-btn { background: #2ecc71 !important; color: white !important; border-color: #27ae60 !important; }
@@ -781,21 +729,21 @@
 
 /* Statistiek blokjes met kleurcodering en emoji's */
 .stat-box {
-    width: 120px !important; height: 120px !important; border-radius: 16px !important;
+    width: 120px !important; height: 120px; border-radius: 16px;
     background: rgba(44, 62, 80, 0.95) !important; color: #ffffff !important;
-    border-width: 3px !important; border-style: solid !important;
-    font-size: 1.8rem !important; font-weight: 900 !important;
+     border-style: solid;
+    font-size: 1.8rem; font-weight: 900;
     display: flex !important; align-items: center !important; justify-content: center !important;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4); position: relative !important; overflow: hidden !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4); position: relative; overflow: hidden;
 }
-#p1PlayedAvg, #p2PlayedAvg { border-color: #3498db !important; }
-#p1Highest, #p2Highest { border-color: #f1c40f !important; }
-#p1TargetAvg, #p2TargetAvg { border-color: #e67e22 !important; }
+#p1PlayedAvg, #p2PlayedAvg { border-color: #3498db; }
+#p1Highest, #p2Highest { border-color: #f1c40f; }
+#p1TargetAvg, #p2TargetAvg { border-color: #e67e22; }
 
 .stat-box::before {
-    position: absolute !important; top: 50% !important; left: 50% !important;
-    transform: translate(-50%, -50%) !important; font-size: 5rem !important;
-    opacity: 0.15 !important; filter: brightness(1.2) !important; pointer-events: none !important;
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) !important; font-size: 5rem;
+    opacity: 0.15 !important; filter: brightness(1.2); pointer-events: none;
 }
 #p1PlayedAvg::before, #p2PlayedAvg::before { content: "📈"; color: #3498db; }
 #p1Highest::before, #p2Highest::before { content: "⭐"; color: #f1c40f; }
@@ -816,14 +764,14 @@
 .turns-scroll-container {
     height: 350px; min-height: 350px; max-height: 350px;
     overflow-y: auto; background: rgba(0,0,0,0.05) !important;
-    border-radius: 8px; padding: 10px !important;
+    border-radius: 8px; padding: 10px;
 }
 .turns-list {
-    display: grid !important;
+    display: grid;
     grid-template-rows: repeat(8, 1fr); /* Max 8 rijen hoog */
     grid-auto-flow: column;             /* Vul EERST naar beneden, dan volgende kolom */
     grid-auto-columns: 1fr;             /* Kolommen even breed */
-    gap: 8px 10px !important;
+    gap: 8px 10px;
     align-content: start;
 }
 
@@ -838,8 +786,7 @@
 }
 @media (max-width: 750px) {
     .players-container { grid-template-columns: 1fr; }
-    .scoring-row-container { gap: 8px; }
-    .score-cell { min-width: 80px; padding: 10px 5px; }
+    .score-cell { min-width: 80px;  }
     .cell-value { font-size: 3rem !important; }
 }
 
@@ -850,7 +797,7 @@
 /* ✅ NOG TE SPELEN BEURTEN: Donkere schaduw */
 .turn-row.pending {
     background: rgba(0, 0, 0, 0.35) !important;
-    color: rgba(255, 255, 255, 0.25) !important;
+    color: rgba(255, 255, 255, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.05);
     opacity: 0.6 !important;
 }
@@ -872,25 +819,22 @@
 /* ✅ BEURTEN MET 0 PUNTEN: Zeer lichtrode achtergrond */
 .turn-row.played.zero-turn {
     background: rgba(231, 76, 60, 0.12) !important; /* Heel licht roze/rood */
-    border: 1px solid rgba(231, 76, 60, 0.35) !important;
+    border: 1px solid rgba(231, 76, 60, 0.35);
 }
 .turn-row.played.zero-turn span {
-    color: #c0392b !important; /* Donkerder rood voor leesbaarheid */
+    color: #c0392b; /* Donkerder rood voor leesbaarheid */
 }
 
 
 /* ✅ HOOGSTE REEKS: Alle beurten die gelijk zijn aan de hoogste reeks worden groen */
 .turn-row.played.highest-series {
     background: rgba(46, 204, 113, 0.25) !important; /* Lichtgroene achtergrond */
-    border: 2px solid #2ecc71 !important;            /* Duidelijke groene rand */
-    color: #27ae60 !important;
+    border: 2px solid #2ecc71;            /* Duidelijke groene rand */
+    color: #27ae60;
     font-weight: 900 !important;
     box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3) !important;
 }
 
-.turn-row.played.highest-series span {
-    color: #27ae60 !important; /* Groene tekst voor de score */
-}
 
 /* ✅ ALLERLAATSTE BEURT (subtiel blauw accent, alleen als het NIET de hoogste reeks is) */
 .turn-row.played.latest-turn {
@@ -899,7 +843,7 @@
 }
 .turn-row.played.latest-turn span {
     color: #2980b9 !important;
-    font-weight: 900 !important;
+    font-weight: 900;
 }
 
 
@@ -952,16 +896,14 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start !important;
+    justify-content: flex-start;
     align-items: center;
     padding: 20px 15px;
     text-align: center;
     border-radius: 16px;
     background: linear-gradient(135deg, #2c3e50, #34495e);
     box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    color: #ffffff;
+    overflow-x: hidden;
 }
 
 .summary-player-name {
@@ -1008,7 +950,7 @@
 
 /* TSG blauw */
 .summary-stat.tsg-stat .summary-value {
-    color: #3498db !important;
+    color: #3498db;
 }
 
 /* ✅ BEURTENLIJST HORIZONTAAL */
@@ -1101,7 +1043,6 @@
     align-items: center;
     padding: 10px 15px;
     width: 100%;
-    box-sizing: border-box;
     border-bottom: 2px solid #34495e;
     margin-bottom: 15px;
     flex-shrink: 0;
@@ -1112,8 +1053,6 @@
 }
 
 .page6-header h1 {
-    color: white;
-    margin: 0;
     font-size: 1.5rem;
     text-align: center;
     justify-self: center;
@@ -1123,24 +1062,22 @@
 @media (max-width: 768px) {
     .match-summary-container {
         flex-direction: column;
-        height: auto;
         gap: 15px;
     }
     .summary-half {
         padding: 15px 10px;
-        max-height: none;
     }
     .summary-stats-grid {
-        gap: 8px !important;
+        gap: 8px;
     }
     .summary-stat {
-        padding: 12px 6px !important;
+        padding: 12px 6px;
     }
     .summary-label {
-        font-size: 0.75rem !important;
+        font-size: 0.75rem;
     }
     .summary-value {
-        font-size: 1.6rem !important;
+        font-size: 1.6rem;
     }
 }
 
@@ -1151,8 +1088,7 @@
     box-shadow: 0 0 20px rgba(52, 152, 219, 0.6), 0 4px 12px rgba(0,0,0,0.3) !important;
     transform: translateY(-3px) scale(1.02) !important;
     transition: all 0.2s ease !important;
-    z-index: 10 !important;
-    position: relative !important;
+    z-index: 10;
 }
 
 /* ==========================================
@@ -1164,36 +1100,32 @@
     display: flex !important;
     justify-content: space-between !important;
     align-items: stretch !important; /* Zorgt dat alle blokken even hoog zijn */
-    gap: 30px !important;            /* ✅ Meer ruimte TUSSEN de blokken */
+    gap: 30px;            /* ✅ Meer ruimte TUSSEN de blokken */
     width: 100% !important;
-    padding: 20px 40px !important;   /* ✅ Meer ruimte aan de zijkanten van het scherm */
-    box-sizing: border-box !important;
+    padding: 20px 40px;   /* ✅ Meer ruimte aan de zijkanten van het scherm */
 }
 
 /* 2. De individuele blokken: 1.5x groter gevoel door hoogte en padding */
 .score-cell {
     min-height: 160px !important;    /* ✅ Duidelijk hoger dan standaard */
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: column;
     align-items: center !important;
     justify-content: center !important;
-    padding: 35px 20px !important;   /* ✅ Meer binnenruimte = massiever blok */
-    border-radius: 15px !important;
+    padding: 35px 20px;   /* ✅ Meer binnenruimte = massiever blok */
+    border-radius: 15px;
     flex: 1 !important;              /* Eerlijke verdeling van de breedte */
 }
 
 /* 3. Het middelste blok (Huidige beurt) mag net iets meer aandacht krijgen */
 #currentPlayerDisplay {
     flex: 1.3 !important;            /* 30% breder dan de zijblokken */
-    min-height: 160px !important;
 }
 
 /* 4. DE TEKST: Geen geforceerde verkleining! */
 .score-cell .cell-value {
     /* ✅ GEEN font-size hier ingesteld! Hierdoor behoudt het zijn oorspronkelijke, grote formaat. */
-    line-height: 1.1 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    line-height: 1.1;
     
     /* Zorg dat de tekst perfect in het midden van het grotere blok zweeft */
     display: flex !important;
@@ -1211,71 +1143,61 @@
 /* 1. Hoofdcontainer: Alleen op Pagina 5 gecentreerd zonder knoppen */
 #page5 .header {
     display: flex !important;
-    justify-content: center !important;
+    justify-content: center;
     align-items: center !important;
     width: 100% !important;
-    max-width: 100vw !important;
+    max-width: 100vw;
     margin: 0 !important;
-    padding: 15px !important;
-    box-sizing: border-box !important;
+    padding: 15px;
 }
 
 /* 2. Middenblok: Forceer volle breedte, vernietig max-width (ALLEEN PAGINA 5) */
 #page5 .header-match-info {
-    flex: 1 1 auto !important;
+    flex: 1 1 auto;
     width: 100% !important;
     min-width: 0 !important;
-    max-width: none !important;      /* ✅ KILL DE 300PX LIMIER */
     margin: 0 !important;
-    padding: 0 15px !important;
+    padding: 0 15px;
     display: flex !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    gap: 15px !important;
+    justify-content: space-between;
+    gap: 15px;
 }
 
 /* 3. Speler zijdes: Vul de ruimte (ALLEEN PAGINA 5) */
 #page5 .header-player-side {
-    flex: 1 !important;
+    flex: 1;
     width: 100% !important;
-    max-width: none !important;      /* ✅ KILL DE 300PX LIMIER */
-    margin: 0 !important;
-    padding: 0 !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: center !important;
-    gap: 15px !important;
+    justify-content: center;
+    gap: 15px;
 }
 
 /* 4. De tekst: Laat hem nu eindelijk groeien! (ALLEEN PAGINA 5) */
 #page5 .header-name {
-    font-size: clamp(2rem, 5vw, 4rem) !important;
-    font-weight: 900 !important;
-    max-width: none !important;      /* ✅ KILL DE 300PX LIMIER */
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 900;
+    max-width: none;      /* ✅ KILL DE 300PX LIMIER */
     width: auto !important;          
-    margin: 0 !important;
-    padding: 0 !important;
     white-space: nowrap !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
+    overflow: visible;
+    text-overflow: clip;
     color: #ffffff !important;
 }
 
 #page5 .header-target {
-    font-size: clamp(2.25rem, 5.4vw, 4.95rem) !important; 
-    font-weight: 900 !important;
-    max-width: none !important;      /* ✅ KILL DE 300PX LIMIER */
+    font-size: clamp(2.25rem, 5.4vw, 4.95rem);
+    font-weight: 900;
     width: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    white-space: nowrap !important;
+    white-space: nowrap;
     color: #2ecc71 !important;  
 }
 
 #page5 .header-vs {
     /* ✅ 15% kleiner gemaakt voor een betere verhouding */
-    font-size: clamp(2.125rem, 5.1vw, 4.25rem) !important;
-    color: #95a5a6 !important; /* Zacht grijs, zodat het niet de show steelt */
+    font-size: clamp(2.125rem, 5.1vw, 4.25rem);
+    color: #95a5a6; /* Zacht grijs, zodat het niet de show steelt */
 }
 
 
@@ -1283,23 +1205,12 @@
    ✅ ONDERSTE 'ONGEDAAN' KNOP (ALTIJD ACTIEF, SUBTIEL)
    ========================================== */
 .undo-btn-bottom {
-    /* Exact dezelfde afmetingen als de + en - knoppen */
-    width: 80px !important;
-    height: 80px !important;
-    border-radius: 50% !important;
-    border: none !important;
-    
     /* ✅ Subtiele, kalme kleur (Zacht Teal/Zeegroen - geen grijs!) */
     background: #26a69a !important; 
-    color: #ffffff !important;
+    color: #ffffff;
     
     /* Emoji grootte en perfecte centrering */
-    font-size: 2.2rem !important; 
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
     
-    cursor: pointer !important;
     transition: all 0.2s ease !important;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
     opacity: 1 !important; /* Altijd 100% zichtbaar */
@@ -1324,11 +1235,11 @@
 
 /* De container (vervangt het oude gedrag van het zwaardje) */
 #page5 .header-vs {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 0 15px !important;
-    flex-shrink: 0 !important;
+    flex-shrink: 0;
 }
 
 /* De daadwerkelijke gekleurde box - 1.5x GROTER */
@@ -1365,30 +1276,29 @@
 
 /* 1. De titel "Selecteer Datum" groter en duidelijker */
 #page1 .selection-title {
-    font-size: clamp(2rem, 5vw, 3rem) !important; /* Schaalt mooi mee met het scherm */
-    font-weight: 900 !important;
-    margin-bottom: 25px !important;
-    color: #ffffff !important;
-    text-transform: uppercase !important;
-    letter-spacing: 2px !important;
-    text-align: center !important;
+    font-size: clamp(2rem, 5vw, 3rem); /* Schaalt mooi mee met het scherm */
+    font-weight: 900;
+    margin-bottom: 25px;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 /* 2. Het datum invoerveld zelf flink vergroten */
 #page1 #dateSelect,
 #page1 .date-input {
-    font-size: clamp(1.5rem, 4vw, 2.5rem) !important; /* Grote, leesbare cijfers */
-    font-weight: 700 !important;
-    padding: 15px 25px !important; /* Groter klikbaar oppervlak voor de muis/presenter */
+    font-size: clamp(1.5rem, 4vw, 2.5rem); /* Grote, leesbare cijfers */
+    font-weight: 700;
+    padding: 15px 25px; /* Groter klikbaar oppervlak voor de muis/presenter */
     text-align: center !important;
-    border-radius: 12px !important;
-    border: 3px solid #34495e !important; /* Duidelijke, stevige rand */
+    border-radius: 12px;
+    border: 3px solid #34495e; /* Duidelijke, stevige rand */
     background-color: #ecf0f1 !important; /* Lichte achtergrond voor maximaal contrast */
-    color: #2c3e50 !important; /* Donkere tekst voor optimale leesbaarheid */
+    color: #2c3e50; /* Donkere tekst voor optimale leesbaarheid */
     width: 100% !important;
-    max-width: 400px !important; /* Niet te breed, maar groot genoeg */
+    max-width: 400px; /* Niet te breed, maar groot genoeg */
     margin: 0 auto 30px auto !important; /* Mooi gecentreerd met ruimte eronder */
-    display: block !important;
+    display: block;
         cursor: pointer !important;
     
 }
@@ -1407,21 +1317,17 @@
 
 /* Zorg voor ruimte tussen kader 1 en kader 2 */
 .friendly-container {
-    margin-top: 40px !important;
-    padding-top: 30px !important;
-    border-top: 2px dashed rgba(255, 255, 255, 0.15) !important; /* Subtiele stippellijn als scheiding */
+    margin-top: 40px;
+    border-top: 2px dashed rgba(255, 255, 255, 0.15); /* Subtiele stippellijn als scheiding */
 }
 
 /* De blauwe knop voor vrije match */
 .friendly-btn {
     background: #3498db !important; /* Helder blauw */
-    width: 100% !important;
-    max-width: 650px !important;
-    margin: 0 auto !important;
-    display: block !important;
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
     transition: all 0.2s ease !important;
-    padding: 26px 60px !important;
-    font-size: 30px !important;
 }
 
 .friendly-btn:hover {
@@ -1436,12 +1342,12 @@
     color: #ffffff !important;
     border: none !important;
     padding: 12px 24px !important;
-    border-radius: 8px !important;
+    border-radius: 8px;
     font-size: 1.1rem !important;
-    font-weight: bold !important;
+    font-weight: bold;
     cursor: pointer !important;
     transition: all 0.2s ease !important;
-    margin-right: 20px !important;
+    margin-right: 20px;
 }
 
 .back-btn:hover {
@@ -1463,8 +1369,8 @@
 /* Het gedimde vak (in de schaduw) */
 .inactive-mode {
     opacity: 0.25 !important;
-    pointer-events: none !important; /* Voorkomt klikken */
-    filter: grayscale(0.8) blur(1px) !important;
+    pointer-events: none; /* Voorkomt klikken */
+    filter: grayscale(0.8) blur(1px);
 }
 
 /* Dikke rand bij hover/focus (nu in Donkerblauw) */
@@ -1472,7 +1378,7 @@
 #page1 .friendly-btn {
     border: 5px solid transparent !important;
     transition: all 0.2s ease !important;
-    outline: none !important;
+    outline: none;
 }
 
 #page1 .next-btn:hover, #page1 .next-btn:focus, #page1 .next-btn:active,
@@ -1509,7 +1415,6 @@
     padding: 30px 40px;
     min-width: 200px;
     text-align: center;
-    cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
 }
@@ -1533,8 +1438,8 @@
 /* Schaduw voor niet-gekozen blokjes */
 .config-card.dimmed {
     opacity: 0.3 !important;
-    filter: grayscale(0.8) !important;
-    pointer-events: none !important; /* Zorgt dat je er niet per ongeluk op klikt */
+    filter: grayscale(0.8);
+    pointer-events: none; /* Zorgt dat je er niet per ongeluk op klikt */
     transition: all 0.3s ease !important;
 }
 
@@ -1546,12 +1451,10 @@
 .card-label {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #ffffff;
     margin-bottom: 8px;
 }
 
 .card-sublabel {
-    font-size: 1rem;
     color: #bdc3c7;
     font-weight: 500;
 }
@@ -1563,51 +1466,44 @@
 
 /* 1. Maak de hoofdcontainer veel breder */
 .friendly-config-container {
-    width: 95vw !important;          /* Gebruik 95% van de schermbreedte */
-    max-width: 2000px !important;    /* Maar niet oneindig breed op reusachtige schermen */
-    margin: 0 auto !important;
-    padding: 40px 20px !important;
+    width: 95vw;          /* Gebruik 95% van de schermbreedte */
+    max-width: 2000px;    /* Maar niet oneindig breed op reusachtige schermen */
+    margin: 0 auto;
+    padding: 40px 20px;
 }
 
 .config-section {
-    margin-bottom: 60px !important;
+    margin-bottom: 60px;
     transition: all 0.4s ease !important;
 }
 
-.config-section.hidden {
-    display: none !important;
-}
 
 .config-title {
     font-size: clamp(1.8rem, 3vw, 2.5rem) !important;
     font-weight: 900 !important;
     color: #ffffff !important;
-    text-align: center !important;
-    margin-bottom: 30px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 2px !important;
+    text-align: center;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 /* 2. De magische 1-rij layout voor de speltypen */
 .single-line-options {
-    display: flex !important;
-    flex-wrap: nowrap !important;    /* ✅ VERBIEDT absoluut een 2e rij */
-    gap: 15px !important;            /* Ruimte tussen de blokken */
-    width: 100% !important;
-    justify-content: stretch !important; /* Forceer uitrekken naar de randen */
+    flex-wrap: nowrap;    /* ✅ VERBIEDT absoluut een 2e rij */
+    gap: 15px;            /* Ruimte tussen de blokken */
+    width: 100%;
+    justify-content: stretch; /* Forceer uitrekken naar de randen */
 }
 
 /* 3. De blokjes zelf: perfecte gelijke verdeling */
 .single-line-options .config-card {
-    flex: 1 1 0 !important;          /* ✅ DE MAGIE: Verdeel ruimte perfect gelijk over 6 kolommen */
-    min-width: 0 !important;         /* Sta toe dat ze krimpen als het scherm smaller is */
-    max-width: none !important;      /* ✅ VERWIJDER DE LIMiet: Laat ze zo groot worden als de ruimte toelaat */
+    flex: 1 1 0;          /* ✅ DE MAGIE: Verdeel ruimte perfect gelijk over 6 kolommen */
+    min-width: 0;         /* Sta toe dat ze krimpen als het scherm smaller is */
     
     background: rgba(255, 255, 255, 0.05) !important;
     border: 4px solid transparent !important;
-    border-radius: 15px !important;
-    padding: 25px 10px !important;   /* Ruimte binnen het blokje */
-    text-align: center !important;
+    padding: 25px 10px;   /* Ruimte binnen het blokje */
     cursor: pointer !important;
     transition: all 0.3s ease !important;
 }
@@ -1629,26 +1525,21 @@
 
 .single-line-options .config-card.dimmed {
     opacity: 0.3 !important;
-    filter: grayscale(0.8) !important;
-    pointer-events: none !important;
 }
 
 /* 4. Tekst en iconen schalen mooi mee in de bredere blokken */
 .single-line-options .card-icon {
-    font-size: 2.8rem !important;
-    margin-bottom: 12px !important;
+    font-size: 2.8rem;
+    margin-bottom: 12px;
 }
 
 .single-line-options .card-label {
     font-size: 1.25rem !important;   /* Iets groter voor betere leesbaarheid */
-    font-weight: 800 !important;
-    color: #ffffff !important;
-    margin-bottom: 8px !important;
-    line-height: 1.2 !important;
+    font-weight: 800;
+    line-height: 1.2;
 }
 
 .single-line-options .card-sublabel {
-    font-size: 1rem !important;
     color: #bdc3c7 !important;
     font-weight: 500 !important;
 }
@@ -1660,39 +1551,33 @@
 
 /* 1. Forceer de header om een flexbox te zijn met ruimte ertussen */
 #pageFriendly #friendlyHeader {
-    display: flex !important;
-    justify-content: space-between !important; /* Links, Midden, Rechts */
-    align-items: center !important;
-    width: 100% !important;
-    padding: 20px 40px !important;
-    box-sizing: border-box !important;
+    width: 100%;
+    padding: 20px 40px;
 }
 
 /* Zorg dat de titel rechts netjes staat */
 #pageFriendly #friendlyHeader h1 {
-    margin: 0 !important;
-    font-size: clamp(1.5rem, 2.5vw, 2.2rem) !important;
-    text-align: right !important;
+    font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+    text-align: right;
 }
 
 /* 2. DE KNOP ZELF: Groot, Duidelijk, Onoverwinnelijk */
 #friendlyResetBtn {
     /* Afmetingen: Dwing een minimale grootte af */
-    padding: 15px 40px !important;
-    min-width: 180px !important; 
+    padding: 15px 40px;
+    min-width: 180px;
     
     /* Tekst: Groot en vet */
-    font-size: 1.3rem !important;
-    font-weight: 900 !important;
-    color: #ffffff !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-    text-align: center !important;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     
     /* Uiterlijk: Duidelijke oranje knop met witte rand */
     background-color: #e67e22 !important;
-    border: 3px solid #ffffff !important;
-    border-radius: 12px !important;
+    border: 3px solid #ffffff;
+    border-radius: 12px;
     cursor: pointer !important;
     box-shadow: 0 5px 15px rgba(0,0,0,0.4) !important;
     transition: all 0.2s ease !important;
@@ -1711,22 +1596,19 @@
    ========================================================================= */
 
 .modal-overlay {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100vw !important;
     height: 100vh !important;
     background: rgba(0, 0, 0, 0.85) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 9999 !important;
-    backdrop-filter: blur(5px) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
 }
 
-.modal-overlay.hidden {
-    display: none !important;
-}
 
 /* ✅ ALGEMENE HIDDEN CLASS */
 .hidden {
@@ -1736,40 +1618,39 @@
 .modal-content {
     background: #2c3e50 !important;
     border: 2px solid #34495e !important;
-    border-radius: 15px !important;
+    border-radius: 15px;
     padding: 25px !important; /* ✅ COMPACTER */
     width: 85vw !important;
-    max-width: 900px !important;
-    max-height: 85vh !important;
-    display: flex !important;
-    flex-direction: column !important;
+    max-width: 900px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 15px 40px rgba(0,0,0,0.7) !important;
 }
 
 .modal-title {
-    text-align: center !important;
-    font-size: 1.8rem !important; /* ✅ KLEINER */
-    color: #ffffff !important;
-    margin-bottom: 20px !important;
+    text-align: center;
+    font-size: 1.8rem; /* ✅ KLEINER */
+    margin-bottom: 20px;
 }
 
 /* Grote keuze knoppen (Clublid/Gast) */
 .modal-choice-buttons {
-    display: flex !important;
-    gap: 20px !important; /* ✅ KLEINER */
-    justify-content: center !important;
-    margin-bottom: 15px !important;
+    display: flex;
+    gap: 20px; /* ✅ KLEINER */
+    justify-content: center;
+    margin-bottom: 15px;
 }
 
 .modal-btn {
     padding: 12px 25px !important; /* ✅ COMPACTER */
     font-size: 1.1rem !important; /* ✅ KLEINER */
-    font-weight: 700 !important;
-    border-radius: 8px !important;
+    font-weight: 700;
+    border-radius: 8px;
     border: none !important;
     cursor: pointer !important;
     transition: all 0.2s ease !important;
-    color: #ffffff !important;
+    color: #ffffff;
 }
 
 .modal-btn.primary { background: #2ecc71 !important; }
@@ -1785,33 +1666,32 @@
 .search-input-display {
     background: rgba(0, 0, 0, 0.5) !important;
     border: 2px solid #2ecc71 !important;
-    border-radius: 8px !important;
-    padding: 10px 20px !important; /* ✅ MINDER */
-    margin-bottom: 15px !important;
-    display: flex !important;
-    align-items: center !important;
-    font-size: 1.3rem !important; /* ✅ KLEINER */
-    font-weight: 700 !important;
-    color: #ffffff !important;
-    min-height: 40px !important; /* ✅ LAGER */
+    border-radius: 8px;
+    padding: 10px 20px; /* ✅ MINDER */
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    font-size: 1.3rem; /* ✅ KLEINER */
+    font-weight: 700;
+    min-height: 40px; /* ✅ LAGER */
 }
 
 .search-label {
-    color: #95a5a6 !important;
-    font-size: 1rem !important; /* ✅ KLEINER */
-    margin-right: 10px !important;
-    font-weight: 500 !important;
+    color: #95a5a6;
+    font-size: 1rem; /* ✅ KLEINER */
+    margin-right: 10px;
+    font-weight: 500;
 }
 
 .search-text {
-    color: #2ecc71 !important;
-    letter-spacing: 2px !important;
+    color: #2ecc71;
+    letter-spacing: 2px;
 }
 
 .cursor {
     animation: blink 1s infinite !important;
-    color: #2ecc71 !important;
-    margin-left: 3px !important;
+    color: #2ecc71;
+    margin-left: 3px;
 }
 
 @keyframes blink {
@@ -1821,22 +1701,21 @@
 
 /* Zoekinterface Layout */
 .search-layout {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 20px !important; /* ✅ KLEINER */
-    flex: 1 !important;
-    overflow: hidden !important;
-    align-items: stretch !important;
+    display: flex;
+    gap: 20px; /* ✅ KLEINER */
+    flex: 1;
+    overflow: hidden;
+    align-items: stretch;
 }
 
 /* ✅ COMPACT A-Z GRID */
 .alphabet-grid {
-    display: grid !important;
-    grid-template-columns: repeat(7, 1fr) !important; /* ✅ 7 kolommen */
-    gap: 6px !important; /* ✅ KLEINER */
-    flex: 0 0 45% !important;
-    max-width: 350px !important;
-    align-content: start !important;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* ✅ 7 kolommen */
+    gap: 6px; /* ✅ KLEINER */
+    flex: 0 0 45%;
+    max-width: 350px;
+    align-content: start;
 }
 
 /* ✅ COMPACTE LETTERKNOPPEN */
@@ -1844,16 +1723,15 @@
     background: rgba(255,255,255,0.1) !important;
     border: 2px solid rgba(255,255,255,0.2) !important;
     color: #ffffff !important;
-    font-size: 1rem !important; /* ✅ KLEINER */
-    font-weight: 700 !important;
-    border-radius: 6px !important;
+    font-size: 1rem; /* ✅ KLEINER */
+    font-weight: 700;
+    border-radius: 6px;
     cursor: pointer !important;
     transition: all 0.1s ease !important;
-    aspect-ratio: 1 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 0 !important;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .alpha-btn:hover, .alpha-btn:active {
@@ -1864,15 +1742,15 @@
 
 /* ✅ COMPACTE SPATIE-KNOP */
 .alpha-btn.space-bar {
-    grid-column: span 3 !important;
+    grid-column: span 3;
     background: rgba(46, 204, 113, 0.2) !important;
     border-color: #2ecc71 !important;
     color: #2ecc71 !important;
     font-size: 0.9rem !important; /* ✅ KLEINER */
     font-weight: 800 !important;
-    letter-spacing: 1px !important;
+    letter-spacing: 1px;
     aspect-ratio: auto !important;
-    height: 40px !important;
+    height: 40px;
 }
 
 .alpha-btn.space-bar:hover, .alpha-btn.space-bar:active {
@@ -1882,16 +1760,15 @@
 
 /* ✅ COMPACTE SPELERSLIJST */
 .player-list-container {
-    flex: 1 !important;
+    flex: 1;
     background: rgba(0,0,0,0.3) !important;
-    border-radius: 8px !important;
+    border-radius: 8px;
     border: 2px solid rgba(255,255,255,0.1) !important;
-    min-width: 0 !important;
-    max-height: 350px !important; /* ✅ LAGER */
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    scrollbar-width: thin !important;
-    scrollbar-color: #2ecc71 rgba(0,0,0,0.3) !important;
+    min-width: 0;
+    max-height: 350px; /* ✅ LAGER */
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: #2ecc71 rgba(0,0,0,0.3);
 }
 
 .player-list-container::-webkit-scrollbar {
@@ -1915,12 +1792,12 @@
 /* ✅ COMPACTE LIJST ITEMS */
 .player-list-item {
     padding: 10px 15px !important; /* ✅ MINDER */
-    font-size: 1.1rem !important; /* ✅ KLEINER */
+    font-size: 1.1rem; /* ✅ KLEINER */
     color: #ecf0f1 !important;
-    border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
     cursor: pointer !important;
     transition: all 0.2s ease !important;
-    user-select: none !important;
+    user-select: none;
 }
 
 .player-list-item:hover {
@@ -1935,10 +1812,10 @@
 
 /* ✅ COMPACTE ACTIEKNOPPEN */
 .modal-actions {
-    display: flex !important;
-    gap: 10px !important; /* ✅ KLEINER */
-    justify-content: center !important;
-    margin-top: 15px !important;
+    display: flex;
+    gap: 10px; /* ✅ KLEINER */
+    justify-content: center;
+    margin-top: 15px;
 }
 
 .modal-actions .modal-btn {
@@ -1967,18 +1844,17 @@
 
 /* Display van gekozen spelers op hoofdpagina */
 .chosen-players-display {
-    display: flex !important;
-    gap: 30px !important;
-    justify-content: center !important;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
 }
 .chosen-player {
     background: rgba(46, 204, 113, 0.1) !important;
-    border: 2px solid #2ecc71 !important;
-    padding: 20px 40px !important;
-    border-radius: 12px !important;
-    font-size: 1.5rem !important;
-    font-weight: 700 !important;
-    color: #ffffff !important;
+    border: 2px solid #2ecc71;
+    padding: 20px 40px;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 
 
@@ -1990,7 +1866,6 @@
 #btnModeClub.mode-active-club {
     border: 3px solid #2ecc71 !important; /* ✅ Dwing de rand af */
     background: rgba(46, 204, 113, 0.3) !important;
-    color: #ffffff !important;
     box-shadow: 0 0 15px rgba(46, 204, 113, 0.6) !important; /* Groene gloed */
     transform: scale(1.05);
 }
@@ -1999,7 +1874,6 @@
 #btnModeGuest.mode-active-guest {
     border: 3px solid #3498db !important; /* ✅ Dwing de rand af */
     background: rgba(52, 152, 219, 0.3) !important;
-    color: #ffffff !important;
     box-shadow: 0 0 15px rgba(52, 152, 219, 0.6) !important; /* Blauwe gloed */
     transform: scale(1.05);
 }
@@ -2098,7 +1972,6 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
-    width: 100%;
     max-width: 500px;
     margin: 0 auto;
 }
@@ -2121,7 +1994,6 @@
 .player-color-name {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #ffffff;
     flex: 1;
 }
 
@@ -2139,7 +2011,6 @@
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
-    cursor: pointer;
     transition: all 0.25s ease;
     border: 3px solid rgba(255, 255, 255, 0.3);
     opacity: 0.4; 
@@ -2151,7 +2022,7 @@
 /* Helder biljart-kleuren (Zonder gradients voor maximale rand-compatibiliteit) */
 .color-dot.white { background: #ecf0f1; color: #333; }
 .color-dot.yellow { background: #f1c40f; color: #333; }
-.color-dot.red { background: #e74c3c; color: #fff; }
+.color-dot.red { background: #e74c3c;  }
 
 /* Hover effect (alleen als hij niet disabled of active is) */
 .color-dot:hover:not(.disabled):not(.active) {
@@ -2163,23 +2034,22 @@
 /* ✅ GEKOZEN: ONMISKENBAAR (Dikke groene rand + Enorme gloed) */
 .color-dot.active {
     opacity: 1 !important;
-    filter: none !important; /* Verwijdert alle grijs volledig */
+    filter: none; /* Verwijdert alle grijs volledig */
     transform: scale(1.25) !important;
-    border: 4px solid #2ecc71 !important; /* Forceer de dikke groene rand */
-    outline: 2px solid #2ecc71 !important; /* Dubbele zekerheid voor de rand */
+    border: 4px solid #2ecc71; /* Forceer de dikke groene rand */
+    outline: 2px solid #2ecc71; /* Dubbele zekerheid voor de rand */
     box-shadow: 0 0 20px #2ecc71, 0 0 40px rgba(46, 204, 113, 0.6) !important; /* Felle groene gloed */
-    z-index: 10 !important;
-    cursor: default;
+    z-index: 10;
 }
 
 /* ✅ LOCK-OUT: Bijna onzichtbaar, grijs, plat en NIET klikbaar */
 .color-dot.disabled {
     opacity: 0.15 !important;
-    filter: grayscale(1) brightness(0.3) !important;
+    filter: grayscale(1) brightness(0.3);
     cursor: not-allowed !important;
-    pointer-events: none !important; /* Blokkeert de muis echt */
+    pointer-events: none; /* Blokkeert de muis echt */
     transform: scale(0.85);
-    border-color: rgba(255,255,255,0.05) !important;
+    border-color: rgba(255,255,255,0.05);
     box-shadow: none !important;
 }
 
@@ -2198,7 +2068,6 @@
 /* De actieve speler krijgt een subtiele gloed */
 
 .player-name {
-    font-size: 1.5rem;
     font-weight: 700;
     color: #ffffff;
     margin-bottom: 5px;
@@ -2216,7 +2085,6 @@
     font-weight: 700;
     border: none;
     border-radius: 8px;
-    cursor: pointer;
     transition: all 0.2s ease;
 }
 
@@ -2289,8 +2157,6 @@
     border: 2px solid #e74c3c;
     background: #2c3e50;
     color: #ffffff;
-    cursor: pointer;
-    outline: none;
 }
 
 .target-select:focus {
@@ -2313,54 +2179,46 @@
 /* Hoofdcontainer */
 #page14 .header {
     display: flex !important;
-    justify-content: center !important;
+    justify-content: center;
     align-items: center !important;
     width: 100% !important;
-    max-width: 100vw !important;
-    margin: 0 !important;
-    padding: 15px !important;
-    box-sizing: border-box !important;
+    max-width: 100vw;
+    margin: 0;
+    padding: 15px;
 }
 
 /* Middenblok: Forceer volle breedte, geen limieten */
 #page14 .header-match-info {
-    flex: 1 1 auto !important;
+    flex: 1 1 auto;
     width: 100% !important;
     min-width: 0 !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 15px !important;
+    padding: 0 15px;
     display: flex !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    gap: 15px !important;
+    justify-content: space-between;
+    gap: 15px;
 }
 
 /* Speler zijdes: Vul de ruimte */
 #page14 .header-player-side {
-    flex: 1 !important;
+    flex: 1;
     width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: center !important;
-    gap: 15px !important;
+    justify-content: center;
+    gap: 15px;
 }
 
 /* De namen: Laat ze groeien! */
 #page14 .header-name {
-    font-size: clamp(2rem, 5vw, 4rem) !important;
-    font-weight: 900 !important;
-    max-width: none !important;
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 900;
+    max-width: none;
     width: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
     white-space: nowrap !important;
-    overflow: visible !important;
-    text-overflow: clip !important;
-    color: #ffffff !important;
+    overflow: visible;
+    text-overflow: clip;
+    color: #ffffff;
 }
 #page14 #friendlyHeaderName2 {
     color: #f1c40f !important;
@@ -2368,27 +2226,22 @@
 
 /* De targets (Doelen) */
 #page14 .header-target {
-    font-size: clamp(2.25rem, 5.4vw, 4.95rem) !important;
-    font-weight: 900 !important;
-    max-width: none !important;
+    font-size: clamp(2.25rem, 5.4vw, 4.95rem);
+    font-weight: 900;
     width: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
     white-space: nowrap !important;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 #page14 #friendlyHeaderTarget1 { color: #ffffff !important; }
-#page14 #friendlyHeaderTarget2 { color: #f1c40f !important; }
 
 /* Het middenblok (Discipline container) */
 #page14 .header-vs {
     display: flex !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: center;
     margin: 0 15px !important;
-    flex-shrink: 0 !important;
+    flex-shrink: 0;
     font-size: clamp(2.125rem, 5.1vw, 4.25rem) !important;
-    color: #95a5a6 !important;
+    color: #95a5a6;
 }
 
 /* De gekleurde discipline badge */
@@ -2418,7 +2271,6 @@
 
 /* Algemene actieve speler schaal (subtiel omhoog) */
 #page14 .score-cell.active-player {
-    transform: scale(1.03);
     z-index: 10;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -2448,12 +2300,12 @@
 /* Totaalpunten Speler 1 (Witte achtergrond, zwarte letters) */
 #page14 #friendlyP1TotalCell { 
     background: white !important; 
-    color: black !important; 
-    border: 3px solid #3182ce !important; 
+    color: black;
+    border: 3px solid #3182ce;
 }
 #page14 #friendlyP1TotalCell .cell-value { 
     font-size: 6.5rem !important; 
-    color: #000 !important; 
+    color: #000;
 }
 #page14 #friendlyP1TotalCell .cell-label {
     color: #3182ce !important;
@@ -2462,12 +2314,12 @@
 /* Totaalpunten Speler 2 (Gele achtergrond, zwarte letters) */
 #page14 #friendlyP2TotalCell { 
     background: #f1c40f !important; 
-    color: black !important; 
-    border: 3px solid #3182ce !important; 
+    color: black;
+    border: 3px solid #3182ce;
 }
 #page14 #friendlyP2TotalCell .cell-value { 
     font-size: 6.5rem !important; 
-    color: #000 !important; 
+    color: #000;
 }
 #page14 #friendlyP2TotalCell .cell-label {
     color: #000 !important;
@@ -2477,11 +2329,6 @@
 #page14 #friendlyP1NeededCell,
 #page14 #friendlyP2NeededCell {
     background: rgba(46, 204, 113, 0.15) !important;
-    border-color: #27ae60 !important;
-}
-#page14 #friendlyP1NeededCell .cell-value,
-#page14 #friendlyP2NeededCell .cell-value {
-    color: #2ecc71 !important;
 }
 
 /* Nog nodig: Rode waarschuwing bij <= 5 punten */
@@ -2516,7 +2363,6 @@
 #page14 #friendlyP2NeededCell.active-player {
     opacity: 1 !important;
     transform: scale(1.03) !important;
-    filter: none !important;
 }
 
 /* =========================================
@@ -2524,19 +2370,14 @@
    ========================================= */
 
 /* 1. Statistieken Blokken */
-#page14 #friendlyP1PlayedAvg, #page14 #friendlyP2PlayedAvg { border-color: #3498db !important; }
-#page14 #friendlyP1Highest, #page14 #friendlyP2Highest { border-color: #f1c40f !important; }
-#page14 #friendlyP1TargetAvg, #page14 #friendlyP2TargetAvg { border-color: #e67e22 !important; }
+#page14 #friendlyP1PlayedAvg, #page14 #friendlyP2PlayedAvg { border-color: #3498db; }
+#page14 #friendlyP1Highest, #page14 #friendlyP2Highest { border-color: #f1c40f; }
+#page14 #friendlyP1TargetAvg, #page14 #friendlyP2TargetAvg { border-color: #e67e22; }
 
-#page14 .stat-box {
-    position: relative !important;
-    overflow: hidden !important;
-}
 
 #page14 .stat-box::before {
-    position: absolute !important; top: 50% !important; left: 50% !important;
-    transform: translate(-50%, -50%) !important; font-size: 5rem !important;
-    opacity: 0.15 !important; filter: brightness(1.2) !important; pointer-events: none !important;
+    transform: translate(-50%, -50%) !important;
+    opacity: 0.15 !important;
 }
 #page14 #friendlyP1PlayedAvg::before, #page14 #friendlyP2PlayedAvg::before { content: "📈"; color: #3498db; }
 #page14 #friendlyP1Highest::before, #page14 #friendlyP2Highest::before { content: "⭐"; color: #f1c40f; }
@@ -2544,15 +2385,12 @@
 
 /* 2. Spelerkaarten & Beurtenlijst */
 #page14 .players-container { 
-    display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; padding: 0 20px; 
+     grid-template-columns: 1fr 1fr;
 }
 #page14 .player-card {
-    border-radius: 15px; padding: 20px; font-size: 1.1em; transition: all 0.3s;
-    min-height: 350px; display: flex; flex-direction: column; position: relative;
+       transition: all 0.3s;
+    min-height: 350px;
 }
-#page14 .player-inactive { opacity: 0.6;  }
-#page14 .player-white { background: white; color: black; }
-#page14 .player-yellow { background: #f1c40f; color: black; }
 
 #page14 .turns-scroll-container {
      background: rgba(0,0,0,0.05) !important;
@@ -2576,31 +2414,17 @@
 /* BEURTEN MET 0 PUNTEN: Zeer lichtrode achtergrond */
 #page14 .turn-row.played.zero-turn {
     background: rgba(231, 76, 60, 0.12) !important;
-    border: 1px solid rgba(231, 76, 60, 0.35) !important;
-}
-#page14 .turn-row.played.zero-turn span {
-    color: #c0392b !important;
 }
 
 /* HOOGSTE REEKS: Groene achtergrond en rand */
 #page14 .turn-row.played.highest-series {
     background: rgba(46, 204, 113, 0.25) !important;
-    border: 2px solid #2ecc71 !important;
-    color: #27ae60 !important;
     box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3) !important;
-}
-#page14 .turn-row.played.highest-series span {
-    color: #27ae60 !important;
 }
 
 /* ALLERLAATSTE BEURT (subtiel blauw accent, alleen als het NIET de hoogste reeks is) */
 #page14 .turn-row.played.latest-turn {
-    border: 2px solid #3498db !important;
     box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3) !important;
-}
-#page14 .turn-row.played.latest-turn span {
-    color: #2980b9 !important;
-    font-weight: 900 !important;
 }
 
 
@@ -2625,7 +2449,6 @@
     border: 2px solid rgba(255, 255, 255, 0.2);
     color: white;
     border-radius: 12px;
-    cursor: pointer;
     transition: all 0.2s;
     display: flex;
     flex-direction: column;
@@ -2636,7 +2459,7 @@
 #page14-3player .ctrl-btn:active { transform: scale(0.95); }
 #page14-3player .undo-btn { width: 60px; height: 60px; font-size: 1.5rem; }
 #page14-3player .minus-btn { width: 70px; height: 70px; font-size: 2.5rem; font-weight: 900; }
-#page14-3player .plus-btn { width: 70px; height: 70px; font-size: 2.5rem; font-weight: 900; background: rgba(46, 204, 113, 0.2); border-color: #2ecc71; }
+#page14-3player .plus-btn { width: 70px; height: 70px; font-size: 2.5rem; font-weight: 900;   }
 
 #page14-3player .center-turn-btn {
     flex: 1;
@@ -2655,16 +2478,6 @@
     padding: 0 20px 20px 20px;
     height: calc(100vh - 120px); /* Vul de rest van het scherm */
 }
-
-/* 3. Individuele Kolom Stijl */
-#page14-3player .player-col {
-    background: rgba(44, 62, 80, 0.6);
-}
-
-/* Kleuraccenten per kolom */
-#page14-3player .player-white-col { border-top: 4px solid #ffffff; }
-#page14-3player .player-yellow-col { border-top: 4px solid #f1c40f; }
-#page14-3player .player-red-col { border-top: 4px solid #e74c3c; }
 
 /* Actieve speler highlight (wordt later door JS toegevoegd) */
 #page14-3player .player-col.active-player {
@@ -2689,7 +2502,6 @@
     width: 100%;
     background: rgba(0, 0, 0, 0.15);
     border-radius: 8px;
-    margin-top: 0; /* Geen extra marge bovenaan */
     overflow-y: auto;
 }
 
@@ -2737,7 +2549,6 @@
     padding: 10px 5px;
     margin-bottom: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-sizing: border-box;
     gap: 5px;
 }
 
@@ -2772,7 +2583,6 @@
 #page14-3player .score-value {
     font-size: 3.5rem; /* Groot voor Target/Totaal */
     font-weight: 900;
-    color: #ffffff;
     line-height: 1;
     text-shadow: 0 4px 8px rgba(0,0,0,0.5);
 }
@@ -2862,7 +2672,7 @@
 }
 
 #page14-3player .turn-row.played.highest-series span {
-    font-weight: 900 !important;
+    font-weight: 900;
 }
 
 /* =========================================================================
@@ -2870,10 +2680,10 @@
    ========================================================================= */
 
 #page14-3player .player-col {
-    padding: 10px 8px 5px 8px !important;
-    height: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
+    padding: 10px 8px 5px 8px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 
@@ -2882,34 +2692,28 @@
     padding-top: 2px !important;
 }
 
-#page14-3player .col-turns-placeholder,
-#page14-3player .col-stats-placeholder {
-    margin: 0 !important;
-    padding: 0 !important;
-}
 
 /* =========================================================================
    PAGINA 14 (3 SPELERS): DEFINITIEVE FIX - BEURTENLIJST ZONDER SCROLLBAR
    ========================================================================= */
 
 #page14-3player .col-stats-placeholder {
-    height: auto !important;
-    max-height: 120px !important;
-    flex: 0 0 auto !important;
+    max-height: 120px;
+    flex: 0 0 auto;
     margin-bottom: 10px !important;
 }
 
 #page14-3player .col-turns-placeholder {
-    flex: 1 1 auto !important;
-    min-height: 0 !important;
-    overflow: visible !important;
-    display: flex !important;
-    flex-direction: column !important;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
 }
 
 #page14-3player .turns-scroll-container {
-    flex: 1 1 auto !important;
-    min-height: 0 !important;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-x: hidden;
     scrollbar-width: thin;
     scrollbar-color: rgba(255,255,255,0.3) transparent;
@@ -2933,7 +2737,6 @@
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
     min-height: 100vh;
     padding: 20px;
-    display: none; /* ✅ Standaard verborgen */
     flex-direction: column;
 }
 
@@ -2952,7 +2755,6 @@
 #page15-3player-summary .summary3p-title {
     font-size: 2.5rem;
     font-weight: 900;
-    color: white;
     margin-bottom: 10px;
 }
 
@@ -2964,7 +2766,6 @@
 }
 
 #page15-3player-summary .summary3p-subtitle {
-    font-size: 1rem;
     color: #bdc3c7;
     font-style: italic;
 }
@@ -3013,7 +2814,6 @@
 #page15-3player-summary .summary3p-name {
     font-size: 1.5rem;
     font-weight: 900;
-    color: white;
 }
 
 #page15-3player-summary .summary3p-stats {
@@ -3134,7 +2934,6 @@
     font-size: 1.2rem;
     font-weight: 700;
     border-radius: 10px;
-    cursor: pointer;
     transition: all 0.3s;
 }
 
@@ -3249,12 +3048,10 @@
    HEADER DISCIPLINE
    ========================================================================= */
 #friendlyHeaderDiscipline {
-    font-size: 2.5rem !important;
-    font-weight: 900 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 3px !important;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 3px;
     transition: color 0.3s ease !important;
-    margin-top: 10px !important;
 }
 
 /* =========================================================================
@@ -3277,7 +3074,6 @@
 .competition-table th {
     background-color: #34495e;
     color: #ecf0f1;
-    font-weight: bold;
 }
 
 .competition-table td {
@@ -3299,21 +3095,18 @@
 
 .rank-1 td:first-child {
     background-color: #FFD700 !important;
-    color: #1a1a2e !important;
+    color: #1a1a2e;
     font-weight: 900;
-    text-align: center;
 }
 .rank-2 td:first-child {
     background-color: #E8EDF2 !important;
-    color: #1a1a2e !important;
+    color: #1a1a2e;
     font-weight: 900;
-    text-align: center;
 }
 .rank-3 td:first-child {
     background-color: #CD7F32 !important;
-    color: #1a1a2e !important;
+    color: #1a1a2e;
     font-weight: 900;
-    text-align: center;
 }
 
 
@@ -3331,15 +3124,13 @@
     padding: 4px 2px;
     text-align: center;
     border: 1px dashed #666;
-    vertical-align: middle;
     min-height: 20px; /* ✅ Zorg dat lege cellen ook hoogte hebben */
 }
 
 .cross-table th {
     background-color: #34495e;
     color: #ecf0f1;
-    font-weight: bold;
-    border: 1px solid #000 !important;
+    border: 1px solid #000;
 }
 
 /* 1. VASTE BREEDTES */
@@ -3355,11 +3146,10 @@
 
 .cross-table .player-name,
 .cross-table .player-coef {
-    width: 200px !important;
-    min-width: 200px !important;
-    max-width: 200px !important;
-    text-align: left !important;
-    padding-left: 10px !important;
+    min-width: 200px;
+    max-width: 200px;
+    text-align: left;
+    padding-left: 10px;
 }
 
 .cross-table .player-nr { width: 30px; font-weight: bold; }
@@ -3372,7 +3162,6 @@
     border: 2px solid #ecf0f1 !important;
 }
 .cross-table .tot-sub {
-    background-color: #34495e;
     font-size: 0.85em;
 }
 
@@ -3396,20 +3185,19 @@
 .cross-table .tot-hr {
     background-color: #2c3e50 !important;
     color: #ecf0f1;
-    font-weight: bold !important;
-    border: 2px solid #555 !important;
-    text-align: center !important;
-    padding: 6px 4px !important;
+    font-weight: bold;
+    border: 2px solid #555;
+    padding: 6px 4px;
     min-width: 40px;
 }
 
 .cross-table .tot-pts { background-color: rgba(52, 152, 219, 0.25) !important; }
 .cross-table .tot-turns { background-color: rgba(149, 165, 166, 0.25) !important; }
-.cross-table .tot-mp { font-size: 1.1em !important; }
+.cross-table .tot-mp { font-size: 1.1em; }
 
 .cross-table .self-cell { 
     background-color: #7f8c8d !important; 
-    border: 1px solid #555 !important; 
+    border: 1px solid #555;
 }
 
 .cross-table .not-played { 
@@ -3417,8 +3205,8 @@
     color: #7f8c8d; 
 }
 
-.cross-table .comp-pts-positive { color: #2ecc71 !important; font-weight: bold; }
-.cross-table .comp-pts-negative { color: #e74c3c !important; font-weight: bold; }
+.cross-table .comp-pts-positive {  font-weight: bold; }
+.cross-table .comp-pts-negative {  font-weight: bold; }
 
 /* =========================================================================
    COMPETITIE HEADER CONTROLS - Dropdowns & Knoppen
@@ -3440,8 +3228,6 @@
     border-radius: 25px;
     font-size: 0.95em;
     font-weight: 500;
-    cursor: pointer;
-    outline: none;
     transition: all 0.2s ease;
     
     appearance: none;
@@ -3484,7 +3270,6 @@
 
 .comp-header-controls select option {
     background-color: #2c3e50;
-    color: #ecf0f1;
     padding: 10px;
     font-weight: 500;
 }
@@ -3496,7 +3281,6 @@
     border: 1px solid #444;
     padding: 8px 20px;
     border-radius: 25px;         /* Pill shape */
-    cursor: pointer;
     font-size: 0.95em;
     font-weight: 500;
     transition: all 0.2s ease;
@@ -3522,7 +3306,6 @@
    ========================================================================= */
 
 #page20 {
-    overflow-y: auto !important;
     height: 100% !important;
 }
 
@@ -3540,18 +3323,13 @@
 
 /* MPTN kleuren: groen als positief, rood als negatief */
 #page20 .comp-pts-positive {
-    color: #16a34a;
     font-weight: bold;
 }
 
 #page20 .comp-pts-negative {
-    color: #ef4444;
     font-weight: bold;
 }
 
-#page20 .comp-pts-zero {
-    color: #64748b;
-}
 
 /* PTN: gewoon wit (geen speciale kleur) */
 #page20 .pts-met-doel,
@@ -3639,7 +3417,7 @@
 #page13 .ball-circle.yellow {
     background: radial-gradient(circle at 30% 30%, #f1c40f, #d4ac0d) !important;
     color: #333 !important;
-    border-color: rgba(241, 196, 15, 0.5) !important;
+    border-color: rgba(241, 196, 15, 0.5);
 }
 
 /* ✅ GEKOZEN WITTE BAL (alleen op pagina 13) */
@@ -3696,7 +3474,6 @@ html body * {
 }
 
 #page50{
-    margin:0;
     padding:0;
     overflow:hidden;
 }
@@ -3710,9 +3487,7 @@ html body * {
     font-family:system-ui, sans-serif;
     row-gap: 12px;
 }
-.alt-col-white{ color:#fff; }
 .alt-col-yellow{ color:#f1c40f; }
-.alt-col-mid{ color:#fff; }
 
 .alt-name{
     font-size:4.4rem;
@@ -3798,7 +3573,6 @@ html body * {
     border: 3px solid #fff;
     border-radius: 8px;
     overflow: hidden;
-    background: transparent;
 }
 .alt-progress-pct{
     position: absolute;
@@ -3811,7 +3585,6 @@ html body * {
     justify-content: center;
     font-size: 1.4rem;
     font-weight: 700;
-    color: #fff;
     text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 .alt-progress-bar{
@@ -3829,10 +3602,9 @@ html body * {
 
 /* Scorebord (pagina 5): + / − / ongedaan niet tonen (bediening met de presenter). */
 #page5 .score-controls .score-btn { display: none !important; }
-#page5 .undo-btn-bottom { display: none !important; }
 
 /* Nodig-blokje: paarse rand en een vaag 💎 achter het cijfer, zoals de andere blokjes. */
-#p1NodigAvg, #p2NodigAvg { border-color: #9b59b6 !important; }
+#p1NodigAvg, #p2NodigAvg { border-color: #9b59b6; }
 #p1NodigAvg::before, #p2NodigAvg::before { content: "💎"; color: #9b59b6; }
 
 /* Gespeeld gemiddelde: heel lichte groene of rode achtergrond. */
@@ -3842,9 +3614,9 @@ html body * {
 /* Grotere hoofdblokken en infoblokjes, in % van het scherm; alleen vanaf 1200 px breed. */
 @media (min-width: 1200px) {
     #page5 .scoring-row-container { padding: 20px 24px !important; gap: 16px !important; }
-    #page5 .score-cell { min-height: 22vh !important; max-width: 16vw !important; padding: 25px 6px !important; }
-    #page5 .score-cell.center-info, #page5 #currentPlayerDisplay { min-height: 22vh !important; max-width: 24vw !important; }
-    #page5 .cell-value { font-size: 5.8vw !important; }
+    #page5 .score-cell { min-height: 22vh !important; max-width: 16vw; padding: 25px 6px !important; }
+    #page5 .score-cell.center-info, #page5 #currentPlayerDisplay {  max-width: 24vw !important; }
+    #page5 .cell-value { font-size: 5.8vw; }
     #page5 #p1TotalCell .cell-value, #page5 #p2TotalCell .cell-value { font-size: 6vw !important; }
     #page5 .stat-box { width: 10.5vw !important; height: 12vh !important; font-size: 2.6vw !important; }
     #page5 .stat-box::before { font-size: 6rem !important; }
