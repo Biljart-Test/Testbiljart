@@ -510,7 +510,7 @@ window.fetchTournamentMatchesFromAPI = async function() {
                         team2: team2Players.map(p => ({ club_id: parseInt(p.club_id), name: lookupName(p.club_id) }))
                     },
                     completed: false,
-                    target1: 70, target2: 70,
+                    target1: window.spelDoel('dubbeltje'), target2: window.spelDoel('dubbeltje'),
                     p1Score: 0, p2Score: 0,
                     p1Turns: [], p2Turns: [],
                     p1Highest: 0, p2Highest: 0,
@@ -576,10 +576,10 @@ window.startTournamentDubbelMatch = function(match) {
         numPlayers: 4,
         gameType: 'dubbeltje',
         players: {
-            1: { name: t1[0].name, target: 70, average: 0 },
-            2: { name: t1[1].name, target: 70, average: 0 },
-            3: { name: t2[0].name, target: 70, average: 0 },
-            4: { name: t2[1].name, target: 70, average: 0 }
+            1: { name: t1[0].name, target: window.spelDoel('dubbeltje'), average: 0 },
+            2: { name: t1[1].name, target: window.spelDoel('dubbeltje'), average: 0 },
+            3: { name: t2[0].name, target: window.spelDoel('dubbeltje'), average: 0 },
+            4: { name: t2[1].name, target: window.spelDoel('dubbeltje'), average: 0 }
         },
         teams: { 1: 1, 2: 1, 3: 2, 4: 2 },
         orders: { 1: 1, 2: 2, 3: 1, 4: 2 },

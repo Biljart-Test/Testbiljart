@@ -140,6 +140,11 @@ window.syncMatchToAPI = async function(match) {
 
         if (response.ok) {
             console.log("✅ Match succesvol gesynchroniseerd met de server!");
+            // De planner stuurt de klassementspunten van deze match mee; die tonen we in het overzicht
+            try {
+                const antwoord = await response.clone().json();
+                if (antwoord && antwoord.punten && typeof window.zetKlassementspunten === 'function') window.zetKlassementspunten(match, antwoord.punten);
+            } catch (e) { /* het overzicht blijft dan zonder punten; de uitslag is wel aangekomen */ }
             removeFromPendingQueue(matchId);
             // ✅ FIX: voor het opruimen van de LOKALE Pi-backup gebruiken we
             // ALTIJD match.id rechtstreeks (nooit de payload-matchId met zijn
@@ -155,6 +160,7 @@ window.syncMatchToAPI = async function(match) {
     } catch (error) {
         console.warn("⚠️ Netwerkfout of server niet bereikbaar. Match lokaal in wachtrij geplaatst.", error);
         saveToPendingQueue(payload);
+        if (typeof window.zetKlassementspunten === 'function') window.zetKlassementspunten(match, null);
         return false;
     }
 };

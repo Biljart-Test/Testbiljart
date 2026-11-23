@@ -1899,6 +1899,17 @@ function renderMatchSummary() {
         if (p2IsWinner) p2CardStyle = 'style="border: 3px solid #2ecc71; box-shadow: 0 0 20px rgba(46, 204, 113, 0.3);"';
     }
 
+    // Klassementspunten van deze match (enkel competitiematchen): de PLANNER rekent ze uit en stuurt ze terug op het moment dat de
+    // uitslag aankomt (zie syncMatchToAPI); de app rekent zelf niets uit. Tot dan staat er een stipje.
+    const toonKlassementspunten = !isFriendly && state.currentMatch.discipline !== 'Tornooi';
+    const puntenBlok = (nr) => toonKlassementspunten ? `
+            <div class="summary-stats-grid">
+                <div class="summary-stat summary-punten">
+                    <div class="summary-label">Klassementspunten</div>
+                    <div class="summary-value" id="summaryPunten${nr}">…</div>
+                </div>
+            </div>` : '';
+
     const html1 = `
         <div class="summary-player-card" ${p1CardStyle}>
             <div class="summary-player-name">${p1NameDisplay}</div>
@@ -1933,6 +1944,7 @@ function renderMatchSummary() {
                 </div>
             </div>
             
+            ${puntenBlok(1)}
             <div class="summary-turns-container">
                 <div class="summary-turns-title">📊 Alle Beurten</div>
                 ${renderTurnsHorizontal(state.player1.turns)}
@@ -1974,6 +1986,7 @@ function renderMatchSummary() {
                 </div>
             </div>
             
+            ${puntenBlok(2)}
             <div class="summary-turns-container">
                 <div class="summary-turns-title">📊 Alle Beurten</div>
                 ${renderTurnsHorizontal(state.player2.turns)}
@@ -1983,7 +1996,38 @@ function renderMatchSummary() {
 
     document.getElementById('summaryPlayer1').innerHTML = html1;
     document.getElementById('summaryPlayer2').innerHTML = html2;
+    window.updateKlassementspuntenOverzicht();
 }
+
+// Zet de punten van de planner in het overzicht na de match: groen bij plus, rood bij min, grijs bij nul.
+window.updateKlassementspuntenOverzicht = function() {
+    const m = state.currentMatch;
+    if (!m) return;
+    [1, 2].forEach(function(nr) {
+        const el = document.getElementById('summaryPunten' + nr);
+        if (!el) return;
+        const id = String(nr === 1 ? m.p1_club_id : m.p2_club_id);
+        const p = m.klassementspunten ? m.klassementspunten[id] : undefined;
+        if (Number.isFinite(p)) {
+            el.textContent = p > 0 ? '+' + p : String(p);
+            el.style.color = p > 0 ? '#2ecc71' : (p < 0 ? '#e74c3c' : '#bdc3c7');
+            el.style.fontSize = '';
+        } else if (m.klassementspuntenStatus === 'later') {
+            el.textContent = 'volgen zodra de uitslag verstuurd is';
+            el.style.color = '#95a5a6';
+            el.style.fontSize = '0.8rem';
+        } else {
+            el.textContent = '…';
+        }
+    });
+};
+
+// De planner antwoordt op een uitslag met de klassementspunten van beide spelers (null = de uitslag is nog niet aangekomen)
+window.zetKlassementspunten = function(match, punten) {
+    match.klassementspunten = punten || null;
+    match.klassementspuntenStatus = punten ? 'klaar' : 'later';
+    if (state.currentMatch === match) window.updateKlassementspuntenOverzicht();
+};
 // ✅ NAVIGATIE NAAR VRIENDSCHAPPELIJKE MATCH PAGINA
 window.startFriendlyMatch = function() {
     console.log("🍻 Navigatie naar Vriendschappelijke Match configuratie");
@@ -3194,21 +3238,10 @@ window.initFriendlyScoring = function() {
     const fm = state.friendlyMatch;
     if (!fm) return;
 
-    // A. Bepaal de limieten per fase op basis van speltype
-    if (fm.gameType === 'dubbeltje') {
-        fm.limits = { vrijspel: 3, bandstoten: 2, driebanden: 1 };
-        fm.thresholds = { vrijspel: 40, bandstoten: 20, driebanden: 10 };
-    } else if (fm.gameType === 'triatlon-small') {
-        fm.limits = { vrijspel: 99, bandstoten: 99, driebanden: 99 };
-        fm.thresholds = { vrijspel: 20, bandstoten: 10, driebanden: 5 };
-    } else if (fm.gameType === 'triatlon-large') {
-        fm.limits = { vrijspel: 99, bandstoten: 99, driebanden: 99 };
-        fm.thresholds = { vrijspel: 40, bandstoten: 20, driebanden: 10 };
-    } else {
-        // Vrijspel, bandstoten, driebanden (1-tegen-1)
-        fm.limits = { vrijspel: 99, bandstoten: 99, driebanden: 99 };
-        fm.thresholds = { vrijspel: 999, bandstoten: 999, driebanden: 999 }; // Geen fase-overgang
-    }
+    // A. Bepaal de limieten en drempels per fase op basis van het speltype (zie js/spelregels.js)
+    const spelregels = window.spelregelsVan(fm.gameType);
+    fm.limits = Object.assign({}, spelregels.limieten);
+    fm.thresholds = Object.assign({}, spelregels.drempels);
 
     // B. Initialiseer de turn state (als die nog niet bestaat)
     if (!fm.turnState) {
@@ -3293,7 +3326,7 @@ window.updateFriendlyUI = function() {
     // --- B. Update de Header ---
     
     // ✅ NIEUW: Voeg emoji toe en verberg de '0' bij Triatlon/Dubbeltje (4 spelers)
-    const isPhaseGameHeader = ['triatlon-small', 'triatlon-large', 'dubbeltje'].includes(fm.gameType);
+    const isPhaseGameHeader = window.isFaseSpel(fm.gameType);
     const icons = { 1: "🧙‍♂️", 2: "👷‍♂️", 3: "👮‍♂️", 4: "👨‍🚀" };
     
     let displayLeftName = leftName;
@@ -3332,7 +3365,7 @@ window.updateFriendlyUI = function() {
     // op 'vrijspel' staan (dat veld is enkel bedoeld voor fase-overgangen bij
     // Triatlon/Dubbeltje) — daardoor toonde de titel altijd "VRIJSPEL", ook bij
     // een Driebanden-match. Gebruik voor gewone matches gewoon fm.gameType.
-    const isPhaseGameTitle = ['triatlon-small', 'triatlon-large', 'dubbeltje'].includes(fm.gameType);
+    const isPhaseGameTitle = window.isFaseSpel(fm.gameType);
     const activePhase = isPhaseGameTitle
         ? (ts.activeSide === 'left' ? ts.leftPhase : ts.rightPhase)
         : fm.gameType;
@@ -3357,7 +3390,7 @@ window.updateFriendlyUI = function() {
 
     // --- C. Update de Score Cellen ---
     // ✅ Bepaal of het een fase-spel is (eenmalige declaratie voor heel sectie C)
-    const isPhaseGameCheck = ['triatlon-small', 'triatlon-large', 'dubbeltje'].includes(fm.gameType);
+    const isPhaseGameCheck = window.isFaseSpel(fm.gameType);
     
     // ✅ HUIDIG: Toont altijd de punten van de huidige beurt (currentRun)
     // Dit geldt voor ALLE speltypes (normaal, Triatlon, Dubbeltje)
@@ -3393,7 +3426,7 @@ window.updateFriendlyUI = function() {
     const p2NeededCell = document.getElementById('friendlyP2NeededCell');
     
     // 1. Bepaal of het een fase-spel is
-    const isPhaseLocal = ['triatlon-small', 'triatlon-large', 'dubbeltje'].includes(fm.gameType);
+    const isPhaseLocal = window.isFaseSpel(fm.gameType);
     
     // 2. Bepaal de huidige discipline per team
     const leftPhaseLocal = isPhaseLocal ? ts.leftPhase : fm.gameType;
@@ -3439,7 +3472,7 @@ window.updateFriendlyUI = function() {
     if (stat2El) stat2El.textContent = rightAvg;
     
     // Check of we een speltype spelen met fases
-    const isPhaseGame = ['triatlon-small', 'triatlon-large', 'dubbeltje'].includes(fm.gameType);
+    const isPhaseGame = window.isFaseSpel(fm.gameType);
 
     // Helper functie: vergelijkt de fase van DIT team met de kolom die we willen tonen
     const getPhaseBox = (teamPhase, phaseName, targetValue) => {
@@ -3678,7 +3711,7 @@ window.friendlyChangeScore = function(delta) {
     }
 
     // ✅ CHECK 1: Heeft het actieve team zijn fase-drempel bereikt? (EERST checken!)
-    const isPhaseGame = ['triatlon-small', 'triatlon-large', 'dubbeltje'].includes(fm.gameType);
+    const isPhaseGame = window.isFaseSpel(fm.gameType);
     if (isPhaseGame) {
         const activePhase = ts.activeSide === 'left' ? ts.leftPhase : ts.rightPhase;
         const currentPhaseScore = ts.activeSide === 'left' ? ts.leftPhaseScore : ts.rightPhaseScore;
@@ -3775,7 +3808,7 @@ window.friendlyMiss = function() {
     window.lastFriendlyState = JSON.parse(JSON.stringify(fm));
 
     // ✅ CHECK: Is dit een phase game (Triatlon/Dubbeltje)?
-    const isPhaseGame = ['triatlon-small', 'triatlon-large', 'dubbeltje'].includes(fm.gameType);
+    const isPhaseGame = window.isFaseSpel(fm.gameType);
 
     // 1. Sla de huidige reeks op in de beurtenlijst en update hoogste reeks
     // ✅ Voor fase-spellen: gebruik de team-run (totaal van beide partners)
@@ -3928,7 +3961,7 @@ window.endFriendlyMatch = function() {
 
     // 2. ✅ Bepaal de winnaar
     let winnerName = "";
-    const isPhaseGame = ['triatlon-small', 'triatlon-large', 'dubbeltje'].includes(fm.gameType);
+    const isPhaseGame = window.isFaseSpel(fm.gameType);
 
     if (isPhaseGame) {
         // ✅ FASE-SPELLEN: Wie het target in driebanden haalt, wint direct (geen nabeurt, geen rendement)
@@ -3980,7 +4013,7 @@ window.endFriendlyMatch = function() {
     // ✅ NIEUW: Bepaal de weergavenamen (met emojis voor 4-speler fase-spellen)
     let displayP1 = fm.players[1].name;
     let displayP2 = fm.players[2].name;
-    const isPhaseGameSummary = ['triatlon-small', 'triatlon-large', 'dubbeltje'].includes(fm.gameType);
+    const isPhaseGameSummary = window.isFaseSpel(fm.gameType);
 
     if (fm.numPlayers === 4 && isPhaseGameSummary) {
         const icons = { 1: "🧙‍♂️", 2: "👷‍♂️", 3: "👮‍♂️", 4: "👨‍🚀" };
