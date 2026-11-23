@@ -49,3 +49,9 @@ Beide tests gebruiken `tests/lib/omgeving.js` (start planner, Pi-programma en ee
 
 ## Codes van het bestuur (in `test-koppelen.js`)
 `admin123` (Beheer Matchen) en `8970` (Dames-avond) staan niet meer in de app. De codes staan in de planner (Clubinstellingen) en komen enkel naar een goedgekeurd toestel. Getest: zonder codes zijn de knoppen verborgen en opent `admin123` niets (ook niet als je de knop omzeilt); met codes verschijnen de knoppen, werken de oude codes niet en de nieuwe wel.
+
+## test-tornooi-dubbel.js: tornooi-dubbeltje (4 spelers per match) met wissel van de witte bal
+Echte planner + echt Pi-programma + app. Een dubbeltje-tornooi met 4 paren (2 halve finales en een finale) wordt via de app gespeeld, met de echte start (volgorde per team met de presenter-toets, witte bal kiezen). **Het belangrijkste: als paar 2 de witte bal krijgt, staan de teams in de app omgewisseld.** De test leest uit de planner welk paar welke spelers heeft en controleert na elke match dat de score van het paar dat in de app **links** staat bij **dat paar** in de planner staat (en rechts hetzelfde), dat de winnaar klopt, en dat het winnende paar 70 punten haalde. Drie combinaties: wit = paar 1 (paar 1 wint), wit = paar 2 (paar 2 wint) en wit = paar 2 (paar 1 wint). Met de oude fout (punten van paar 2 bij paar 1 en omgekeerd, zoals gemeld op het café) zou de test falen; dat is gecontroleerd door de oude code tijdelijk terug te zetten.
+
+## test-tornooi-dubbel-wifi.js: dubbeltje-uitslag bij verbindingsuitval op het einde
+Een dubbeltje-uitslag ging vroeger **verloren** als de verbinding op het einde wegviel (enkel een `console.warn`; geen back-up, geen wachtrij; de match bleef "nog te spelen" in de planner). Nu komt de uitslag in de wachtrij (browser en Pi), wordt na een herstart met verbinding één keer naar het **tornooi-adres** gestuurd (niet als competitiematch), met de punten bij het juiste paar, en de wachtrij is daarna leeg.

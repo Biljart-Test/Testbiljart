@@ -48,6 +48,16 @@ window.fetchMatchResultsFromAPI = async function() {
  */
 const MATCH_RESULT_URL = "/api/match-result";
 const matchPostsInFlight = new Map();
+// Een tornooi-uitslag uit de wachtrij (herkenbaar aan _tornooi) gaat naar het tornooi-adres, niet naar dat van de competitie.
+function postTornooiResultaat(payload) {
+    const { _tornooi, ...zonderMarkering } = payload;
+    return serverFetch("/api/tournament/match-result", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(zonderMarkering)
+    });
+}
+
 function postMatchResult(payload) {
     const key = payload.match_id;
     if (matchPostsInFlight.has(key)) return matchPostsInFlight.get(key);
@@ -219,7 +229,7 @@ async function syncPendingMatchesEcht() {
     
     for (const payload of pending) {
         try {
-            const response = await postMatchResult(payload);
+            const response = payload._tornooi ? await postTornooiResultaat(payload) : await postMatchResult(payload);
 
             if (response.ok) {
                 console.log(`✅ Achterstallige match ${payload.match_id} succesvol verstuurd!`);
@@ -413,7 +423,6 @@ window.syncTournamentDubbelResult = async function(fm, ts) {
             { club_id: cid[4], score: ts.rightTotalScore, beurten: ts.rightTurns.length, hoogste_reeks: ts.rightHighestSeries || 0, turns_detail: ts.rightTurns || [] }
         ]
     };
-    console.log("🔍 DEBUG - Dit zouden we normaal naar de server sturen:", JSON.stringify(payload, null, 2));
     try {
         const response = await serverFetch("/api/tournament/match-result", {
             method: 'POST',
@@ -422,11 +431,15 @@ window.syncTournamentDubbelResult = async function(fm, ts) {
         });
         if (response.ok) {
             console.log("✅ Tornooi-dubbeltje-uitslag succesvol gesynchroniseerd!");
-        } else {
-            console.warn("⚠️ Server gaf een foutstatus terug:", response.status);
+            return true;
         }
+        throw new Error(`Server fout: ${response.status}`);
     } catch (error) {
-        console.warn("⚠️ Kon tornooi-dubbeltje-uitslag niet versturen:", error);
+        // Net als bij de competitie: de uitslag gaat in de wachtrij (browser én Pi) en wordt later vanzelf verstuurd,
+        // ook na een herstart van de Pi. Anders was de uitslag weg en moest de match opnieuw gespeeld worden.
+        console.warn("⚠️ Kon tornooi-dubbeltje-uitslag niet versturen, in de wachtrij gezet:", error);
+        saveToPendingQueue({ ...payload, _tornooi: true });
+        return false;
     }
 };
 
