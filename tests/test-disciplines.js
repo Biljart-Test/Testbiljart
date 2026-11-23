@@ -30,6 +30,7 @@ for n, (a, sa, ba, b, sb, bb, disc, cat) in enumerate(json.loads(${JSON.stringif
     const instelling = (k, w) => o.sql(`c.execute("INSERT INTO club_settings (key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", (${JSON.stringify(k)}, ${JSON.stringify(w)}))`);
     instelling('disciplines_lijst', JSON.stringify(['Libre', 'Kader 47/2', 'Pool']));
     instelling('disciplines_koppelingen', '[]');
+    instelling('punten_ref_libre', '30');   // eigen referentiebeurten voor Libre; de rest valt onder "Andere" (20)
 
     browser = await chromium.launch();
     const adm = await browser.newContext(); const ap = await adm.newPage();
@@ -48,6 +49,7 @@ for n, (a, sa, ba, b, sb, bb, disc, cat) in enumerate(json.loads(${JSON.stringif
     check('letters als categorie blijven letters (A en B, niet allemaal "1")', cats.filter(c => c[1] === 'Libre').map(c => c[2]).sort().join('') === 'AAABB' && cats.filter(c => c[1] === 'Libre').every(c => c[3] === 'string'), JSON.stringify(cats.filter(c => c[1] === 'Libre')));
     check('cijfers als categorie blijven getallen (zoals altijd)', cats.filter(c => c[1] === 'Kader 47/2').every(c => c[2] === 1 && c[3] === 'number'), JSON.stringify(cats));
 
+    check('referentiebeurten per discipline komen van de planner: Libre 30 (eigen), Kader 47/2 en Pool 20 (Andere)', (await app.evaluate(() => [window.referentiebeurten('Libre'), window.referentiebeurten('Kader 47/2'), window.referentiebeurten('Pool')].join())) === '30,20,20', await app.evaluate(() => JSON.stringify(window.puntenReferentie)));
     console.log('2. Rangschikking en kruistabel');
     const combos = await app.evaluate(() => { window.buildCompComboList(); return window.compComboList.map(x => x.discipline + ' ' + x.category); });
     check('volgorde van de club: Libre A, Libre B, Kader 47/2 1, Pool 1', combos.join('|') === 'Libre A|Libre B|Kader 47/2 1|Pool 1', combos.join('|'));
@@ -100,6 +102,7 @@ for n, (a, sa, ba, b, sb, bb, disc, cat) in enumerate(json.loads(${JSON.stringif
     await wacht(async () => (await app.evaluate(() => window.disciplineLijst().join('|'))) === 'Vrijspel|Bandstoten|Driebanden', 15000);
     const k2 = await app.evaluate(() => [...document.querySelectorAll('#step2GameType .config-card')].map(k => k.getAttribute('data-gametype')));
     check('de kaartjes zijn weer Vrijspel, Bandstoten, Driebanden (naast Triatlon en Dubbeltje)', k2.join('|') === 'triatlon-small|triatlon-large|dubbeltje|vrijspel|bandstoten|driebanden', k2.join('|'));
+    check('zonder instellingen: Driebanden 40 beurten, Vrijspel en Bandstoten 20 (zoals vroeger)', (await app.evaluate(() => [window.referentiebeurten('Vrijspel'), window.referentiebeurten('Bandstoten'), window.referentiebeurten('Driebanden')].join())) === '20,20,40');
     check('volgorde en afkortingen zoals vroeger', (await app.evaluate(() => ['Driebanden', 'Vrijspel', 'Bandstoten'].sort(window.disciplineVolgorde).join())) === 'Vrijspel,Bandstoten,Driebanden');
     check('geen JavaScript-fouten', errs.length === 0, errs.join(' ; '));
   } catch (e) { check('test zonder onverwachte fout', false, String(e.stack || e).slice(0, 600)); }
