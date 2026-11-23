@@ -67,3 +67,6 @@ De drempels, maxima en het doel (70) van Dubbeltje, Triatlon klein en groot, het
 
 ## test-disciplines.js: andere disciplines en categorieën in de app
 De disciplines van de club komen van de planner (`/api/club`, centraal in `js/disciplines.js`). De test zet in een echte testplanner de disciplines Libre (categorie A en B), Kader 47/2 en Pool, en kijkt in de app: de lijst en volgorde van de club, letters als categorie blijven letters (vroeger werd alles "1"), rangschikking en kruistabel per discipline en categorie, de kaartjes voor een vriendschappelijke match (Triatlon en Dubbeltje blijven staan), en dat een match in een andere discipline **nooit stilzwijgend Driebanden wordt** (vroeger gebeurde dat). Zonder instelling van de club geldt de oude indeling (Vrijspel, Bandstoten, Driebanden). Ook de referentiebeurten per discipline (Libre 30 eigen, de rest 20 via "Andere") komen van de planner. Zes sabotages zijn opgemerkt.
+
+## test-sync.js: ook een match zonder id
+Een match zonder `id` (vroeger de bron van de underscore-vorm `club1_club2_datum`) wordt nu verstuurd onder het ene formaat `laagste-hoogste` club_id, ook als speler 1 het hoogste club_id heeft.

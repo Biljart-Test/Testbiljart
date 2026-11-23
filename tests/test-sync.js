@@ -170,6 +170,19 @@ function check(name, ok, extra) { results.push(ok); console.log((ok ? '  OK   ' 
     await ctx.close();
   }
 
+  {
+    // Een match zonder id (vroeger: "90002_90001_datum" met underscore): nu het ene formaat, laagste-hoogste club_id
+    serverUp = true; reset(); pi.backups = {}; pi.pending = {};
+    const ctx = await browser.newContext(); await setup(ctx);
+    const page = await ctx.newPage(); await page.goto(base); await sleep(600);
+    const zonder = fakeMatch(undefined); delete zonder.id; zonder.p1_club_id = 90002; zonder.p2_club_id = 90001;
+    await page.evaluate(m => window.syncMatchToAPI(m), zonder);
+    await sleep(500);
+    console.log('Test 6: een match zonder id');
+    check('wordt verstuurd onder 90001-90002 (laagste-hoogste, geen underscore, geen datum)', log.serverPosts.includes('90001-90002') && !log.serverPosts.some(x => x.includes('_')), JSON.stringify(log.serverPosts));
+    await ctx.close();
+  }
+
   await browser.close(); srv.close();
   const bad = results.filter(r => !r).length;
   console.log(`\nResultaat: ${results.length - bad} van ${results.length} gecontroleerd en in orde${bad ? ', ' + bad + ' FOUT' : ''}.`);
