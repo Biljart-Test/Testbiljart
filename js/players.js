@@ -38,7 +38,7 @@ async function fetchPlayersFromAPI() {
                         user_id: user.id,
                         name: fullName,
                         email: user.email || '',
-                        discipline: stat.discipline || 'Vrijspel',
+                        discipline: stat.discipline || window.disciplineLijst()[0],   // zonder gegevens: de eerste discipline van de club
                         category: window.heeftCategorie(parsedCat) ? parsedCat : 1,
                         target: parseInt(stat.target) || 50,
                         tsg: stat.tsg ? parseFloat(stat.tsg).toFixed(3).replace('.', ',') : '0,000',
@@ -52,7 +52,7 @@ async function fetchPlayersFromAPI() {
                     id: user.id,
                     name: fullName,
                     email: user.email || '',
-                    discipline: 'Vrijspel',
+                    discipline: window.disciplineLijst()[0],
                     category: 1,
                     target: 50,
                     tsg: '0,000',

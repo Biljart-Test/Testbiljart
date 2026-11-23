@@ -196,7 +196,8 @@ function removeFromPendingQueue(matchId) {
     localStorage.setItem('pendingMatches', JSON.stringify(pending));
 
     // ✅ NIEUW: ook uit de lokale Pi-wachtrij verwijderen
-    fetch(LOKAAL_URL + `/pending-match/${matchId}`, { method: 'DELETE' })
+    // De belofte wordt teruggegeven: wie wil, kan wachten tot de Pi het echt verwijderd heeft
+    return fetch(LOKAAL_URL + `/pending-match/${matchId}`, { method: 'DELETE' })
         .catch(e => console.error('Lokaal verwijderen uit Pi-wachtrij mislukt:', e));
 }
 
@@ -240,7 +241,9 @@ async function syncPendingMatchesEcht() {
 
             if (response.ok) {
                 console.log(`✅ Achterstallige match ${payload.match_id} succesvol verstuurd!`);
-                removeFromPendingQueue(payload.match_id);
+                // Wachten tot de Pi de match uit haar wachtrij haalde: anders kan een tweede ronde (bv. 'online' vlak na de start)
+                // dezelfde match nog in het lijstje zien en hem twee keer versturen.
+                await removeFromPendingQueue(payload.match_id);
                 // ✅ FIX: het ORIGINELE match.id gebruiken voor de Pi-backup-
                 // opruiming (net als in syncMatchToAPI), met een veilige
                 // terugval naar payload.match_id voor matchen die al vóór
