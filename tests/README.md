@@ -46,3 +46,6 @@ Beide tests gebruiken `tests/lib/omgeving.js` (start planner, Pi-programma en ee
 - **Pi-programma:** de app stuurt bij elke klik een back-up, vaak meerdere tegelijk. Ze schreven naar hetzelfde tijdelijke bestand (tientallen 500-fouten), en de wachtrij voor verbindingen was te klein.
 - **Pi-programma:** de laatste twee back-ups van een beurt komen soms in omgekeerde volgorde aan, waardoor er een **oude stand** (36 punten, niet afgelopen) over de eindstand heen werd geschreven. Nu wint de nieuwste (`savedAt`).
 - **Score-app:** na een geslaagde verzending van een tornooi-uitslag bleef de back-up op de Pi staan (bij de competitie werd hij wel gewist). Nu wordt hij gewist.
+
+## Codes van het bestuur (in `test-koppelen.js`)
+`admin123` (Beheer Matchen) en `8970` (Dames-avond) staan niet meer in de app. De codes staan in de planner (Clubinstellingen) en komen enkel naar een goedgekeurd toestel. Getest: zonder codes zijn de knoppen verborgen en opent `admin123` niets (ook niet als je de knop omzeilt); met codes verschijnen de knoppen, werken de oude codes niet en de nieuwe wel.

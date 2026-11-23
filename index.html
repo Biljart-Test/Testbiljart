@@ -33,7 +33,7 @@
             <button class="next-btn" onclick="window.selectMode('official')" style="background: #2ecc71;">
                 🏆 Officiële Matchen Ophalen
             </button>
-            <button class="next-btn" onclick="window.startDamesAvond()" style="background: #2ecc71; margin-top: 10px;">
+            <button class="next-btn" id="damesKnop" onclick="window.startDamesAvond()" style="display:none; background: #2ecc71; margin-top: 10px;">
                 🎀 Dames-avond
             </button>
         </div>
@@ -223,7 +223,8 @@
                 <button class="upload-btn" onclick="showPage(8)">👥 Spelers</button>
                 <!-- QR-inlog staat uit (functie bewust bewaard): de planner van een nieuwe club mailt zelf. Verwijder display:none om terug te tonen, en zet het ook aan in de planner. -->
                 <button class="upload-btn" onclick="window.showQRInlogKeuze()" style="display:none;background: #16a34a;">🔑 QR code voor inlog</button>
-                <button class="upload-btn" onclick="changeAdminPassword()" style="background: #9b59b6;">🔐 Wachtwoord</button>
+                <!-- De code voor Beheer Matchen wijzig je in de planner (Clubinstellingen). -->
+                <button class="upload-btn" onclick="changeAdminPassword()" style="display:none; background: #9b59b6;">🔐 Wachtwoord</button>
                 <div style="width: 70px;"></div>
             </div>
         </div>

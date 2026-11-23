@@ -23,10 +23,7 @@ window.onload = function() {
         }
     })();
 
-    // 2. Zet standaardwachtwoord als het nog niet bestaat
-    if (!localStorage.getItem('biljartAdminPassword')) {
-        setAdminPassword(DEFAULT_PASSWORD);
-    }
+    // 2. (De code voor Beheer Matchen komt van de planner, zie verbinding.js.)
     
     // 3. Initialiseer datumvelden
     const dateInput = document.getElementById('dateSelect');

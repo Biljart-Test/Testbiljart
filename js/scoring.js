@@ -4882,9 +4882,11 @@ function toggleQRSection() {
 // ==========================================
 // 🎀 DAMES-AVOND: live wedstrijd starten
 // ==========================================
-const DAMES_PIN = '8970';
+// De code voor de Dames-avond komt van de planner (Clubinstellingen). Zonder code is de knop verborgen.
+function damesPin() { return String(window.damesCode || ''); }
 
 window.startDamesAvond = function() {
+    if (!damesPin()) return;
     let pinInput = '';
     let damesDigitIndex = 0;
     const overlay = document.createElement('div');
@@ -4913,7 +4915,7 @@ window.startDamesAvond = function() {
             btn.onclick = () => { digitIdx = d; addDamesDigit(); };
             container.appendChild(btn);
         }
-        document.getElementById('damesPinDisplay').textContent = '●'.repeat(pinInput.length) + '_'.repeat(Math.max(0, DAMES_PIN.length - pinInput.length));
+        document.getElementById('damesPinDisplay').textContent = '●'.repeat(pinInput.length) + '_'.repeat(Math.max(0, damesPin().length - pinInput.length));
 
         // ✅ NIEUW: "Annuleren"-knop visueel markeren als hij de focus heeft
         const annuleerBtn = document.getElementById('damesPinAnnuleerBtn');
@@ -4948,11 +4950,12 @@ window.startDamesAvond = function() {
     function addDamesDigit() {
         pinInput += String(digitIdx);
         document.getElementById('damesPinError').textContent = '';
-        if (pinInput.length >= DAMES_PIN.length) {
-            if (pinInput === DAMES_PIN) {
+        if (pinInput.length >= damesPin().length) {
+            if (pinInput === damesPin()) {
                 overlay.remove();
                 document.removeEventListener('keydown', damesKeydownHandler, true);
                 window.showDamesSpelersKeuze();
+                return;   // het invoerscherm bestaat niet meer: niet opnieuw tekenen
             } else {
                 pinInput = '';
                 document.getElementById('damesPinError').textContent = '❌ Foute code';

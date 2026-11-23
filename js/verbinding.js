@@ -113,6 +113,11 @@
             if (!r.ok) return;
             const d = await r.json();
             window.clubNaam = d.naam_voluit || d.naam_kort || '';
+            // Codes van het bestuur (komen enkel naar een goedgekeurd toestel): Beheer Matchen en Dames-avond
+            window.beheerCode = d.beheer_code || '';
+            window.damesCode = d.dames_code || '';
+            const dames = document.getElementById('damesKnop'); if (dames) dames.style.display = window.damesCode ? '' : 'none';
+            const beheer = document.querySelector('.header-buttons .upload-btn'); if (beheer) beheer.style.display = window.beheerCode ? '' : 'none';
             const kop = document.getElementById('clubNaamKop');
             if (kop) kop.textContent = window.clubNaam;
             if (d.naam_kort) document.title = d.naam_kort + ' Biljart';

@@ -21,18 +21,10 @@ let state = {
     currentMatchesTab: 'active'
 };
 
-const DEFAULT_PASSWORD = "admin123";
-
+// De code voor "Beheer Matchen" staat NIET meer in de app: het bestuur stelt ze in op de planner (Clubinstellingen) en de
+// app krijgt ze van de planner (enkel een goedgekeurd toestel). Zonder code is "Beheer Matchen" niet beschikbaar.
 function getAdminPassword() {
-    return localStorage.getItem('biljartAdminPassword') || DEFAULT_PASSWORD;
-}
-
-function setAdminPassword(newPassword) {
-    if (newPassword && newPassword.trim() !== '') {
-        localStorage.setItem('biljartAdminPassword', newPassword.trim());
-        return true;
-    }
-    return false;
+    return window.beheerCode || '';
 }
 
 function saveStateToStorage() {
@@ -40,8 +32,7 @@ function saveStateToStorage() {
         const toSave = {
             players: state.players,
             matches: state.matches,
-            downloadedMatches: state.downloadedMatches,
-            adminPassword: localStorage.getItem('biljartAdminPassword') || DEFAULT_PASSWORD
+            downloadedMatches: state.downloadedMatches
         };
         localStorage.setItem('billiardTournamentState', JSON.stringify(toSave));
     } catch (e) {

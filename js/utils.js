@@ -46,6 +46,10 @@ function checkPassword() {
         return;
     }
     
+    if (!getAdminPassword()) {
+        alert("Beheer Matchen is niet beschikbaar: het bestuur moet daarvoor eerst een code instellen in de planner (Clubinstellingen).");
+        return;
+    }
     const ingevoerdWachtwoord = pf.value.trim();
     if (ingevoerdWachtwoord === '') {
         alert("Voer een wachtwoord in");
@@ -68,6 +72,8 @@ function checkPassword() {
 }
 
 function changeAdminPassword(){
+    alert("De code voor Beheer Matchen wijzig je in de planner (Clubinstellingen), niet op dit toestel.");
+    return;
     const c=getAdminPassword();
     const o=prompt("Voer huidig wachtwoord in:");
     if(o===null) return;

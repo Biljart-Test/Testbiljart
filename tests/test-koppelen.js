@@ -32,7 +32,7 @@ const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
   await wacht(async () => (await fetch('http://127.0.0.1:5000/status')).ok);
 
   const b = await chromium.launch(); const ctx = await b.newContext({ viewport: { width: 1280, height: 800 } });
-  const page = await ctx.newPage(); const errs = []; page.on('pageerror', e => errs.push(e.message));
+  const page = await ctx.newPage(); const errs = []; page.on('pageerror', e => errs.push(e.message + ' @ ' + (e.stack || '').split('\n').slice(1, 3).join(' | ')));
   const verzoeken = []; page.on('request', r => verzoeken.push(r.url()));
   await page.goto('http://127.0.0.1:8123/index.html');
 
@@ -59,6 +59,36 @@ const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
   check('de koptekst gebruikt de clubnaam van de planner (neutraal "Biljartclub" zolang niets is ingevuld)', (await page.locator('#clubNaamKop').innerText()) === 'Biljartclub', await page.locator('#clubNaamKop').innerText());
   check('alle server-aanroepen gingen naar de planner uit de instellingen, nooit naar een vast adres', verzoeken.filter(u => /^https?:/.test(u) && !u.startsWith('http://127.0.0.1:8123') && !u.startsWith(SERVER) && !u.startsWith('http://localhost:5000') && !u.includes('cdnjs')).length === 0, verzoeken.filter(u => !u.startsWith('http://127.0.0.1')).join(','));
   check('de knop "QR code voor inlog" is verborgen', !(await page.locator('button:has-text("QR code voor inlog")').isVisible()));
+
+  console.log('2b. Codes van het bestuur: Beheer Matchen en Dames-avond');
+  const heeftBeheer = () => page.evaluate(() => { const b = document.querySelector('.header-buttons .upload-btn'); return !!b && b.offsetParent !== null; });
+  const heeftDames = () => page.evaluate(() => { const b = document.getElementById('damesKnop'); return !!b && b.offsetParent !== null; });
+  check('zonder ingestelde codes: geen knop "Beheer Matchen" en geen knop "Dames-avond"', !(await heeftBeheer()) && !(await heeftDames()));
+  check('er staat geen vast wachtwoord of pincode meer in de app', await page.evaluate(() => typeof DEFAULT_PASSWORD === 'undefined' && typeof DAMES_PIN === 'undefined' && !document.documentElement.innerHTML.includes('admin123')));
+  const vroeg = [];
+  page.once('dialog', d => { vroeg.push(d.message()); d.accept(); });
+  await page.evaluate(() => { const f = document.getElementById('adminPassword'); f.style.display = 'block'; f.value = 'admin123'; checkPassword(); });
+  await sleep(400);
+  check('zonder ingestelde code opent "admin123" NIETS (ook niet als je de knop omzeilt)', (await page.evaluate(() => state.currentPage)) !== 7 && vroeg.some(m => m.includes('niet beschikbaar')), vroeg.join('|'));
+  await page.evaluate(() => { document.getElementById('adminPassword').style.display = 'none'; });
+  execFileSync(PY, ['-c', `import sqlite3;c=sqlite3.connect(${JSON.stringify(path.join(tmp, 'srv.db'))});c.execute("INSERT OR REPLACE INTO club_settings (key,value) VALUES ('app_beheer_code','bestuurscode')");c.execute("INSERT OR REPLACE INTO club_settings (key,value) VALUES ('dames_code','4711')");c.commit()`]);
+  await page.reload(); await sleep(2500);
+  check('met codes in de planner: beide knoppen verschijnen', (await heeftBeheer()) && (await heeftDames()));
+  const meldingen = []; page.on('dialog', d => { meldingen.push(d.message()); d.accept(); });
+  const beheerKnop = page.locator('.header-buttons .upload-btn');
+  await beheerKnop.click(); await page.fill('#adminPassword', 'admin123'); await beheerKnop.click();
+  check('het oude wachtwoord "admin123" werkt niet meer', meldingen.some(m => m.includes('Onjuist')) && (await page.evaluate(() => state.currentPage)) !== 7, meldingen.join('|'));
+  await page.fill('#adminPassword', 'bestuurscode'); await beheerKnop.click(); await sleep(500);
+  check('de code uit de planner opent Beheer Matchen', (await page.evaluate(() => state.currentPage)) === 7);
+  await page.evaluate(() => showPage(1)); await sleep(300);
+  await page.click('#damesKnop'); await page.waitForSelector('#damesPinOverlay');
+  for (const k of '8970') await page.locator('#damesDigits button', { hasText: new RegExp('^' + k + '$') }).click();
+  check('de oude damescode 8970 werkt niet meer', (await page.locator('#damesPinError').innerText()).includes('Foute code') && await page.locator('#damesPinOverlay').count() === 1);
+  for (const k of '4711') await page.locator('#damesDigits button', { hasText: new RegExp('^' + k + '$') }).click().catch(() => {});
+  await sleep(1200);
+  check('de damescode uit de planner opent de Dames-avond', await page.locator('#damesPinOverlay').count() === 0);
+  await page.waitForSelector('text=kies 2 speelsters', { timeout: 8000 }).catch(() => {}); await sleep(2500);   // laat het ophalen van de speelsters afronden
+  await page.reload(); await sleep(2000);
 
   console.log('3. Uitgeschakeld en weer ingeschakeld');
   await ctx.request.post(SERVER + '/admin/toestellen', { form: { actie: 'uitschakelen', id: '1' }, maxRedirects: 0 });
