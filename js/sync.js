@@ -7,12 +7,12 @@
  * Wordt gebruikt voor rangschikking en kruistabel
  */
 window.fetchMatchResultsFromAPI = async function() {
-    const apiUrl = "https://kpbc.pythonanywhere.com/api/match-results";
+    const apiUrl = "/api/match-results";
     
     try {
         console.log("📊 Ophalen van alle gespeelde matches...");
         
-        const response = await fetch(apiUrl);
+        const response = await serverFetch(apiUrl);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -46,12 +46,12 @@ window.fetchMatchResultsFromAPI = async function() {
  * Wordt dezelfde match op hetzelfde moment van twee kanten aangeboden (bv. bij het
  * opstarten: wachtrij én Pi-back-up), dan delen beide aanroepen één verzending.
  */
-const MATCH_RESULT_URL = "https://kpbc.pythonanywhere.com/api/match-result";
+const MATCH_RESULT_URL = "/api/match-result";
 const matchPostsInFlight = new Map();
 function postMatchResult(payload) {
     const key = payload.match_id;
     if (matchPostsInFlight.has(key)) return matchPostsInFlight.get(key);
-    const p = fetch(MATCH_RESULT_URL, {
+    const p = serverFetch(MATCH_RESULT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -163,7 +163,7 @@ function saveToPendingQueue(payload) {
     // ✅ NIEUW: ALTIJD ook naar de lokale Pi-dienst sturen — die overleeft,
     // in tegenstelling tot localStorage, wél een volledige Pi-herstart
     // (incognito wist localStorage, maar niet het bestand op de SD-kaart).
-    fetch('http://localhost:5000/pending-match', {
+    fetch(LOKAAL_URL + '/pending-match', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(payload)
@@ -179,7 +179,7 @@ function removeFromPendingQueue(matchId) {
     localStorage.setItem('pendingMatches', JSON.stringify(pending));
 
     // ✅ NIEUW: ook uit de lokale Pi-wachtrij verwijderen
-    fetch(`http://localhost:5000/pending-match/${matchId}`, { method: 'DELETE' })
+    fetch(LOKAAL_URL + `/pending-match/${matchId}`, { method: 'DELETE' })
         .catch(e => console.error('Lokaal verwijderen uit Pi-wachtrij mislukt:', e));
 }
 
@@ -200,7 +200,7 @@ async function syncPendingMatchesEcht() {
     // (bv. na een Pi-herstart, waarbij localStorage gewist werd maar de
     // lokale, SD-kaart-gebaseerde wachtrij dit wel overleefde).
     try {
-        const lokaalResponse = await fetch('http://localhost:5000/pending-matches', { method: 'GET' });
+        const lokaalResponse = await fetch(LOKAAL_URL + '/pending-matches', { method: 'GET' });
         if (lokaalResponse.ok) {
             const lokalePending = await lokaalResponse.json();
             for (const lokaleMatch of lokalePending) {
@@ -263,7 +263,7 @@ window.addEventListener('online', () => {
  */
 window.restoreCompletedMatchesFromAPI = async function() {
     try {
-        const response = await fetch("https://kpbc.pythonanywhere.com/api/match-results");
+        const response = await serverFetch("/api/match-results");
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const results = await response.json();
 
@@ -357,7 +357,7 @@ window.syncTournamentMatchToAPI = async function(match) {
     };
 
     try {
-        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/match-result", {
+        const response = await serverFetch("/api/tournament/match-result", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -412,7 +412,7 @@ window.syncTournamentDubbelResult = async function(fm, ts) {
     };
     console.log("🔍 DEBUG - Dit zouden we normaal naar de server sturen:", JSON.stringify(payload, null, 2));
     try {
-        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/match-result", {
+        const response = await serverFetch("/api/tournament/match-result", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -438,7 +438,7 @@ window.syncTournamentDubbelResult = async function(fm, ts) {
  */
 window.restoreTournamentMatchesFromAPI = async function() {
     try {
-        const response = await fetch("https://kpbc.pythonanywhere.com/api/tournament/match-results");
+        const response = await serverFetch("/api/tournament/match-results");
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const results = await response.json();
 

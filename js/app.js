@@ -62,11 +62,11 @@ window.onload = function() {
 
 async function checkVoorOnderbrokenMatch() {
     try {
-        const localStorageBackup = JSON.parse(localStorage.getItem('kpbc_match_backup') || 'null');
+        const localStorageBackup = JSON.parse(localStorage.getItem('biljart_match_backup') || 'null');
 
         let alleBackups = [];
         try {
-            const lokaalResponse = await fetch('http://localhost:5000/backups', { method: 'GET' });
+            const lokaalResponse = await fetch(LOKAAL_URL + '/backups', { method: 'GET' });
             if (lokaalResponse.ok) {
                 alleBackups = await lokaalResponse.json();
             }
@@ -143,7 +143,7 @@ function herstelOnderbrokenMatch(backup) {
         // versie blijft bewust bestaan zodat een volgende poging (bv. na een
         // verse data-ophaling van de server) haar nog kan terugvinden.
         toonTijdelijkeMelding('❌ Kon de bijhorende match niet meteen terugvinden. Probeer het later opnieuw.', '#dc2626');
-        localStorage.removeItem('kpbc_match_backup');
+        localStorage.removeItem('biljart_match_backup');
         return;
     }
 
@@ -222,7 +222,7 @@ function herstelOnderbrokenMatch(backup) {
       if (el) el.textContent = countdownValue;
       if (countdownValue <= 0) {
         clearInterval(countdownInterval);
-        fetch('http://127.0.0.1:5005/shutdown').catch(function() {});
+        fetch(LOKAAL_URL + '/shutdown', { method: 'POST' }).catch(function() {});
       }
     }, 1000);
   }

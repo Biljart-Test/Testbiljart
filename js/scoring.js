@@ -8,7 +8,7 @@ async function updateMatchStatusOnServer(matchId, status) {
     try {
         console.log(`📡 Stuur signaal: Match ${matchId} is nu '${status}'`);
         
-        const response = await fetch("https://kpbc.pythonanywhere.com/api/match-status", {
+        const response = await serverFetch("/api/match-status", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
@@ -575,7 +575,7 @@ function backupMatchSilently(data) {
     const dataMetTijd = {...data, savedAt: Date.now()};
 
     try {
-        localStorage.setItem('kpbc_match_backup', JSON.stringify(dataMetTijd));
+        localStorage.setItem('biljart_match_backup', JSON.stringify(dataMetTijd));
     } catch (e) {
         console.error('localStorage backup mislukt:', e);
     }
@@ -586,7 +586,7 @@ function backupMatchSilently(data) {
     // overleeft (in tegenstelling tot localStorage, dat gewist wordt door de
     // incognito-modus). We steunen hier NIET op navigator.onLine (onbetrouwbaar),
     // maar sturen dit gewoon telkens mee — het is lokaal en dus snel/goedkoop.
-    fetch('http://localhost:5000/backup', {
+    fetch(LOKAAL_URL + '/backup', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(dataMetTijd)
@@ -594,12 +594,12 @@ function backupMatchSilently(data) {
 }
 
 function clearMatchBackup(matchId) {
-    localStorage.removeItem('kpbc_match_backup');
+    localStorage.removeItem('biljart_match_backup');
     // ✅ NIEUW: ook de Pi-eigen, matchId-specifieke back-up wissen — maar
     // ENKEL wanneer dit aangeroepen wordt NA een bevestigd succesvolle
     // server-sync (zie de aangepaste aanroep in endMatch()/syncMatchToAPI()).
     if (matchId) {
-        fetch(`http://localhost:5000/backup/${matchId}`, { method: 'DELETE' })
+        fetch(LOKAAL_URL + `/backup/${matchId}`, { method: 'DELETE' })
             .catch(e => console.error('Kon Pi-backup niet verwijderen:', e));
     }
 }
@@ -2304,7 +2304,7 @@ window.initFriendlyQRPage = async function() {
     qrSessionInfo.textContent = '';
     
     try {
-        const response = await fetch('https://kpbc.pythonanywhere.com/api/friendly-setup/create', {
+        const response = await serverFetch('/api/friendly-setup/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -2326,7 +2326,7 @@ window.initFriendlyQRPage = async function() {
         
         qrSessionInfo.textContent = `Sessie: ${qrSessionId.substring(0, 8)}... | Geldig tot: ${geldigTot}`;
         
-        const qrUrl = `https://kpbc.pythonanywhere.com/friendly-setup/${qrSessionId}`;
+        const qrUrl = serverUrl(`/friendly-setup/${qrSessionId}`);
         qrDisplay.innerHTML = '<div id="qrcode"></div>';
         
         new QRCode(document.getElementById('qrcode'), {
@@ -4694,7 +4694,7 @@ window.openFriendlyQRPage = async function() {
     
     try {
         // 1. Maak nieuwe sessie aan op PythonAnywhere
-        const response = await fetch('https://kpbc.pythonanywhere.com/api/friendly-setup/create', {
+        const response = await serverFetch('/api/friendly-setup/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         });
@@ -4717,7 +4717,7 @@ window.openFriendlyQRPage = async function() {
         
         // 3. Genereer QR code
         console.log('🎯 Stap 3: QR code genereren...');
-        const qrUrl = `https://kpbc.pythonanywhere.com/friendly-setup/${qrSessionId}`;
+        const qrUrl = serverUrl(`/friendly-setup/${qrSessionId}`);
         console.log('📱 QR URL:', qrUrl);
         
         const qrDisplay = document.getElementById('qrCodeDisplay');
@@ -4781,7 +4781,7 @@ function startQRPolling() {
         if (!qrSessionId) return;
         
         try {
-            const response = await fetch(`https://kpbc.pythonanywhere.com/api/friendly-setup/status/${qrSessionId}`);
+            const response = await serverFetch(`/api/friendly-setup/status/${qrSessionId}`);
             const data = await response.json();
             
             if (data.status === 'completed') {
@@ -4964,7 +4964,7 @@ window.startDamesAvond = function() {
     renderDamesDigits();
 };
 window.showDamesSpelersKeuze = async function() {
-    const res = await fetch('https://kpbc.pythonanywhere.com/api/dames/spelers-en-paren');
+    const res = await serverFetch('/api/dames/spelers-en-paren');
     const data = await res.json();
     const spelers = data.spelers;
     const gespeeldeParen = new Set(data.gespeelde_paren);
@@ -5163,7 +5163,7 @@ window.showQRInlogKeuze = function() {
         const weergaveEl = document.getElementById('qrInlogWeergave');
         weergaveEl.innerHTML = '⏳ Bezig...';
         try {
-            const res = await fetch('https://kpbc.pythonanywhere.com/api/genereer-setup-token', {
+            const res = await serverFetch('/api/genereer-setup-token', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({user_id: speler.user_id})

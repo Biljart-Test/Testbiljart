@@ -1,6 +1,6 @@
 // Test: synchronisatie van uitslagen (server bereikbaar, wifi weg, herstart, dubbel versturen).
 // Gebruik: node tests/test-sync.js [repo-map]     (standaard: de map boven tests/)
-// Er gaat NOOIT een verzoek naar kpbc.pythonanywhere.com: alles wordt in de routes afgevangen.
+// Er gaat NOOIT een verzoek naar een echte server: de planner (https://planner.test) en het lokale Pi-programma worden nagemaakt.
 const { chromium } = require('playwright');
 const http = require('http');
 const fs = require('fs');
@@ -21,12 +21,15 @@ const srv = http.createServer((req, res) => {
 
 // --- nagebootste Pi-dienst (blijft bestaan bij "herstart", zoals de SD-kaart) ---
 const pi = { backups: {}, pending: {} };
-const log = { serverPosts: [], piDeletes: [], blockedLive: [] };
+const log = { serverPosts: [], piDeletes: [], blockedLive: [], sleutels: [] };
 let serverUp = true;
 
 async function setup(ctx) {
-  await ctx.route('https://kpbc.pythonanywhere.com/**', async route => {
+  await ctx.route('https://planner.test/**', async route => {
     const req = route.request();
+    const cors = { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*', 'access-control-allow-methods': '*' };
+    if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+    log.sleutels.push(req.headers()['x-toestel-sleutel']);
     const url = req.url();
     log.blockedLive.push(req.method() + ' ' + url);
     if (url.endsWith('/api/match-result') && req.method() === 'POST') {
@@ -37,14 +40,16 @@ async function setup(ctx) {
     if (!serverUp) return route.abort('internetdisconnected');
     return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '[]' });
   });
-  await ctx.route(/^http:\/\/(localhost|127\.0\.0\.1):(5000|5005)\/.*/, async route => {
+  await ctx.route(/^http:\/\/(localhost|127\.0\.0\.1):5000\/.*/, async route => {
     const req = route.request();
     const u = new URL(req.url());
     const cors = { 'access-control-allow-origin': '*', 'access-control-allow-methods': '*', 'access-control-allow-headers': '*' };
     const json = b => route.fulfill({ status: 200, contentType: 'application/json', headers: cors, body: JSON.stringify(b) });
     if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
-    if (u.port === '5005') return json({ ok: true });
     const m = u.pathname;
+    if (m === '/status') return json({ status: 'goedgekeurd', koppelcode: '', naam: 'Testtafel', server_url: 'https://planner.test', app_url: 'http://127.0.0.1:8123/index.html' });
+    if (m === '/sleutel') return json({ sleutel: 'testsleutel-' + 'x'.repeat(30) });
+    if (m === '/shutdown') return json({ ok: true });
     if (m === '/backups' && req.method() === 'GET') return json(Object.values(pi.backups));
     if (m === '/backup' && req.method() === 'POST') { const d = JSON.parse(req.postData()); pi.backups[d.matchId] = d; return json({ ok: true }); }
     if (m.startsWith('/backup/') && req.method() === 'DELETE') { const id = decodeURIComponent(m.slice(8)); delete pi.backups[id]; log.piDeletes.push('backup:' + id); return json({ ok: true }); }
@@ -84,11 +89,13 @@ function check(name, ok, extra) { results.push(ok); console.log((ok ? '  OK   ' 
     await page.goto(base); await sleep(800);
     const info = await page.evaluate(() => ({
       sync: window.syncMatchToAPI.toString().includes('clearMatchBackup'),
-      pend: (typeof syncPendingMatchesEcht === 'function' ? syncPendingMatchesEcht : window.syncPendingMatches).toString().includes('localhost:5000'),
-      save: saveToPendingQueue.toString().includes('localhost:5000'),
-      rem: removeFromPendingQueue.toString().includes('localhost:5000'),
+      pend: (typeof syncPendingMatchesEcht === 'function' ? syncPendingMatchesEcht : window.syncPendingMatches).toString().includes('LOKAAL_URL'),
+      save: saveToPendingQueue.toString().includes('LOKAAL_URL'),
+      rem: removeFromPendingQueue.toString().includes('LOKAAL_URL'),
     }));
     console.log('Test 1: pagina laadt, welke versie van de functies is actief?');
+    check('de app stuurt de sleutel van het toestel mee naar de planner', await (async () => { await page.evaluate(() => window.serverFetch('/api/club')); return log.sleutels.includes('testsleutel-' + 'x'.repeat(30)); })());
+    check('er staat nergens meer een KPBC-adres in de app', !(await page.content()).toLowerCase().includes('kpbc') );
     check('geen JavaScript-fouten bij het laden', errs.length === 0, errs.join('; '));
     check('syncMatchToAPI wist de Pi-back-up (goede versie)', info.sync);
     check('syncPendingMatches gebruikt de Pi-wachtrij (goede versie)', info.pend);
@@ -104,12 +111,12 @@ function check(name, ok, extra) { results.push(ok); console.log((ok ? '  OK   ' 
     const page = await ctx.newPage(); await page.goto(base); await sleep(600);
     const id = 'T2-' + Date.now();
     pi.backups[id] = fakeBackup(id);
-    await page.evaluate(m => { localStorage.setItem('kpbc_match_backup', JSON.stringify({ matchId: m.id })); return window.syncMatchToAPI(m); }, fakeMatch(id));
+    await page.evaluate(m => { localStorage.setItem('biljart_match_backup', JSON.stringify({ matchId: m.id })); return window.syncMatchToAPI(m); }, fakeMatch(id));
     await sleep(400);
     console.log('Test 2: match versturen terwijl de server bereikbaar is');
     check('uitslag is naar de server gestuurd', log.serverPosts.includes(id), log.serverPosts.join(','));
     check('back-up op de Pi is gewist na bevestiging', !(id in pi.backups) && log.piDeletes.includes('backup:' + id), JSON.stringify(Object.keys(pi.backups)));
-    check('back-up in de browser is gewist', await page.evaluate(() => localStorage.getItem('kpbc_match_backup') === null));
+    check('back-up in de browser is gewist', await page.evaluate(() => localStorage.getItem('biljart_match_backup') === null));
     await ctx.close();
   }
 
