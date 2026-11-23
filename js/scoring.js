@@ -367,13 +367,13 @@ function updateCurrentScoreDisplay() {
 }
 
 // "Nodig": punten die je in DEZE beurt nog moet maken om na deze beurt op tempo te zitten
-// (doel / 20 per beurt, Driebanden / 40), naar boven afgerond; live met het huidige punt.
+// (doel / referentiebeurten per beurt: standaard 20, driebanden 40, instelbaar in de planner), naar boven afgerond; live met het huidige punt.
 // Gespeeld gemiddelde: lichtgroen bij gelijk of hoger dan het TSG, lichtrood eronder.
 // Bij Dames en tornooien bestaat dit niet: geen blokje, geen kleur.
 window.updateNodigBlokken = function() {
     const disc = state.currentMatch ? state.currentMatch.discipline : '';
     const geenNodig = disc === 'Dames' || disc === 'Tornooi';
-    const doelBeurten = disc === 'Driebanden' ? 40 : 20;
+    const doelBeurten = window.referentiebeurten(disc);   // komt van de planner (Puntentelling); standaard 20, driebanden 40
     const fmtNodig = (p, nr) => {
         const doel = parseFloat(String(p.target).replace(',', '.'));
         if (!doel || isNaN(doel)) return '−';

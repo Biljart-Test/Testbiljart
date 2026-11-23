@@ -1,161 +1,26 @@
 // js/competition.js
 // =========================================================================
-// BLOK 1: CONFIGURATIE (Uit Excel "Algemene info")
+// De klassementspunten worden NIET in de app berekend: de planner rekent ze uit volgens de puntentelling die het bestuur heeft
+// ingesteld (Clubinstellingen, Puntentelling) en stuurt ze mee per gespeelde match (players[].punten, via /api/match-results).
+// Zo toont het rustscherm op de tafel nooit iets anders dan de planner.
 // =========================================================================
-const COMPETITION_CONFIG = {
-    'Vrijspel': {
-        targetPoints: 20,
-        targetTurns: 20,
-        minScore: -5
-    },
-    'Bandstoten': {
-        targetPoints: 15,
-        targetTurns: 20,
-        minScore: -5
-    },
-    'Driebanden': {
-        targetPoints: 13,
-        targetTurns: 40,
-        minScore: -5
-    },
-    'Dames': {
-        targetPoints: 20,
-        targetTurns: 20,
-        minScore: -5,
-        isDames: true  // ✅ Markering voor 3/2/1 systeem
-    }
+
+// Aantal referentiebeurten van een discipline (komt van de planner; enkel nodig voor het voorlopige nieuwe doel)
+window.referentiebeurten = function(discipline) {
+    const r = window.puntenReferentie || {};
+    if (Number.isFinite(r[discipline])) return r[discipline];
+    if (!window.puntenReferentie && discipline === 'Driebanden') return 40;   // zolang de planner nog niet geantwoord heeft: de standaard
+    return Number.isFinite(r.andere) ? r.andere : 20;
 };
 
-
-// =========================================================================
-// BLOK 2: BEREKENINGEN
-// =========================================================================
-
-/**
- * Berekent de competitiepunten voor één speler in één match.
- * Volgt exact de Excel VBA logica (VBA Int() = JS Math.floor()).
- */
-window.calculateCompetitionPoints = function(score, beurten, targetPoints, targetTurns, isDames = false, won = false, isDraw = false) {
-    const MIN_SCORE = -5;
-    
-    // ✅ Dames: 3/2/1 systeem
-    if (isDames) {
-        if (won) return 3;      // Winnaar
-        if (isDraw) return 2;   // Gelijkspel
-        return 1;               // Verliezer
+// De punten die de planner voor deze speler in deze match uitrekende
+window.klassementspuntenVan = function(playerData) {
+    const p = playerData && playerData.punten;
+    if (!Number.isFinite(p)) {
+        console.warn('⚠️ Geen klassementspunten van de planner voor deze match (oude gegevens?)');
+        return 0;
     }
-    
-    // Normale berekening voor andere disciplines
-    if (beurten <= 0) return MIN_SCORE;
-    
-    if (score < targetPoints) {
-        // ❌ Target NIET gehaald: projectie-formule
-        const actualAvg = score / beurten;
-        if (actualAvg === 0) return MIN_SCORE;
-        const projectedTurns = targetPoints / actualAvg;
-        const raw = targetTurns - projectedTurns;
-        return Math.max(Math.floor(raw), MIN_SCORE);
-    } else {
-        // ✅ Target gehaald: simpele aftrekking
-        const raw = targetTurns - beurten;
-        return Math.max(Math.floor(raw), MIN_SCORE);
-    }
-};
-
-/**
- * Berekent de algemene statistieken voor een speler op basis van alle gespeelde matches.
- */
-window.calculatePlayerStats = function(playerId, playerName, discipline, category) {
-    // Filter matches voor deze speler in deze discipline/categorie
-    const playerMatches = state.matches.filter(m => 
-        m.completed && 
-        m.discipline === discipline && 
-        m.cat === category &&
-        (m.p1_club_id === playerId || m.p2_club_id === playerId)
-    );
-
-    let totalCompPoints = 0;
-    let totalPointsScored = 0;
-    let totalTurnsPlayed = 0;
-    let highestSeries = 0;
-    let matchesPlayed = 0;
-    let matchesWon = 0;
-
-    playerMatches.forEach(match => {
-        const isP1 = match.p1_club_id === playerId;
-        const points = isP1 ? match.p1Score : match.p2Score;
-        const turns = isP1 ? match.p1Turns.length : match.p2Turns.length;
-        const hr = isP1 ? match.p1Highest : match.p2Highest;
-        const won = match.winner === (isP1 ? match.p1 : match.p2);
-
-        // Bereken competitiepunten voor deze match
-        // Haal persoonlijk target van de speler op (fallback: 100)
-        const playerTarget = state.players.find(p => p.id === playerId)?.target || 100;
-        // Bepaal targetTurns per discipline
-        const targetTurns = discipline === 'Driebanden' ? 40 : 20;
-        // Bereken competitiepunten met persoonlijke target
-        const compPoints = window.calculateCompetitionPoints(points, turns, playerTarget, targetTurns);
-
-        totalCompPoints += compPoints;
-        totalPointsScored += points;
-        totalTurnsPlayed += turns;
-        if (hr > highestSeries) highestSeries = hr;
-        matchesPlayed++;
-        if (won) matchesWon++;
-    });
-
-    // Bereken algemeen gemiddelde
-    const average = totalTurnsPlayed > 0 ? totalPointsScored / totalTurnsPlayed : 0;
-    
-    // Zoek TSG van de speler in state.players
-    const playerData = state.players.find(p => p.id === playerId);
-    let tsg = 0;
-    if (playerData && playerData.tsg) {
-        // TSG is opgeslagen als string met komma ("1,050"), omzetten naar float
-        tsg = parseFloat(playerData.tsg.replace(',', '.'));
-    }
-    
-    // Coëfficiënt: gespeeld gemiddelde / TSG
-    const coefficient = tsg > 0 ? average / tsg : 0;
-
-    // Bereken TSGVS (Te Spelen Gemiddelde Volgend Seizoen)
-    const playerInfo = state.players.find(p => p.id === playerId);
-    const mode = playerInfo?.mode || 'max -10%';
-    let tsgvs;
-    
-    if (matchesPlayed === 0) {
-        // Niet gespeeld: blijft gelijk aan TSG
-        tsgvs = tsg;
-    } else if (mode.startsWith('k')) {
-        // "kan niet verminderen"
-        tsgvs = average < tsg ? tsg : average;
-    } else {
-        // "max -10%"
-        tsgvs = average < (tsg * 0.9) ? (tsg * 0.9) : average;
-    }
-    
-    // Bereken PTNVS (Punten Volgend Seizoen)
-    const targetTurns = discipline === 'Driebanden' ? 40 : 20;
-    const ptnvs = Math.ceil(tsgvs * targetTurns);
-    
-    return {
-        id: playerId,
-        name: playerName,
-        discipline: discipline,
-        category: category,
-        matchesPlayed: matchesPlayed,
-        matchesWon: matchesWon,
-        totalPointsScored: totalPointsScored,
-        totalTurnsPlayed: totalTurnsPlayed,
-        average: average,
-        highestSeries: highestSeries,
-        totalCompPoints: totalCompPoints,
-        coefficient: coefficient,
-        tsg: tsg,
-        tsgvs: tsgvs,
-        ptnvs: ptnvs,
-        mode: mode
-    };
+    return p;
 };
 
 // =========================================================================
@@ -445,14 +310,8 @@ window.renderCrossTable = function() {
                     const isDraw = opponentData && opponentData.score === points;
                     const won = String(match.winner_club_id) === String(player1.id);
                     
-                    // Haal persoonlijk target van de speler op (fallback: 100)
-                    const playerTarget = state.players.find(p => p.id === player1.id)?.target || 100;
-                    // Bepaal targetTurns per discipline
-                    const targetTurns = currentCrossDiscipline === 'Driebanden' ? 40 : 20;
-                    
-                    // ✅ Dames: 3/2/1 systeem
-                    const isDames = currentCrossDiscipline === 'Dames';
-                    const compPoints = calculateCompetitionPoints(points, turns, playerTarget, targetTurns, isDames, won, isDraw);
+                    // De punten voor deze match rekent de planner uit (volgens de ingestelde puntentelling)
+                    const compPoints = window.klassementspuntenVan(playerData);
                     const compPointsClass = compPoints > 0 ? 'comp-pts-positive' : compPoints < 0 ? 'comp-pts-negative' : '';
                     const compPointsText = compPoints > 0 ? `+${compPoints}` : compPoints;
                     
@@ -801,15 +660,8 @@ window.calculatePlayerStatsFromAPI = function(playerId, playerName, discipline, 
         const opponentData = match.players.find(p => String(p.club_id) !== String(playerId));
         const isDraw = opponentData && opponentData.score === points;
 
-        // Bereken competitiepunten voor deze match
-        // Haal persoonlijk target van de speler op (fallback: 100)
-        const playerTarget = state.players.find(p => p.id === playerId)?.target || 100;
-        // Bepaal targetTurns per discipline
-        const targetTurns = discipline === 'Driebanden' ? 40 : 20;
-        
-        // ✅ Dames: 3/2/1 systeem
-        const isDames = discipline === 'Dames';
-        const compPoints = window.calculateCompetitionPoints(points, turns, playerTarget, targetTurns, isDames, won, isDraw);
+        // De punten voor deze match rekent de planner uit (volgens de ingestelde puntentelling)
+        const compPoints = window.klassementspuntenVan(playerData);
 
         totalCompPoints += compPoints;
         totalPointsScored += points;
@@ -856,7 +708,7 @@ window.calculatePlayerStatsFromAPI = function(playerId, playerName, discipline, 
         }
         
         // Bereken PTNVS (Punten Volgend Seizoen)
-        const targetTurns = discipline === 'Driebanden' ? 40 : 20;
+        const targetTurns = window.referentiebeurten(discipline);
         ptnvs = Math.ceil(tsgvs * targetTurns);
     }
     
