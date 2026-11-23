@@ -57,54 +57,6 @@
         </div>
     </div>
     
-    <!-- PAGINA 2: Speltype selectie (voor later - handmatige matches) -->
-    <div id="page2" class="page">
-        <div class="header">
-            <button class="back-btn" onclick="showPage(1)">← Terug</button>
-            <h1>Selecteer Speltype</h1>
-            <div style="width: 70px;"></div>
-        </div>
-        
-        <div class="selection-container">
-            <div class="selection-title">Kies een speltype</div>
-            <div class="selection-grid">
-                <div class="selection-option" onclick="selectGameType('Vrijspel')">
-                    <h3>Vrijspel</h3>
-                    <p>Klassiek biljart zonder banden</p>
-                </div>
-                <div class="selection-option" onclick="selectGameType('Bandstoten')">
-                    <h3>Bandstoten</h3>
-                    <p>Minimaal één band voor score</p>
-                </div>
-                <div class="selection-option" onclick="selectGameType('Driebanden')">
-                    <h3>Driebanden</h3>
-                    <p>Minimaal drie banden voor score</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- PAGINA 3: Categorie selectie (voor later - handmatige matches) -->
-    <div id="page3" class="page">
-        <div class="header">
-            <button class="back-btn" onclick="showPage(2)">← Terug</button>
-            <h1>Selecteer Categorie</h1>
-            <div style="width: 70px;"></div>
-        </div>
-        
-        <div class="selection-container">
-            <div class="selection-title">Kies een categorie (1-6)</div>
-            <div class="category-grid">
-                <div class="category-option" onclick="selectCategory(1)">Cat. 1</div>
-                <div class="category-option" onclick="selectCategory(2)">Cat. 2</div>
-                <div class="category-option" onclick="selectCategory(3)">Cat. 3</div>
-                <div class="category-option" onclick="selectCategory(4)">Cat. 4</div>
-                <div class="category-option" onclick="selectCategory(5)">Cat. 5</div>
-                <div class="category-option" onclick="selectCategory(6)">Cat. 6</div>
-            </div>
-        </div>
-    </div>
-    
     <!-- PAGINA 4: Bal kleur selectie -->
     <div id="page4" class="page">
         <div class="header">
@@ -983,50 +935,6 @@
         </div>
     </div>
 
-    <!-- PAGINA 21: Kruistabel -->
-    <div id="page21" class="page">
-        <div class="header">
-            <button class="back-btn" onclick="showPage(20)">← Terug</button>
-            <h1>📊 Kruistabel</h1>
-            <div style="width: 70px;"></div>
-        </div>
-    
-        <div class="selection-container" style="margin-top: 20px;">
-            <div class="selection-title">Selecteer Discipline & Categorie</div>
-            
-            <div style="margin-bottom: 20px;">
-                <h3 style="color: #ecf0f1; margin-bottom: 10px;">Discipline:</h3>
-                <div class="selection-grid">
-                    <div class="selection-option" onclick="loadCrossTable('Vrijspel')" id="crossDiscVS">
-                        <h3>Vrijspel</h3>
-                    </div>
-                    <div class="selection-option" onclick="loadCrossTable('Bandstoten')" id="crossDiscBS">
-                        <h3>Bandstoten</h3>
-                    </div>
-                    <div class="selection-option" onclick="loadCrossTable('Driebanden')" id="crossDiscDB">
-                        <h3>Driebanden</h3>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="margin-bottom: 20px;">
-                <h3 style="color: #ecf0f1; margin-bottom: 10px;">Categorie:</h3>
-                <div class="category-grid">
-                    <div class="category-option" onclick="loadCrossTableCategory(1)" id="crossCat1">Cat. 1</div>
-                    <div class="category-option" onclick="loadCrossTableCategory(2)" id="crossCat2">Cat. 2</div>
-                    <div class="category-option" onclick="loadCrossTableCategory(3)" id="crossCat3">Cat. 3</div>
-                    <div class="category-option" onclick="loadCrossTableCategory(4)" id="crossCat4">Cat. 4</div>
-                    <div class="category-option" onclick="loadCrossTableCategory(5)" id="crossCat5">Cat. 5</div>
-                    <div class="category-option" onclick="loadCrossTableCategory(6)" id="crossCat6">Cat. 6</div>
-                </div>
-            </div>
-        </div>
-    
-        <div class="matches-list-container" id="crossTableContainer" style="padding: 10px; overflow-x: auto;">
-            <div class="no-matches"><p>Selecteer een discipline en categorie om de kruistabel te zien.</p></div>
-        </div>
-    </div>
-    
     <!-- PAGINA 50: Alternatief Scorebord -->
     <div id="page50" class="page" style="background:#000;">
         <div class="alt-score-grid">

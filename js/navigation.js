@@ -219,13 +219,3 @@ window.syncAndGoToMatches = function() {
     }
 };
 
-// Vanuit Pagina 1: Ga naar Pagina 2 (oude flow voor handmatige matches)
-window.goToPage2 = function() {
-    const d = document.getElementById('dateSelect');
-    if (!d.value) {
-        alert("Selecteer eerst een datum!");
-        return;
-    }
-    state.selectedDate = d.value;
-    showPage(2);
-};

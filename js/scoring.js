@@ -1484,11 +1484,11 @@ document.addEventListener('keydown', function(event) {
         }
  
  
-        // ✅ PAGINA 2 OF 11: Door matchen navigeren + selecteren
-        // ✅ PAGINA 2 OF 11: Door matchen navigeren + selecteren, MET de "Terug naar
+        // ✅ PAGINA 11: Door matchen navigeren + selecteren
+        // ✅ PAGINA 11: Door matchen navigeren + selecteren, MET de "Terug naar
         // Hoofdmenu"-knop vooraan in de navigatielijst, bereikbaar via PageUp vanaf
         // de eerste match, of via PageDown (wrap) voorbij de laatste match.
-        if (activePage.id === 'page2' || activePage.id === 'page11') {
+        if (activePage.id === 'page11') {
             const cards = Array.from(document.querySelectorAll('#matchList .match-card'));
             const backBtn = document.querySelector(`#${activePage.id} .back-btn`);
             // ✅ FIX: kaarten EERST, "Terug" LAATST — dit moet overeenkomen met de

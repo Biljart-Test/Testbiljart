@@ -30,22 +30,6 @@ window.klassementspuntenVan = function(playerData) {
 let currentCompDiscipline = null;
 let currentCompCategory = null;
 
-// Hulpfuncties voor de knoppen
-window.loadLeaderboard = function(discipline) {
-    currentCompDiscipline = discipline;
-    document.querySelectorAll('#page20 .selection-option').forEach(o => o.classList.remove('selected'));
-    const knopD = document.getElementById(`compDisc${discipline === 'Vrijspel' ? 'VS' : discipline === 'Bandstoten' ? 'BS' : 'DB'}`);
-    if (knopD) knopD.classList.add('selected');   // oude knoppen: bestaan niet meer in de huidige pagina's
-    if (currentCompCategory) renderCompetitionLeaderboard();
-};
-
-window.loadLeaderboardCategory = function(category) {
-    currentCompCategory = category;
-    document.querySelectorAll('#page20 .category-option').forEach(o => o.classList.remove('selected'));
-    document.getElementById(`compCat${category}`).classList.add('selected');
-    if (currentCompDiscipline) renderCompetitionLeaderboard();
-};
-
 /**
  * Genereert en toont het klassement op Pagina 20
  */
@@ -147,22 +131,6 @@ window.renderCompetitionLeaderboard = function() {
 
 let currentCrossDiscipline = null;
 let currentCrossCategory = null;
-
-// Hulpfuncties voor de knoppen
-window.loadCrossTable = function(discipline) {
-    currentCrossDiscipline = discipline;
-    document.querySelectorAll('#page21 .selection-option').forEach(o => o.classList.remove('selected'));
-    const knopC = document.getElementById(`crossDisc${discipline === 'Vrijspel' ? 'VS' : discipline === 'Bandstoten' ? 'BS' : 'DB'}`);
-    if (knopC) knopC.classList.add('selected');
-    if (currentCrossCategory) renderCrossTable();
-};
-
-window.loadCrossTableCategory = function(category) {
-    currentCrossCategory = category;
-    document.querySelectorAll('#page21 .category-option').forEach(o => o.classList.remove('selected'));
-    document.getElementById(`crossCat${category}`).classList.add('selected');
-    if (currentCrossDiscipline) renderCrossTable();
-};
 
 /**
  * Genereert de volledige kruistabel met correcte 2x2 blokken en TOT structuur
