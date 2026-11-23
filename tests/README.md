@@ -33,3 +33,16 @@ Draait het **echte** lokale Pi-programma (`pi/biljart_lokaal.py`) en een **echte
 - De clubnaam in de koptekst en de titel komt van de planner (`/api/club`).
 - De knop "QR code voor inlog" is verborgen (functie bewaard); opslagnaam `kpbc_match_backup` is `biljart_match_backup`.
 - Midden in een match komt nooit een blokscherm: de uitslag komt in de wachtrij en gaat later alsnog weg.
+
+## test-tornooi32.js: een heel tornooi van 32 in de echte score-app
+Echte testplanner + echt Pi-programma + de score-app. Een tornooi met 32 spelers en dubbele uitschakeling (62 matchen) wordt **volledig uitgespeeld via de app**, ronde per ronde, zoals een scheidsrechter dat zou doen (match kiezen, witte bal, spelen, Hoofdmenu). De planner plant telkens wat speelklaar is (hier vereenvoudigd via de database). Gecontroleerd: de app toont in elke ronde precies de matchen die klaar staan, geen "ONBEKEND" als naam bij doorgeschoven spelers, een **herstart (lege browser) midden in een ronde en na een ronde** toont enkel nog te spelen matchen, elke match precies één keer gespeeld en bevestigd, elke match een winnaar en verliezer, niemand verliest meer dan twee keer, het tornooi staat op `completed`. Duurt ongeveer 3,5 minuut.
+
+## test-tornooi-wifi.js: verbinding weg op het einde van een tornooimatch
+De uitslag mag niet verloren gaan: de back-up van de afgewerkte match blijft op de Pi, na een herstart met verbinding gaat de uitslag **precies één keer** naar de planner, daarna wordt de back-up gewist en gebeurt er bij volgende starts niets meer.
+
+Beide tests gebruiken `tests/lib/omgeving.js` (start planner, Pi-programma en een eenvoudige webserver voor de app) en hebben `TESTSERVER` en `PYTHON` nodig.
+
+## Fouten die deze tests aan het licht brachten (hersteld)
+- **Pi-programma:** de app stuurt bij elke klik een back-up, vaak meerdere tegelijk. Ze schreven naar hetzelfde tijdelijke bestand (tientallen 500-fouten), en de wachtrij voor verbindingen was te klein.
+- **Pi-programma:** de laatste twee back-ups van een beurt komen soms in omgekeerde volgorde aan, waardoor er een **oude stand** (36 punten, niet afgelopen) over de eindstand heen werd geschreven. Nu wint de nieuwste (`savedAt`).
+- **Score-app:** na een geslaagde verzending van een tornooi-uitslag bleef de back-up op de Pi staan (bij de competitie werd hij wel gewist). Nu wordt hij gewist.

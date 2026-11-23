@@ -364,6 +364,9 @@ window.syncTournamentMatchToAPI = async function(match) {
         });
         if (response.ok) {
             console.log("✅ Tornooi-match succesvol gesynchroniseerd!");
+            // Net als bij de competitie: pas NA bevestiging van de planner de back-up wissen. Zonder dit blijft de back-up
+            // op de Pi staan en wordt de uitslag bij elke start opnieuw verstuurd (ook nadat de planner ze gecorrigeerd heeft).
+            if (typeof clearMatchBackup === 'function') clearMatchBackup(match.id);
             return true;
         }
         throw new Error(`Server fout: ${response.status}`);
