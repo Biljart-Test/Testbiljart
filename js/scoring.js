@@ -62,19 +62,14 @@ function updateScoringPage() {
         abbr = "👑";
         colorClass = "badge-vs";
     // ✅ FIX: Check "drie" EERST, want "Driebanden" bevat ook "band"
-    } else if (disc.includes("drie") || disc.includes("3")) {
-        abbr = "DB";
-        colorClass = "badge-db";
-    } else if (disc.includes("band")) {
-        abbr = "BS";
-        colorClass = "badge-bs";
-    } else if (disc.includes("vrij")) {
-        abbr = "VS";
-        colorClass = "badge-vs";
     } else if (disc.includes("dames")) {
-        // ✅ NIEUW: anders viel dit terug op de standaardwaarde "??"
-        abbr = "D";
-        colorClass = "badge-dames";
+        abbr = window.disciplineAfkorting('Dames');
+        colorClass = window.disciplineBadgeKlasse('Dames');
+    } else if (window.isGewoneDiscipline(disc)) {
+        // elke discipline van de club (de lijst komt van de planner)
+        const naam = window.disciplineVanSleutel(disc);
+        abbr = window.disciplineAfkorting(naam);
+        colorClass = window.disciplineBadgeKlasse(naam);
     }
     // (Koning(in)sprijskamp wordt al hierboven, als eerste, apart afgehandeld)
 
@@ -2627,7 +2622,7 @@ window.confirmTypedName = function() {
     
     // ✅ VALIDATIE: Target mag niet 0 zijn, BEHALVE bij triatlon en dubbeltje
     const gameType = state.friendlyMatch?.gameType;
-    const requiresTarget = ['vrijspel', 'bandstoten', 'driebanden'].includes(gameType);
+    const requiresTarget = window.isGewoneDiscipline(gameType);
     
     if (requiresTarget && window.tempPlayerTarget === 0) {
         alert("⚠️ Het te spelen doel mag niet 0 zijn.\n\nKies een waarde uit het dropdown menu of controleer de naam.");
@@ -3382,6 +3377,10 @@ window.updateFriendlyUI = function() {
     } else if (activePhase === 'driebanden') {
         phaseText = 'DRIEBANDEN';
         phaseColor = '#e74c3c'; // Rood
+    } else if (activePhase) {
+        // een andere discipline van de club: haar eigen naam, neutrale kleur
+        phaseText = String(window.disciplineVanSleutel(activePhase)).toUpperCase();
+        phaseColor = window.disciplineKleur(phaseText);
     }
 
     const disciplineEl = document.getElementById('friendlyHeaderDiscipline');
@@ -4038,7 +4037,7 @@ window.endFriendlyMatch = function() {
         p1: displayP1, // ✅ Gebruik de aangepaste naam
         p2: displayP2, // ✅ Gebruik de aangepaste naam
         date: new Date().toISOString().split('T')[0],
-        discipline: fm.gameType === 'vrijspel' ? 'Vrijspel' : (fm.gameType === 'bandstoten' ? 'Bandstoten' : 'Driebanden'),
+        discipline: window.disciplineVanSleutel(fm.gameType),   // de echte naam van de discipline, nooit stilzwijgend een andere
         cat: 'Vriendschappelijk',
         p1Score: ts.leftTotalScore,
         p2Score: ts.rightTotalScore,
@@ -4099,8 +4098,7 @@ window.updatePlayerTargetInfo = function(playerName) {
     if (!infoDiv) return; // Veiligheidscheck
     
     // Alleen tonen bij vrijspel, bandstoten of driebanden
-    const eligibleTypes = ['vrijspel', 'bandstoten', 'driebanden'];
-    if (!fm || !eligibleTypes.includes(fm.gameType) || !playerName || playerName.trim() === '') {
+    if (!fm || !window.isGewoneDiscipline(fm.gameType) || !playerName || playerName.trim() === '') {
         infoDiv.classList.add('hidden');
         infoDiv.classList.remove('data-found', 'manual-input');
         return;

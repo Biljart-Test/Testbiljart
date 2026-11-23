@@ -84,7 +84,7 @@ async function fetchMatchesFromAPI() {
                 target1: target1,
                 target2: target2,
                 discipline: apiMatch.discipline,
-                cat: parseInt(apiMatch.category),
+                cat: window.leesCategorie(apiMatch.category),
                 match_type: apiMatch.match_type || 'Regular',
                 completed: false,
                 whitePlayer: null,

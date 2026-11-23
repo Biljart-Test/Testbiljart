@@ -64,3 +64,6 @@ Een competitiematch spelen in de app (echte planner en Pi-programma) en kijken w
 
 ## test-spelregels.js: Dubbeltje en Triatlon op één plaats
 De drempels, maxima en het doel (70) van Dubbeltje, Triatlon klein en groot, het 3-spelersspel en de gewone spellen zijn vergeleken met de getallen van vóór het centraliseren (`js/spelregels.js`), de regels zijn bevroren, en geen enkel ander bestand bevat nog een eigen kopie (de 70, de drempels of de lijst van fase-spellen).
+
+## test-disciplines.js: andere disciplines en categorieën in de app
+De disciplines van de club komen van de planner (`/api/club`, centraal in `js/disciplines.js`). De test zet in een echte testplanner de disciplines Libre (categorie A en B), Kader 47/2 en Pool, en kijkt in de app: de lijst en volgorde van de club, letters als categorie blijven letters (vroeger werd alles "1"), rangschikking en kruistabel per discipline en categorie, de kaartjes voor een vriendschappelijke match (Triatlon en Dubbeltje blijven staan), en dat een match in een andere discipline **nooit stilzwijgend Driebanden wordt** (vroeger gebeurde dat). Zonder instelling van de club geldt de oude indeling (Vrijspel, Bandstoten, Driebanden). Zes sabotages zijn opgemerkt.

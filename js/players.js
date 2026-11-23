@@ -32,14 +32,14 @@ async function fetchPlayersFromAPI() {
                     // onrechte een ECHTE categorie "0" (bij Dames) door 1 —
                     // want in JavaScript is 0 || 1 altijd 1. Expliciet op NaN
                     // checken behoudt de geldige waarde 0 correct.
-                    const parsedCat = parseInt(stat.category);
+                    const parsedCat = window.leesCategorie(stat.category);   // getal blijft getal, letters (A, B, C) blijven tekst
                     state.players.push({
                         id: clubId,
                         user_id: user.id,
                         name: fullName,
                         email: user.email || '',
                         discipline: stat.discipline || 'Vrijspel',
-                        category: isNaN(parsedCat) ? 1 : parsedCat,
+                        category: window.heeftCategorie(parsedCat) ? parsedCat : 1,
                         target: parseInt(stat.target) || 50,
                         tsg: stat.tsg ? parseFloat(stat.tsg).toFixed(3).replace('.', ',') : '0,000',
                         pnt: parseInt(stat.target) || 50,
@@ -89,7 +89,7 @@ async function fetchPlayersFromAPI() {
 function selectDiscipline(discipline) {
     selectedDiscipline = discipline;
     document.querySelectorAll('#page8 .selection-option').forEach(option => option.classList.remove('selected'));
-    document.getElementById(`discipline${discipline}`).classList.add('selected');
+    const dKnop = document.getElementById(`discipline${discipline}`); if (dKnop) dKnop.classList.add('selected');
     updatePlayerFilterStatus();
     loadFilteredPlayers();
 }
@@ -240,11 +240,8 @@ window.loadPlayersList = function() {
     
     html += `<div class="matches-list-title">Alle Spelers Overzicht (${state.players.length} spelers)</div>`;
     
-    const desiredOrder = ["Vrijspel", "Bandstoten", "Driebanden"];
     const disciplines = Object.keys(playersByDiscipline);
-    const sortedDisciplines = [];
-    desiredOrder.forEach(d => { if (disciplines.includes(d)) sortedDisciplines.push(d); });
-    disciplines.filter(d => !sortedDisciplines.includes(d)).sort().forEach(d => sortedDisciplines.push(d));
+    const sortedDisciplines = disciplines.sort(window.disciplineVolgorde);   // volgorde van de club (komt van de planner)
     
     sortedDisciplines.forEach(discipline => {
         const disciplineData = playersByDiscipline[discipline];
@@ -255,12 +252,12 @@ window.loadPlayersList = function() {
                 <button onclick="selectDiscipline('${discipline}')" style="background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 5px; font-size: 0.9em; cursor: pointer;">🔍 Toon ${discipline}</button>
             </div>`;
         
-        Object.keys(disciplineData).sort((a, b) => a - b).forEach(category => {
+        Object.keys(disciplineData).map(window.leesCategorie).sort(window.vergelijkCategorie).forEach(category => {
             const categoryPlayers = disciplineData[category];
             html += `<div style="margin: 15px 0; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 10px; border-left: 4px solid ${getCategoryColor(category)};">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h4 style="color: #f1c40f; margin: 0;">Categorie ${category} <span style="color: #95a5a6; font-size: 0.9em;">(${categoryPlayers.length} spelers)</span></h4>
-                    <button onclick="selectDisciplineAndCategory('${discipline}', ${category})" style="background: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 5px; font-size: 0.8em; cursor: pointer;">👁️ Bekijk Details</button>
+                    <button onclick="selectDisciplineAndCategory('${discipline}', window.leesCategorie('${category}'))" style="background: #f39c12; color: white; border: none; padding: 6px 12px; border-radius: 5px; font-size: 0.8em; cursor: pointer;">👁️ Bekijk Details</button>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 15px;">`;
             

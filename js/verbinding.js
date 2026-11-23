@@ -115,6 +115,7 @@
             window.clubNaam = d.naam_voluit || d.naam_kort || '';
             // Codes van het bestuur (komen enkel naar een goedgekeurd toestel): Beheer Matchen en Dames-avond
             window.puntenReferentie = d.referentiebeurten || null;   // referentiebeurten per discipline (puntentelling van het bestuur)
+            if (typeof window.zetDisciplines === 'function') window.zetDisciplines(d.disciplines, d.koppelingen);   // de disciplines van de club
             window.beheerCode = d.beheer_code || '';
             window.damesCode = d.dames_code || '';
             const dames = document.getElementById('damesKnop'); if (dames) dames.style.display = window.damesCode ? '' : 'none';

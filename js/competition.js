@@ -34,7 +34,8 @@ let currentCompCategory = null;
 window.loadLeaderboard = function(discipline) {
     currentCompDiscipline = discipline;
     document.querySelectorAll('#page20 .selection-option').forEach(o => o.classList.remove('selected'));
-    document.getElementById(`compDisc${discipline === 'Vrijspel' ? 'VS' : discipline === 'Bandstoten' ? 'BS' : 'DB'}`).classList.add('selected');
+    const knopD = document.getElementById(`compDisc${discipline === 'Vrijspel' ? 'VS' : discipline === 'Bandstoten' ? 'BS' : 'DB'}`);
+    if (knopD) knopD.classList.add('selected');   // oude knoppen: bestaan niet meer in de huidige pagina's
     if (currentCompCategory) renderCompetitionLeaderboard();
 };
 
@@ -50,10 +51,10 @@ window.loadLeaderboardCategory = function(category) {
  */
 window.renderCompetitionLeaderboard = function() {
     currentCompDiscipline = document.getElementById('compDisc').value;
-    currentCompCategory = parseInt(document.getElementById('compCat').value);
+    currentCompCategory = window.leesCategorie(document.getElementById('compCat').value);
     // ✅ FIX: "!currentCompCategory" was ook waar bij categorie 0 (Dames) —
     // in JavaScript is !0 altijd true. Expliciet op NaN/leeg checken.
-    if (!currentCompDiscipline || document.getElementById('compCat').value === '' || isNaN(currentCompCategory)) return;
+    if (!currentCompDiscipline || !window.heeftCategorie(currentCompCategory)) return;
 
     const container = document.getElementById('competitionLeaderboard');
     // ✅ FIX: filter matches zonder players-array weg (lokale matches hebben een ander
@@ -151,7 +152,8 @@ let currentCrossCategory = null;
 window.loadCrossTable = function(discipline) {
     currentCrossDiscipline = discipline;
     document.querySelectorAll('#page21 .selection-option').forEach(o => o.classList.remove('selected'));
-    document.getElementById(`crossDisc${discipline === 'Vrijspel' ? 'VS' : discipline === 'Bandstoten' ? 'BS' : 'DB'}`).classList.add('selected');
+    const knopC = document.getElementById(`crossDisc${discipline === 'Vrijspel' ? 'VS' : discipline === 'Bandstoten' ? 'BS' : 'DB'}`);
+    if (knopC) knopC.classList.add('selected');
     if (currentCrossCategory) renderCrossTable();
 };
 
@@ -167,10 +169,10 @@ window.loadCrossTableCategory = function(category) {
  */
 window.renderCrossTable = function() {
     currentCrossDiscipline = document.getElementById('compDisc').value;
-    currentCrossCategory = parseInt(document.getElementById('compCat').value);
+    currentCrossCategory = window.leesCategorie(document.getElementById('compCat').value);
     // ✅ FIX: zelfde "!0 is altijd true"-valstrik als bij de rangschikking —
     // expliciet op leeg/NaN checken, niet op "is het 0".
-    if (!currentCrossDiscipline || document.getElementById('compCat').value === '' || isNaN(currentCrossCategory)) return;
+    if (!currentCrossDiscipline || !window.heeftCategorie(currentCrossCategory)) return;
 
     const container = document.getElementById('crossTableContainer');
     // ✅ FIX: zelfde beveiliging als bij de rangschikking
@@ -463,18 +465,8 @@ window.initCompetitionPage = function() {
     // Haal unieke disciplines op
     const disciplines = [...new Set(state.players.map(p => p.discipline))];
     
-    // ✅ Definieer de gewenste volgorde
-    const disciplineOrder = ['Vrijspel', 'Bandstoten', 'Driebanden', 'Dames'];
-    
-    // ✅ Sorteer volgens deze volgorde
-    const sortedDisciplines = disciplines.sort((a, b) => {
-        const indexA = disciplineOrder.indexOf(a);
-        const indexB = disciplineOrder.indexOf(b);
-        // Als discipline niet in de lijst staat, zet hem achteraan
-        const posA = indexA === -1 ? 999 : indexA;
-        const posB = indexB === -1 ? 999 : indexB;
-        return posA - posB;
-    });
+    // ✅ Volgorde van de club (komt van de planner)
+    const sortedDisciplines = disciplines.sort(window.disciplineVolgorde);
     
     // Vul de dropdown
     sortedDisciplines.forEach(d => {
@@ -497,19 +489,12 @@ window.initCompetitionPage = function() {
  * combinaties, in dezelfde volgorde als de (voormalige) dropdowns.
  */
 window.buildCompComboList = function() {
-    const disciplineOrder = ['Vrijspel', 'Bandstoten', 'Driebanden', 'Dames'];
     const disciplines = [...new Set(state.players.map(p => p.discipline))];
-    const sortedDisciplines = disciplines.sort((a, b) => {
-        const indexA = disciplineOrder.indexOf(a);
-        const indexB = disciplineOrder.indexOf(b);
-        const posA = indexA === -1 ? 999 : indexA;
-        const posB = indexB === -1 ? 999 : indexB;
-        return posA - posB;
-    });
+    const sortedDisciplines = disciplines.sort(window.disciplineVolgorde);
 
     const list = [];
     sortedDisciplines.forEach(disc => {
-        const cats = [...new Set(state.players.filter(p => p.discipline === disc).map(p => p.category))].sort((a, b) => a - b);
+        const cats = [...new Set(state.players.filter(p => p.discipline === disc).map(p => p.category))].sort(window.vergelijkCategorie);
         cats.forEach(cat => list.push({ discipline: disc, category: cat }));
     });
 
@@ -536,7 +521,7 @@ window.goToCompCombo = function(index) {
     // Categorie-opties opbouwen voor deze discipline (los van updateCompCategories,
     // want die reset de categorie altijd naar leeg — hier willen we een specifieke waarde zetten)
     catSelect.innerHTML = '';
-    const cats = [...new Set(state.players.filter(p => p.discipline === combo.discipline).map(p => p.category))].sort((a, b) => a - b);
+    const cats = [...new Set(state.players.filter(p => p.discipline === combo.discipline).map(p => p.category))].sort(window.vergelijkCategorie);
     cats.forEach(c => {
         catSelect.innerHTML += `<option value="${c}">📜 Cat. ${c}</option>`;
     });
@@ -580,7 +565,7 @@ window.updateCompCategories = function() {
     catSelect.innerHTML = '<option value="">📜Kies Categorie</option>';
     if(!disc) return;
     
-    const cats = [...new Set(state.players.filter(p => p.discipline === disc).map(p => p.category))].sort((a,b) => a-b);
+    const cats = [...new Set(state.players.filter(p => p.discipline === disc).map(p => p.category))].sort(window.vergelijkCategorie);
     cats.forEach(c => {
         catSelect.innerHTML += `<option value="${c}">📜 Cat. ${c}</option>`;
     });
