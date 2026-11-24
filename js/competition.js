@@ -662,7 +662,7 @@ window.calculatePlayerStatsFromAPI = function(playerId, playerName, discipline, 
         
         // Bereken PTNVS (Punten Volgend Seizoen)
         const targetTurns = window.referentiebeurten(discipline);
-        ptnvs = Math.ceil(tsgvs * targetTurns);
+        ptnvs = Math.ceil(Number((tsgvs * targetTurns).toFixed(9)));   // afronden op 9 decimalen: 0,28 x 25 is anders 7,000000000000001 en dus 8
     }
     
     return {
