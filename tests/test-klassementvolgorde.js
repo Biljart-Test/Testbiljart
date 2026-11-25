@@ -75,6 +75,17 @@ for i, (cid, vn, an, disc, cat) in enumerate([('2001','Anna','Alfa','Vrijspel','
     check('"kan niet verminderen" (en de oude schrijfwijze "kleiner"): het doel blijft 40', JSON.stringify(await nieuwDoel('kan niet verminderen', 8, 1.6)) === '[2,40]' && JSON.stringify(await nieuwDoel('kleiner', 10, 1.6)) === '[2,40]');
     check('de oude waarde "max -10%" volgt het percentage van de club (8%: 37)', JSON.stringify(await nieuwDoel('max -10%', 8, 1.6)) === '[1.84,37]');
     check('de regel wordt in gewone taal getoond (max -8% / kan niet verminderen); zonder percentage van de planner 10', await app.evaluate(() => { window.maxDaling = 8; const a = [modeTekst('max'), modeTekst('K')]; window.maxDaling = undefined; return JSON.stringify(a.concat([modeTekst('max -10%')])); }) === '["max -8%","kan niet verminderen","max -10%"]');
+    console.log('5. Het minimum doel per discipline (van de planner)');
+    check('de app kent de minima van de planner (Vrijspel 20, Bandstoten 15, Driebanden 13)', (m => m.Vrijspel === 20 && m.Bandstoten === 15 && m.Driebanden === 13)(await app.evaluate(() => window.minDoelPerDiscipline)), JSON.stringify(await app.evaluate(() => window.minDoelPerDiscipline)));
+    const minDoel = (disc, tsg, gem, doel) => app.evaluate(([disc, tsg, gem, doel]) => {
+      window.maxDaling = 10;
+      state.players = [{ id: 'm1', name: 'Mi Nimum', discipline: disc, category: 1, target: doel, tsg, mode: 'max' }];
+      const m = { discipline: disc, category: 1, winner_club_id: 'x', players: [{ club_id: 'm1', score: Math.round(gem * 100), beurten: 100, hoogste_reeks: 5 }, { club_id: 'm2', score: 10, beurten: 100 }] };
+      return calculatePlayerStatsFromAPI('m1', 'Mi Nimum', disc, 1, [m]).ptnvs;
+    }, [disc, tsg, gem, doel]);
+    check('Vrijspel: een speler met doel 20 die slecht speelt (gemiddelde 0,5) blijft 20: hij staat op het minimum', await minDoel('Vrijspel', '1,000', 0.5, 20) === 20, await minDoel('Vrijspel', '1,000', 0.5, 20));
+    check('Driebanden (40 beurten): doel 13 blijft 13, ook na een heel slecht jaar', await minDoel('Driebanden', '0,325', 0.05, 13) === 13, await minDoel('Driebanden', '0,325', 0.05, 13));
+    check('een discipline zonder minimum (Libre) zakt gewoon 10% (20 -> 18)', await minDoel('Libre', '1,000', 0.5, 20) === 18, await minDoel('Libre', '1,000', 0.5, 20));
     check('geen JavaScript-fouten', errs.length === 0, errs.join(' ; '));
   } catch (e) { check('test zonder onverwachte fout', false, String(e.stack || e).slice(0, 600)); }
   finally { if (browser) await browser.close(); await o.stop(); const bad = res.filter(x => !x).length; console.log(`\nResultaat: ${res.length - bad} van ${res.length} gecontroleerd en in orde${bad ? ', ' + bad + ' FOUT' : ''}.`); process.exit(bad ? 1 : 0); }

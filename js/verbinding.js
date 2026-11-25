@@ -115,6 +115,7 @@
             window.clubNaam = d.naam_voluit || d.naam_kort || '';
             // Codes van het bestuur (komen enkel naar een goedgekeurd toestel): Beheer Matchen en de speciale competities
             window.klassementVolgorde = Array.isArray(d.klassement_volgorde) ? d.klassement_volgorde : null;   // waarop het klassement gerangschikt wordt (van het bestuur)
+            window.minDoelPerDiscipline = d.min_doel || {};   // kleinste doel per discipline (0 = geen)
             window.maxDaling = d.max_daling;   // procent dat een speler volgend seizoen hoogstens mag zakken
             window.puntenReferentie = d.referentiebeurten || null;   // referentiebeurten per discipline (puntentelling van het bestuur)
             if (typeof window.zetDisciplines === 'function') window.zetDisciplines(d.disciplines, d.koppelingen);   // de disciplines van de club

@@ -597,6 +597,10 @@ window.maxDalingPercentage = function() {
     const x = Number(window.maxDaling);
     return (isFinite(x) && x >= 0 && x <= 100) ? x : 10;
 };
+window.minimumDoel = function(discipline) {
+    const n = Number((window.minDoelPerDiscipline || {})[discipline]);
+    return isFinite(n) && n > 0 ? n : 0;
+};
 window.modeTekst = function(mode) {
     return String(mode || '').trim().toLowerCase().startsWith('k') ? 'kan niet verminderen' : 'max -' + window.maxDalingPercentage() + '%';
 };
@@ -681,6 +685,9 @@ window.calculatePlayerStatsFromAPI = function(playerId, playerName, discipline, 
         
         // Bereken PTNVS (Punten Volgend Seizoen)
         const targetTurns = window.referentiebeurten(discipline);
+        // een minimum doel per discipline (van de planner): nooit lager, dus wie op het minimum staat kan niet zakken
+        const minimum = window.minimumDoel(discipline);
+        if (matchesPlayed > 0 && minimum > 0 && targetTurns > 0 && tsgvs * targetTurns < minimum) tsgvs = minimum / targetTurns;
         ptnvs = Math.ceil(Number((tsgvs * targetTurns).toFixed(9)));   // afronden op 9 decimalen: 0,28 x 25 is anders 7,000000000000001 en dus 8
     }
     
