@@ -16,6 +16,23 @@
     const NEUTRAAL = { badge: 'badge-vs', kleur: '#95a5a6', icoon: '⚪🟡🔴', sub: '' };
     let lijst = STANDAARD.slice();
     let koppelingen = [];
+    // Speciale competities (bv. Dames): een aparte competitie zonder categorieën, met eigen punten, die op speelavonden gespeeld wordt.
+    // De lijst komt van de planner (/api/club); zolang die niet geantwoord heeft: Dames (zoals bij KPBC).
+    let speciaal = [DAMES];
+    window.zetSpeciale = function(nieuw) {
+        if (Array.isArray(nieuw)) speciaal = nieuw.map(String).filter(function(d) { return d.trim() !== ''; });
+    };
+    window.speciaalLijst = function() { return speciaal.slice(); };
+    window.isSpeciaal = function(naam) {
+        const s = String(naam || '').toLowerCase();
+        return speciaal.some(function(d) { return d.toLowerCase() === s; });
+    };
+    // De naam van een speciale competitie zoals de club ze schrijft (uit een sleutel in kleine letters), of null
+    window.speciaalNaam = function(naam) {
+        const s = String(naam || '').toLowerCase();
+        const g = speciaal.find(function(d) { return d.toLowerCase() === s; });
+        return g === undefined ? null : g;
+    };
 
     window.zetDisciplines = function(nieuweLijst, nieuweKoppelingen) {
         if (Array.isArray(nieuweLijst) && nieuweLijst.length > 0) {
@@ -28,7 +45,7 @@
     window.disciplineLijst = function() { return lijst.slice(); };
     window.disciplineKoppelingen = function() { return koppelingen.slice(); };
 
-    function info(naam) { return BEKEND[String(naam || '').toLowerCase()] || NEUTRAAL; }
+    function info(naam) { return BEKEND[String(naam || '').toLowerCase()] || (window.isSpeciaal(naam) ? BEKEND.dames : NEUTRAAL); }
     // Afkorting voor een badge: bekende vaste, anders de eerste twee letters (hoofdletters)
     window.disciplineAfkorting = function(naam) {
         const b = BEKEND[String(naam || '').toLowerCase()];
@@ -47,7 +64,8 @@
         const s = String(sleutel || '').toLowerCase();
         const gevonden = lijst.find(function(d) { return d.toLowerCase() === s; });
         if (gevonden) return gevonden;
-        if (s === DAMES.toLowerCase()) return DAMES;
+        const sp = window.speciaalNaam(s);
+        if (sp) return sp;
         return String(sleutel || '');
     };
     // Is dit speltype een gewone 1-tegen-1 discipline van de club (met doel en gemiddelde)?
@@ -55,11 +73,11 @@
         const s = String(sleutel || '').toLowerCase();
         return lijst.some(function(d) { return d.toLowerCase() === s; });
     };
-    // Volgorde: eerst de volgorde van de club, dan onbekende (alfabetisch), Dames laatst
+    // Volgorde: eerst de volgorde van de club, dan onbekende (alfabetisch), speciale competities laatst
     function plaats(naam) {
         const i = lijst.findIndex(function(d) { return d.toLowerCase() === String(naam).toLowerCase(); });
         if (i >= 0) return i;
-        return String(naam).toLowerCase() === DAMES.toLowerCase() ? 100000 : 50000;
+        return window.isSpeciaal(naam) ? 100000 + speciaal.findIndex(function(d) { return d.toLowerCase() === String(naam).toLowerCase(); }) : 50000;
     }
     window.disciplineVolgorde = function(a, b) {
         const d = plaats(a) - plaats(b);

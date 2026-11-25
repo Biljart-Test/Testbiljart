@@ -60,10 +60,10 @@ const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
   check('alle server-aanroepen gingen naar de planner uit de instellingen, nooit naar een vast adres', verzoeken.filter(u => /^https?:/.test(u) && !u.startsWith('http://127.0.0.1:8123') && !u.startsWith(SERVER) && !u.startsWith('http://localhost:5000') && !u.includes('cdnjs')).length === 0, verzoeken.filter(u => !u.startsWith('http://127.0.0.1')).join(','));
   check('de knop "QR code voor inlog" is verborgen', !(await page.locator('button:has-text("QR code voor inlog")').isVisible()));
 
-  console.log('2b. Codes van het bestuur: Beheer Matchen en Dames-avond');
+  console.log('2b. Codes van het bestuur: Beheer Matchen en de speciale competities');
   const heeftBeheer = () => page.evaluate(() => { const b = document.querySelector('.header-buttons .upload-btn'); return !!b && b.offsetParent !== null; });
-  const heeftDames = () => page.evaluate(() => { const b = document.getElementById('damesKnop'); return !!b && b.offsetParent !== null; });
-  check('zonder ingestelde codes: geen knop "Beheer Matchen" en geen knop "Dames-avond"', !(await heeftBeheer()) && !(await heeftDames()));
+  const heeftDames = () => page.evaluate(() => { const b = document.getElementById('speciaalKnop'); return !!b && b.offsetParent !== null; });
+  check('zonder ingestelde codes: geen knop "Beheer Matchen" en geen knop "Speciale competitie"', !(await heeftBeheer()) && !(await heeftDames()));
   check('er staat geen vast wachtwoord of pincode meer in de app', await page.evaluate(() => typeof DEFAULT_PASSWORD === 'undefined' && typeof DAMES_PIN === 'undefined' && !document.documentElement.innerHTML.includes('admin123')));
   const vroeg = [];
   page.once('dialog', d => { vroeg.push(d.message()); d.accept(); });
@@ -81,13 +81,13 @@ const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/cs
   await page.fill('#adminPassword', 'bestuurscode'); await beheerKnop.click(); await sleep(500);
   check('de code uit de planner opent Beheer Matchen', (await page.evaluate(() => state.currentPage)) === 7);
   await page.evaluate(() => showPage(1)); await sleep(300);
-  await page.click('#damesKnop'); await page.waitForSelector('#damesPinOverlay');
-  for (const k of '8970') await page.locator('#damesDigits button', { hasText: new RegExp('^' + k + '$') }).click();
-  check('de oude damescode 8970 werkt niet meer', (await page.locator('#damesPinError').innerText()).includes('Foute code') && await page.locator('#damesPinOverlay').count() === 1);
-  for (const k of '4711') await page.locator('#damesDigits button', { hasText: new RegExp('^' + k + '$') }).click().catch(() => {});
+  await page.click('#speciaalKnop'); await page.waitForSelector('#speciaalPinOverlay');
+  for (const k of '8970') await page.locator('#speciaalDigits button', { hasText: new RegExp('^' + k + '$') }).click();
+  check('de oude code 8970 werkt niet meer', (await page.locator('#speciaalPinError').innerText()).includes('Foute code') && await page.locator('#speciaalPinOverlay').count() === 1);
+  for (const k of '4711') await page.locator('#speciaalDigits button', { hasText: new RegExp('^' + k + '$') }).click().catch(() => {});
   await sleep(1200);
-  check('de damescode uit de planner opent de Dames-avond', await page.locator('#damesPinOverlay').count() === 0);
-  await page.waitForSelector('text=kies 2 speelsters', { timeout: 8000 }).catch(() => {}); await sleep(2500);   // laat het ophalen van de speelsters afronden
+  check('de code uit de planner opent de speciale competitie', await page.locator('#speciaalPinOverlay').count() === 0);
+  await page.waitForSelector('text=kies 2 spelers', { timeout: 8000 }).catch(() => {}); await sleep(2500);   // laat het ophalen van de speelsters afronden
   await page.reload(); await sleep(2000);
 
   console.log('3. Uitgeschakeld en weer ingeschakeld');

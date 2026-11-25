@@ -113,13 +113,14 @@
             if (!r.ok) return;
             const d = await r.json();
             window.clubNaam = d.naam_voluit || d.naam_kort || '';
-            // Codes van het bestuur (komen enkel naar een goedgekeurd toestel): Beheer Matchen en Dames-avond
+            // Codes van het bestuur (komen enkel naar een goedgekeurd toestel): Beheer Matchen en de speciale competities
             window.klassementVolgorde = Array.isArray(d.klassement_volgorde) ? d.klassement_volgorde : null;   // waarop het klassement gerangschikt wordt (van het bestuur)
             window.puntenReferentie = d.referentiebeurten || null;   // referentiebeurten per discipline (puntentelling van het bestuur)
             if (typeof window.zetDisciplines === 'function') window.zetDisciplines(d.disciplines, d.koppelingen);   // de disciplines van de club
             window.beheerCode = d.beheer_code || '';
-            window.damesCode = d.dames_code || '';
-            const dames = document.getElementById('damesKnop'); if (dames) dames.style.display = window.damesCode ? '' : 'none';
+            if (typeof window.zetSpeciale === 'function') window.zetSpeciale(d.speciale_competities);   // de speciale competities van de club (bv. Dames)
+            window.speciaalCode = d.speciale_code || d.dames_code || '';             // één code voor alle speciale competities
+            const speciaalKnop = document.getElementById('speciaalKnop'); if (speciaalKnop) speciaalKnop.style.display = (window.speciaalCode && window.speciaalLijst().length) ? '' : 'none';
             const beheer = document.querySelector('.header-buttons .upload-btn'); if (beheer) beheer.style.display = window.beheerCode ? '' : 'none';
             const kop = document.getElementById('clubNaamKop');
             if (kop) kop.textContent = window.clubNaam;

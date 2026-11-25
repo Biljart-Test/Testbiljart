@@ -37,7 +37,7 @@ function updateScoringPage() {
     if (!state.currentMatch) return;
 
     // ✅ NIEUW: bij Dames bestaat er geen target, dus tonen we dat cijfer niet in de header
-    const isDamesForHeader = state.currentMatch.discipline === "Dames";
+    const isDamesForHeader = window.isSpeciaal(state.currentMatch.discipline);
 
     // 1. Header update
     document.getElementById('headerTarget1').textContent = isDamesForHeader ? '' : state.wit.target;
@@ -62,9 +62,9 @@ function updateScoringPage() {
         abbr = "👑";
         colorClass = "badge-vs";
     // ✅ FIX: Check "drie" EERST, want "Driebanden" bevat ook "band"
-    } else if (disc.includes("dames")) {
-        abbr = window.disciplineAfkorting('Dames');
-        colorClass = window.disciplineBadgeKlasse('Dames');
+    } else if (window.isSpeciaal(disc)) {
+        abbr = window.disciplineAfkorting(window.speciaalNaam(disc));
+        colorClass = window.disciplineBadgeKlasse(window.speciaalNaam(disc));
     } else if (window.isGewoneDiscipline(disc)) {
         // elke discipline van de club (de lijst komt van de planner)
         const naam = window.disciplineVanSleutel(disc);
@@ -99,7 +99,7 @@ function updateScoringPage() {
             }
             
             // ✅ DAMES: 20 beurten tonen (4 rijen van 5), HEREN: 56 beurten tonen
-            const isDames = state.currentMatch.discipline === "Dames";
+            const isDames = window.isSpeciaal(state.currentMatch.discipline);
             const minBeurten = isDames ? 20 : 56;
             const totalToShow = Math.max(minBeurten, turns.length);
             const highest = player.highestSeries || 0;
@@ -321,7 +321,7 @@ function updateCurrentScoreDisplay() {
     // dus het groene aftelblok heeft daar geen betekenis en tonen we niet.
     // FIX: gewone .style.display werd overschreven door een CSS-regel met !important
     // (op .needed-cell), dus we moeten hier zelf ook !important gebruiken via setProperty.
-    const isDamesMatch = state.currentMatch && state.currentMatch.discipline === "Dames";
+    const isDamesMatch = state.currentMatch && window.isSpeciaal(state.currentMatch.discipline);
     if (witNeededCell) {
         if (isDamesMatch) {
             witNeededCell.style.setProperty('display', 'none', 'important');
@@ -367,7 +367,7 @@ function updateCurrentScoreDisplay() {
 // Bij Dames en tornooien bestaat dit niet: geen blokje, geen kleur.
 window.updateNodigBlokken = function() {
     const disc = state.currentMatch ? state.currentMatch.discipline : '';
-    const geenNodig = disc === 'Dames' || disc === 'Tornooi';
+    const geenNodig = window.isSpeciaal(disc) || disc === 'Tornooi';
     const doelBeurten = window.referentiebeurten(disc);   // komt van de planner (Puntentelling); standaard 20, driebanden 40
     const fmtNodig = (p, nr) => {
         const doel = parseFloat(String(p.target).replace(',', '.'));
@@ -636,7 +636,7 @@ window.addScore = function() {
     }
 
     // ✅ NIEUW: DAMES-COMPETITIE - Check op 20 beurten limiet
-    if (state.currentMatch.discipline === "Dames") {
+    if (window.isSpeciaal(state.currentMatch.discipline)) {
         // Beide spelers hebben 20 beurten gespeeld? Match eindigt!
         if (state.wit.turns.length >= 20 && state.geel.turns.length >= 20) {
             endMatch();
@@ -883,7 +883,7 @@ function endMatch() {
     state.currentMatch.geelHighest = state.geel.highestSeries;
     
     // ✅ DAMES-COMPETITIE: Winner op basis van hoogste score + puntenverdeling (3-2-1)
-    if (state.currentMatch.discipline === "Dames") {
+    if (window.isSpeciaal(state.currentMatch.discipline)) {
         if (state.wit.score > state.geel.score) {
             // Speler 1 wint
             state.currentMatch.winner = state.currentMatch.wit;
@@ -4893,29 +4893,30 @@ function toggleQRSection() {
 // ==========================================
 // 🎀 DAMES-AVOND: live wedstrijd starten
 // ==========================================
-// De code voor de Dames-avond komt van de planner (Clubinstellingen). Zonder code is de knop verborgen.
-function damesPin() { return String(window.damesCode || ''); }
+// De code voor de speciale competities (één code voor allemaal) komt van de planner (Clubinstellingen). Zonder code is de knop verborgen.
+function speciaalPin() { return String(window.speciaalCode || ''); }
 
-window.startDamesAvond = function() {
-    if (!damesPin()) return;
+window.startSpecialeCompetitie = function() {
+    if (!speciaalPin()) return;
     let pinInput = '';
-    let damesDigitIndex = 0;
+    let speciaalDigitIndex = 0;
     const overlay = document.createElement('div');
-    overlay.id = 'damesPinOverlay';
+    overlay.id = 'speciaalPinOverlay';
     overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:rgba(26,26,46,0.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;color:#fff;text-align:center;';
     overlay.innerHTML = `
-        <div style="font-size:3rem;">🎀</div>
-        <h2 style="margin:0;">Dames-avond code</h2>
-        <div id="damesPinDisplay" style="font-size:2.2rem;letter-spacing:12px;font-weight:900;min-height:1.2em;"></div>
-        <div id="damesDigits" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:400px;"></div>
-        <div id="damesPinError" style="color:#e74c3c;font-weight:bold;min-height:1.5em;"></div>
-<button id="damesPinAnnuleerBtn" onclick="document.getElementById('damesPinOverlay').remove(); document.removeEventListener('keydown', damesKeydownHandler, true);" style="background:#64748b;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;">Annuleren</button>
+        <div style="font-size:3rem;">👑</div>
+        <h2 style="margin:0;">Code speciale competitie</h2>
+        <div id="speciaalPinDisplay" style="font-size:2.2rem;letter-spacing:12px;font-weight:900;min-height:1.2em;"></div>
+        <div id="speciaalDigits" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:400px;"></div>
+        <div id="speciaalPinError" style="color:#e74c3c;font-weight:bold;min-height:1.5em;"></div>
+<button id="speciaalPinAnnuleerBtn" style="background:#64748b;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;">Annuleren</button>
     `;
     document.body.appendChild(overlay);
+    document.getElementById('speciaalPinAnnuleerBtn').onclick = () => { document.removeEventListener('keydown', speciaalKeydownHandler, true); overlay.remove(); };
 
     let digitIdx = 0;
-    function renderDamesDigits() {
-        const container = document.getElementById('damesDigits');
+    function renderSpeciaalDigits() {
+        const container = document.getElementById('speciaalDigits');
         container.innerHTML = '';
         for (let d = 0; d <= 9; d++) {
             const btn = document.createElement('button');
@@ -4923,62 +4924,62 @@ window.startDamesAvond = function() {
             btn.style.cssText = 'width:50px;height:50px;font-size:1.3rem;font-weight:900;border-radius:10px;border:3px solid ' +
                 (d === digitIdx ? '#ec4899' : '#34495e') + ';background:' +
                 (d === digitIdx ? '#ec4899' : '#2c3e50') + ';color:#fff;cursor:pointer;';
-            btn.onclick = () => { digitIdx = d; addDamesDigit(); };
+            btn.onclick = () => { digitIdx = d; addSpeciaalDigit(); };
             container.appendChild(btn);
         }
-        document.getElementById('damesPinDisplay').textContent = '●'.repeat(pinInput.length) + '_'.repeat(Math.max(0, damesPin().length - pinInput.length));
+        document.getElementById('speciaalPinDisplay').textContent = '●'.repeat(pinInput.length) + '_'.repeat(Math.max(0, speciaalPin().length - pinInput.length));
 
         // ✅ NIEUW: "Annuleren"-knop visueel markeren als hij de focus heeft
-        const annuleerBtn = document.getElementById('damesPinAnnuleerBtn');
+        const annuleerBtn = document.getElementById('speciaalPinAnnuleerBtn');
         if (annuleerBtn) annuleerBtn.style.outline = (digitIdx === 10) ? '3px solid #ec4899' : 'none';
     }
 
-    function damesKeydownHandler(e) {
-        if (!document.getElementById('damesPinOverlay')) return;
+    function speciaalKeydownHandler(e) {
+        if (!document.getElementById('speciaalPinOverlay')) return;
         // ✅ NIEUW: 11 posities (0-9 + "Annuleren" op positie 10)
         if (e.key === 'PageUp') {
             e.preventDefault(); e.stopImmediatePropagation();
-            damesDigitIndex = (damesDigitIndex + 1) % 11;
-            digitIdx = damesDigitIndex;
-            renderDamesDigits();
+            speciaalDigitIndex = (speciaalDigitIndex + 1) % 11;
+            digitIdx = speciaalDigitIndex;
+            renderSpeciaalDigits();
         } else if (e.key === 'PageDown') {
             e.preventDefault(); e.stopImmediatePropagation();
-            damesDigitIndex = (damesDigitIndex - 1 + 11) % 11;
-            digitIdx = damesDigitIndex;
-            renderDamesDigits();
+            speciaalDigitIndex = (speciaalDigitIndex - 1 + 11) % 11;
+            digitIdx = speciaalDigitIndex;
+            renderSpeciaalDigits();
         } else if (e.key === 'Tab') {
             e.preventDefault(); e.stopImmediatePropagation();
-            digitIdx = damesDigitIndex;
+            digitIdx = speciaalDigitIndex;
             if (digitIdx === 10) {
-                document.getElementById('damesPinAnnuleerBtn').click();
+                document.getElementById('speciaalPinAnnuleerBtn').click();
             } else {
-                addDamesDigit();
+                addSpeciaalDigit();
             }
         }
     }
-    document.addEventListener('keydown', damesKeydownHandler, true);
+    document.addEventListener('keydown', speciaalKeydownHandler, true);
 
-    function addDamesDigit() {
+    function addSpeciaalDigit() {
         pinInput += String(digitIdx);
-        document.getElementById('damesPinError').textContent = '';
-        if (pinInput.length >= damesPin().length) {
-            if (pinInput === damesPin()) {
+        document.getElementById('speciaalPinError').textContent = '';
+        if (pinInput.length >= speciaalPin().length) {
+            if (pinInput === speciaalPin()) {
                 overlay.remove();
-                document.removeEventListener('keydown', damesKeydownHandler, true);
-                window.showDamesSpelersKeuze();
+                document.removeEventListener('keydown', speciaalKeydownHandler, true);
+                window.kiesSpecialeCompetitie();
                 return;   // het invoerscherm bestaat niet meer: niet opnieuw tekenen
             } else {
                 pinInput = '';
-                document.getElementById('damesPinError').textContent = '❌ Foute code';
+                document.getElementById('speciaalPinError').textContent = '❌ Foute code';
             }
         }
-        renderDamesDigits();
+        renderSpeciaalDigits();
     }
 
-    renderDamesDigits();
+    renderSpeciaalDigits();
 };
-window.showDamesSpelersKeuze = async function() {
-    const res = await serverFetch('/api/dames/spelers-en-paren');
+window.toonSpecialeSpelersKeuze = async function(competitie) {
+    const res = await serverFetch('/api/dames/spelers-en-paren?competitie=' + encodeURIComponent(competitie || ''));
     const data = await res.json();
     const spelers = data.spelers;
     const gespeeldeParen = new Set(data.gespeelde_paren);
@@ -4986,18 +4987,19 @@ window.showDamesSpelersKeuze = async function() {
     let gekozen = [];
 
     const overlay = document.createElement('div');
-    overlay.id = 'damesKeuzeOverlay';
+    overlay.id = 'speciaalKeuzeOverlay';
     overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;padding:20px;color:#fff;overflow-y:auto;';
     overlay.innerHTML = `
-        <h2 style="margin:10px 0;">🎀 Dames-avond — kies 2 speelsters</h2>
-        <div id="damesSpelersLijst" style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:400px;"></div>
-        <button id="damesStartBtn" disabled style="margin-top:20px;background:#22c55e;color:white;border:none;padding:14px 24px;border-radius:10px;font-weight:700;font-size:1.1rem;cursor:pointer;opacity:0.5;">▶️ Match starten</button>
-            <button id="damesAnnuleerBtn" onclick="document.getElementById('damesKeuzeOverlay').remove(); document.removeEventListener('keydown', damesKeuzeKeydownHandler, true);" style="margin-top:10px;background:#64748b;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;">Annuleren</button>
+        <h2 style="margin:10px 0;">👑 ${competitie} — kies 2 spelers</h2>
+        <div id="speciaalSpelersLijst" style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:400px;"></div>
+        <button id="speciaalStartBtn" disabled style="margin-top:20px;background:#22c55e;color:white;border:none;padding:14px 24px;border-radius:10px;font-weight:700;font-size:1.1rem;cursor:pointer;opacity:0.5;">▶️ Match starten</button>
+            <button id="speciaalAnnuleerBtn" style="margin-top:10px;background:#64748b;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;">Annuleren</button>
     `;
     document.body.appendChild(overlay);
+    document.getElementById('speciaalAnnuleerBtn').onclick = () => { document.removeEventListener('keydown', speciaalKeuzeKeydownHandler, true); overlay.remove(); };
 
-    const lijstEl = document.getElementById('damesSpelersLijst');
-    const damesButtons = [];
+    const lijstEl = document.getElementById('speciaalSpelersLijst');
+    const speciaalButtons = [];
     spelers.forEach(s => {
         const btn = document.createElement('button');
         btn.textContent = s.name;
@@ -5005,46 +5007,46 @@ window.showDamesSpelersKeuze = async function() {
         btn.style.cssText = 'padding:18px;border-radius:8px;border:2px solid #34495e;background:#2c3e50;color:#fff;font-weight:600;cursor:pointer;text-align:left;font-size:1.3rem;';
         btn.onclick = () => toggleSpeler(s, btn);
         lijstEl.appendChild(btn);
-        damesButtons.push(btn);
+        speciaalButtons.push(btn);
     });
 
     // ✅ NIEUW: presenter-navigatie door de lijst (PageUp/PageDown), Tab om
     // te (de)selecteren, en op de "Match starten"-knop navigeren om te
     // bevestigen zodra 2 geldige speelsters gekozen zijn.
-    let damesFocusIndex = 0;
-    function updateDamesFocusStyle() {
-        damesButtons.forEach((b, i) => {
-            b.style.outline = (i === damesFocusIndex) ? '3px solid #ec4899' : 'none';
+    let speciaalFocusIndex = 0;
+    function updateSpeciaalFocusStyle() {
+        speciaalButtons.forEach((b, i) => {
+            b.style.outline = (i === speciaalFocusIndex) ? '3px solid #ec4899' : 'none';
         });
-        const startBtn = document.getElementById('damesStartBtn');
-        const annuleerBtn = document.getElementById('damesAnnuleerBtn');
-        startBtn.style.outline = (damesFocusIndex === damesButtons.length) ? '3px solid #ec4899' : 'none';
-        if (annuleerBtn) annuleerBtn.style.outline = (damesFocusIndex === damesButtons.length + 1) ? '3px solid #ec4899' : 'none';
+        const startBtn = document.getElementById('speciaalStartBtn');
+        const annuleerBtn = document.getElementById('speciaalAnnuleerBtn');
+        startBtn.style.outline = (speciaalFocusIndex === speciaalButtons.length) ? '3px solid #ec4899' : 'none';
+        if (annuleerBtn) annuleerBtn.style.outline = (speciaalFocusIndex === speciaalButtons.length + 1) ? '3px solid #ec4899' : 'none';
     }
-    function damesKeuzeKeydownHandler(e) {
-        if (!document.getElementById('damesKeuzeOverlay')) return;
-        const maxIndex = damesButtons.length + 1;
+    function speciaalKeuzeKeydownHandler(e) {
+        if (!document.getElementById('speciaalKeuzeOverlay')) return;
+        const maxIndex = speciaalButtons.length + 1;
         if (e.key === 'PageDown') {
             e.preventDefault(); e.stopImmediatePropagation();
-            damesFocusIndex = Math.min(damesFocusIndex + 1, maxIndex);
-            updateDamesFocusStyle();
+            speciaalFocusIndex = Math.min(speciaalFocusIndex + 1, maxIndex);
+            updateSpeciaalFocusStyle();
         } else if (e.key === 'PageUp') {
             e.preventDefault(); e.stopImmediatePropagation();
-            damesFocusIndex = Math.max(damesFocusIndex - 1, 0);
-            updateDamesFocusStyle();
+            speciaalFocusIndex = Math.max(speciaalFocusIndex - 1, 0);
+            updateSpeciaalFocusStyle();
         } else if (e.key === 'Tab') {
             e.preventDefault(); e.stopImmediatePropagation();
-            if (damesFocusIndex === damesButtons.length) {
-                document.getElementById('damesStartBtn').click();
-            } else if (damesFocusIndex === damesButtons.length + 1) {
-                document.getElementById('damesAnnuleerBtn').click();
+            if (speciaalFocusIndex === speciaalButtons.length) {
+                document.getElementById('speciaalStartBtn').click();
+            } else if (speciaalFocusIndex === speciaalButtons.length + 1) {
+                document.getElementById('speciaalAnnuleerBtn').click();
             } else {
-                damesButtons[damesFocusIndex].click();
+                speciaalButtons[speciaalFocusIndex].click();
             }
         }
     }
-    document.addEventListener('keydown', damesKeuzeKeydownHandler, true);
-    updateDamesFocusStyle();
+    document.addEventListener('keydown', speciaalKeuzeKeydownHandler, true);
+    updateSpeciaalFocusStyle();
 
     function heeftAlGespeeld(cid1, cid2) {
         return gespeeldeParen.has(`${cid1}_${cid2}`);
@@ -5066,8 +5068,8 @@ window.showDamesSpelersKeuze = async function() {
     }
 
     function updateStartKnop() {
-        const startBtn = document.getElementById('damesStartBtn');
-        const errorDiv = document.getElementById('damesKeuzeError');
+        const startBtn = document.getElementById('speciaalStartBtn');
+        const errorDiv = document.getElementById('speciaalKeuzeError');
         if (errorDiv) errorDiv.remove();
 
         if (gekozen.length === 2) {
@@ -5076,10 +5078,10 @@ window.showDamesSpelersKeuze = async function() {
                 startBtn.disabled = true;
                 startBtn.style.opacity = '0.5';
                 const err = document.createElement('div');
-                err.id = 'damesKeuzeError';
+                err.id = 'speciaalKeuzeError';
                 err.textContent = '⚠️ Deze twee speelden al tegen elkaar!';
                 err.style.cssText = 'color:#f87171;font-weight:700;margin-top:10px;';
-                overlay.insertBefore(err, document.getElementById('damesStartBtn'));
+                overlay.insertBefore(err, document.getElementById('speciaalStartBtn'));
             } else {
                 startBtn.disabled = false;
                 startBtn.style.opacity = '1';
@@ -5090,9 +5092,9 @@ window.showDamesSpelersKeuze = async function() {
         }
     }
 
-    document.getElementById('damesStartBtn').onclick = () => {
+    document.getElementById('speciaalStartBtn').onclick = () => {
         if (gekozen.length !== 2) return;
-        document.removeEventListener('keydown', damesKeuzeKeydownHandler, true);
+        document.removeEventListener('keydown', speciaalKeuzeKeydownHandler, true);
         const [s1, s2] = gekozen;
         const clubIds = [s1.club_id, s2.club_id].sort((a, b) => a - b);
         const matchId = `${clubIds[0]}-${clubIds[1]}`;
@@ -5109,7 +5111,7 @@ window.showDamesSpelersKeuze = async function() {
             tweede_club_id: parseInt(s2.club_id),
             eersteDoel: 20,
             tweedeDoel: 20,
-            discipline: 'Dames',
+            discipline: competitie,
             cat: 0,
             match_type: 'Regular',
             completed: false,
@@ -5128,6 +5130,42 @@ window.showDamesSpelersKeuze = async function() {
     };
 };
 
+
+
+// Na de code: welke speciale competitie? Heeft de club er maar één, dan meteen de spelers kiezen; anders eerst de competitie kiezen.
+window.kiesSpecialeCompetitie = function() {
+    const lijst = window.speciaalLijst();
+    if (lijst.length === 0) return;
+    if (lijst.length === 1) { window.toonSpecialeSpelersKeuze(lijst[0]); return; }
+    const overlay = document.createElement('div');
+    overlay.id = 'speciaalKeuzeOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:99998;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;padding:20px;color:#fff;overflow-y:auto;';
+    overlay.innerHTML = '<h2 style="margin:10px 0;">👑 Welke speciale competitie?</h2><div id="speciaalKeuzeLijst" style="display:flex;flex-direction:column;gap:8px;width:100%;max-width:400px;"></div>' +
+        '<button id="speciaalKeuzeAnnuleer" style="margin-top:20px;background:#64748b;color:white;border:none;padding:14px 24px;border-radius:10px;font-weight:700;font-size:1rem;cursor:pointer;">Annuleren</button>';
+    document.body.appendChild(overlay);
+    const knoppen = [];
+    const sluit = () => { document.removeEventListener('keydown', toets, true); overlay.remove(); };
+    lijst.forEach(naam => {
+        const b = document.createElement('button');
+        b.textContent = '👑 ' + naam; b.dataset.competitie = naam;
+        b.style.cssText = 'padding:18px;border-radius:8px;border:2px solid #34495e;background:#2c3e50;color:#fff;font-weight:600;cursor:pointer;text-align:left;font-size:1.1rem;';
+        b.onclick = () => { sluit(); window.toonSpecialeSpelersKeuze(naam); };
+        document.getElementById('speciaalKeuzeLijst').appendChild(b); knoppen.push(b);
+    });
+    const annuleer = document.getElementById('speciaalKeuzeAnnuleer'); annuleer.onclick = sluit;
+    knoppen.push(annuleer);
+    let idx = 0;
+    const toon = () => knoppen.forEach((b, i) => { b.style.outline = i === idx ? '3px solid #ec4899' : 'none'; });
+    // presenter: PageDown/PageUp door de lijst, Tab kiest
+    function toets(e) {
+        if (!document.getElementById('speciaalKeuzeOverlay')) return;
+        if (e.key === 'PageDown') { e.preventDefault(); e.stopImmediatePropagation(); idx = Math.min(idx + 1, knoppen.length - 1); toon(); }
+        else if (e.key === 'PageUp') { e.preventDefault(); e.stopImmediatePropagation(); idx = Math.max(idx - 1, 0); toon(); }
+        else if (e.key === 'Tab') { e.preventDefault(); e.stopImmediatePropagation(); knoppen[idx].click(); }
+    }
+    document.addEventListener('keydown', toets, true);
+    toon();
+};
 
 // ==========================================
 // 🔑 QR-CODE VOOR INLOG (activatie zonder e-mail)

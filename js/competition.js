@@ -65,7 +65,7 @@ window.renderCompetitionLeaderboard = function() {
         // ✅ NIEUW: bij Dames geen categorie tonen (consistent met de rest van de
     // app) — "Categorie 0" voelt onbedoeld denigrerend aan, terwijl het
     // gewoon de enige, ongedeelde groep is.
-    const titleSuffix = currentCompDiscipline === 'Dames' ? '' : ` - Categorie ${currentCompCategory}`;
+    const titleSuffix = window.isSpeciaal(currentCompDiscipline) ? '' : ` - Categorie ${currentCompCategory}`;
     let html = `<div class="matches-list-title">🏆 Klassement: ${currentCompDiscipline}${titleSuffix}</div>`;
     html += `<table class="competition-table">
         <thead>
@@ -162,7 +162,7 @@ window.renderCrossTable = function() {
 
     // 3. Bouw de kruistabel
     // ✅ NIEUW: bij Dames geen categorie tonen, consistent met de rangschikking.
-    const crossTitleSuffix = currentCrossDiscipline === 'Dames' ? '' : ` - Categorie ${currentCrossCategory}`;
+    const crossTitleSuffix = window.isSpeciaal(currentCrossDiscipline) ? '' : ` - Categorie ${currentCrossCategory}`;
     let html = `<div class="matches-list-title">📊 Kruistabel: ${currentCrossDiscipline}${crossTitleSuffix}</div>`;
     html += `<div style="overflow-x: auto;"><table class="cross-table"><thead>`;
     
@@ -498,7 +498,7 @@ window.updateCompCurrentLabel = function() {
     const disc = document.getElementById('compDisc').value;
     const cat = document.getElementById('compCat').value;
     // ✅ NIEUW: bij Dames geen categorie tonen, consistent met de rest van de app.
-    if (disc === 'Dames') {
+    if (window.isSpeciaal(disc)) {
         label.textContent = disc ? `🏅 ${disc}` : 'Geen gegevens';
     } else {
         label.textContent = (disc && cat) ? `🏅 ${disc} • 📜 Categorie ${cat}` : 'Geen gegevens';
@@ -652,7 +652,7 @@ window.calculatePlayerStatsFromAPI = function(playerId, playerName, discipline, 
     let ptnvs;
     
     // ✅ Dames: Vaste waarden
-    if (discipline === 'Dames') {
+    if (window.isSpeciaal(discipline)) {
         tsgvs = 20.0;
         ptnvs = 1;
     } else {

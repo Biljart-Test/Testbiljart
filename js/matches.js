@@ -315,7 +315,7 @@ function loadCompletedMatches() {
             // andere disciplines → wie zijn target haalde (de oude logica).
             let winner = m.winner;
             if (!winner) {
-                if (m.discipline === "Dames") {
+                if (window.isSpeciaal(m.discipline)) {
                     winner = m.witScore > m.geelScore ? m.wit : (m.geelScore > m.witScore ? m.geel : "Gelijk");
                 } else {
                     winner = m.witScore >= m.witDoel ? m.wit : m.geel;
