@@ -70,3 +70,6 @@ De disciplines van de club komen van de planner (`/api/club`, centraal in `js/di
 
 ## test-sync.js: ook een match zonder id
 Een match zonder `id` (vroeger de bron van de underscore-vorm `club1_club2_datum`) wordt nu verstuurd onder het ene formaat `laagste-hoogste` club_id, ook als speler 1 het hoogste club_id heeft.
+
+## test-wit-geel.js (wit en geel in plaats van speler 1 en 2)
+In de score-app is **wit** altijd de speler met de witte bal (links, begint) en **geel** de ander, ook als de planner die speler als tweede doorgaf (de app wisselt de twee dan om). In de code heten ze `state.wit` en `state.geel`. De test speelt echte matchen met de witte bal voor speler 1 én voor speler 2 en controleert: wie links staat en begint, de club-id's en doelen die mee wisselen, de uitslag bij de juiste club-id in de planner (scores, beurten, winnaar), de punten bij de juiste speler, en dat de oude namen nergens meer staan.

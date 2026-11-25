@@ -68,14 +68,14 @@ function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Ma
       let guard = 0;
       while (!(await page.evaluate(() => state.matchEnded)) && guard++ < 60) {
         await page.evaluate(([w, lp]) => {
-          const cp = state.currentPlayer; const p = cp === 1 ? state.player1 : state.player2;
+          const cp = state.currentPlayer; const p = cp === 1 ? state.wit : state.geel;
           const n = cp === w ? 9 : Math.max(0, Math.min(4, lp - p.score));
           for (let k = 0; k < n; k++) changeScore(1);
           window.addScore();
         }, [winnaar, verliezerPunten]);
         await sleep(60);
       }
-      const einde = await page.evaluate(() => [state.matchEnded, state.player1.score, state.player2.score]);
+      const einde = await page.evaluate(() => [state.matchEnded, state.wit.score, state.geel.score]);
       if (gespeeld.length === 0) check('een tornooimatch toont GEEN klassementspunten in het overzicht (tornooien tellen niet mee voor het klassement)', await page.evaluate(() => document.getElementById('summaryPunten1') === null));
       await page.waitForFunction(() => state.currentPage === 6, null, { timeout: 15000 });   // de app toont zelf het overzicht na afloop
       const m = /T(\d+)M(\d+)/.exec(mid); const nr = parseInt(m[2]);

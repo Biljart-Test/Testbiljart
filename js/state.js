@@ -8,9 +8,11 @@ let state = {
     downloadedMatches: [],
     players: [],
     currentMatch: null,
-    player1: { score: 0, turns: [], target: 0, beurtNummer: 1, highestSeries: 0, isWhite: false },
-    player2: { score: 0, turns: [], target: 0, beurtNummer: 1, highestSeries: 0, isWhite: false },
-    currentPlayer: 1,
+    // LET OP: in de score-app is 'wit' ALTIJD de speler met de witte bal (staat links, begint) en 'geel' de ander,
+    // ongeacht de volgorde waarin de planner de twee spelers doorgaf (bij het starten worden ze zo nodig omgewisseld).
+    wit: { score: 0, turns: [], target: 0, beurtNummer: 1, highestSeries: 0, isWhite: false },
+    geel: { score: 0, turns: [], target: 0, beurtNummer: 1, highestSeries: 0, isWhite: false },
+    currentPlayer: 1,   // 1 = wit (begint), 2 = geel
     turnNumber: 1,
     matchEnded: false,
     isFirstPlayerInRound: true,

@@ -57,7 +57,7 @@ for i, (cid, vn, an, disc, cat) in enumerate([('2001','Anna','Alfa','Vrijspel','
       await app.waitForFunction(() => state.currentPage === 6, null, { timeout: 15000 });
       const lees = nr_ => app.evaluate(n => { const el = document.getElementById('summaryPunten' + n); return el ? { tekst: el.textContent.trim(), kleur: getComputedStyle(el).color } : null; }, nr_);
       await wacht(async () => (await lees(1)) && (await lees(1)).tekst !== '…', 8000);
-      return { p1: await lees(1), p2: await lees(2), eind: await app.evaluate(() => [state.player1.score, state.player1.turns.length, state.player2.score, state.player2.turns.length]) };
+      return { p1: await lees(1), p2: await lees(2), eind: await app.evaluate(() => [state.wit.score, state.wit.turns.length, state.geel.score, state.geel.turns.length]) };
     }
 
     console.log('1. Standaard (beurtenbonus)');

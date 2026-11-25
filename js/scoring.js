@@ -40,8 +40,8 @@ function updateScoringPage() {
     const isDamesForHeader = state.currentMatch.discipline === "Dames";
 
     // 1. Header update
-    document.getElementById('headerTarget1').textContent = isDamesForHeader ? '' : state.player1.target;
-    document.getElementById('headerTarget2').textContent = isDamesForHeader ? '' : state.player2.target;
+    document.getElementById('headerTarget1').textContent = isDamesForHeader ? '' : state.wit.target;
+    document.getElementById('headerTarget2').textContent = isDamesForHeader ? '' : state.geel.target;
     document.getElementById('headerName1').textContent = state.currentMatch.p1;
     document.getElementById('headerName2').textContent = state.currentMatch.p2;
 
@@ -87,8 +87,8 @@ function updateScoringPage() {
     const p2Card = document.getElementById('player2Card');
     
     if (p1Card && p2Card) {
-        p1Card.className = `player-card ${state.player1.isWhite ? 'player-white' : 'player-yellow'} ${state.currentPlayer === 1 ? 'player-active' : 'player-inactive'}`;
-        p2Card.className = `player-card ${state.player2.isWhite ? 'player-white' : 'player-yellow'} ${state.currentPlayer === 2 ? 'player-active' : 'player-inactive'}`;
+        p1Card.className = `player-card ${state.wit.isWhite ? 'player-white' : 'player-yellow'} ${state.currentPlayer === 1 ? 'player-active' : 'player-inactive'}`;
+        p2Card.className = `player-card ${state.geel.isWhite ? 'player-white' : 'player-yellow'} ${state.currentPlayer === 2 ? 'player-active' : 'player-inactive'}`;
 
         if (typeof updateCurrentTurnSize === 'function') updateCurrentTurnSize();
 
@@ -189,32 +189,32 @@ function updateScoringPage() {
         p1Card.innerHTML = `
             <div>
                 <h3>
-                    ${state.currentMatch.p1} ${state.player1.isWhite ? '⚪' : '🟡'}
+                    ${state.currentMatch.p1} ${state.wit.isWhite ? '⚪' : '🟡'}
                     ${matchInfo} <!-- Hier wordt de info toegevoegd -->
                 </h3>
             </div>
             <div class="turns-scroll-container">
-                <div class="turns-list">${renderTurns(state.player1.turns, state.player1)}</div>
+                <div class="turns-list">${renderTurns(state.wit.turns, state.wit)}</div>
             </div>`;
 
         // ✅ 3. Update Speler 2 kaart
         p2Card.innerHTML = `
             <div>
                 <h3>
-                    ${state.currentMatch.p2} ${state.player2.isWhite ? '⚪' : '🟡'}
+                    ${state.currentMatch.p2} ${state.geel.isWhite ? '⚪' : '🟡'}
                     ${matchInfo} <!-- Hier wordt de info toegevoegd -->
                 </h3>
             </div>
             <div class="turns-scroll-container">
-                <div class="turns-list">${renderTurns(state.player2.turns, state.player2)}</div>
+                <div class="turns-list">${renderTurns(state.geel.turns, state.geel)}</div>
             </div>`;
     }
 
     // 3. Middenblok: Beurt info (DYNAMISCHE KLEUR)
-    let currentBeurt = state.currentPlayer === 1 ? state.player1.beurtNummer : state.player2.beurtNummer;
+    let currentBeurt = state.currentPlayer === 1 ? state.wit.beurtNummer : state.geel.beurtNummer;
     if (state.matchEnded) currentBeurt = Math.max(1, currentBeurt - 1);
     
-    const isWhite = (state.currentPlayer === 1 && state.player1.isWhite) || (state.currentPlayer === 2 && state.player2.isWhite);
+    const isWhite = (state.currentPlayer === 1 && state.wit.isWhite) || (state.currentPlayer === 2 && state.geel.isWhite);
     const textColor = isWhite ? '#ffffff' : '#f1c40f';
     const glowColor = isWhite ? 'rgba(255, 255, 255, 0.4)' : 'rgba(241, 196, 15, 0.4)';
     
@@ -277,22 +277,22 @@ function updateCurrentScoreDisplay() {
     const isKoningMatchDisplay = state.currentMatch && (state.currentMatch.cat === 'heren' || state.currentMatch.cat === 'dames');
     let n1, n2;
     if (isKoningMatchDisplay) {
-        const p1Score = state.player1.score + (state.currentPlayer === 1 ? state.currentInput : 0);
-        const p2Score = state.player2.score + (state.currentPlayer === 2 ? state.currentInput : 0);
-        const tsg1 = parseFloat(String(state.player1.fixedTSG).replace(',', '.')) || 1;
-        const tsg2 = parseFloat(String(state.player2.fixedTSG).replace(',', '.')) || 1;
+        const p1Score = state.wit.score + (state.currentPlayer === 1 ? state.currentInput : 0);
+        const p2Score = state.geel.score + (state.currentPlayer === 2 ? state.currentInput : 0);
+        const tsg1 = parseFloat(String(state.wit.fixedTSG).replace(',', '.')) || 1;
+        const tsg2 = parseFloat(String(state.geel.fixedTSG).replace(',', '.')) || 1;
         n1 = Math.max(0, Math.floor(p2Score * (tsg1 / tsg2)) + 1 - p1Score);
         n2 = Math.max(0, Math.floor(p1Score * (tsg2 / tsg1)) + 1 - p2Score);
     } else {
-        n1 = Math.max(0, state.player1.target - state.player1.score - (state.currentPlayer === 1 ? state.currentInput : 0));
-        n2 = Math.max(0, state.player2.target - state.player2.score - (state.currentPlayer === 2 ? state.currentInput : 0));
+        n1 = Math.max(0, state.wit.target - state.wit.score - (state.currentPlayer === 1 ? state.currentInput : 0));
+        n2 = Math.max(0, state.geel.target - state.geel.score - (state.currentPlayer === 2 ? state.currentInput : 0));
     }
     
     if (p1NeededEl) p1NeededEl.textContent = n1;
     if (p2NeededEl) p2NeededEl.textContent = n2;
 
-    const p1DisplayScore = state.player1.score + (state.currentPlayer === 1 ? state.currentInput : 0);
-    const p2DisplayScore = state.player2.score + (state.currentPlayer === 2 ? state.currentInput : 0);
+    const p1DisplayScore = state.wit.score + (state.currentPlayer === 1 ? state.currentInput : 0);
+    const p2DisplayScore = state.geel.score + (state.currentPlayer === 2 ? state.currentInput : 0);
     
     if (p1TotalCell) document.getElementById('p1TotalVal').textContent = p1DisplayScore;
     if (p2TotalCell) document.getElementById('p2TotalVal').textContent = p2DisplayScore;
@@ -342,7 +342,7 @@ function updateCurrentScoreDisplay() {
 
     const fmtAvg = (p) => {
         // De speler aan de beurt telt zijn lopende beurt mee (live); na het einde van de match niet meer.
-        const nr = p === state.player1 ? 1 : 2;
+        const nr = p === state.wit ? 1 : 2;
         const lopend = state.currentPlayer === nr && !state.matchEnded;
         const beurten = (p.turns ? p.turns.length : 0) + (lopend ? 1 : 0);
         const punten = p.score + (lopend ? (state.currentInput || 0) : 0);
@@ -350,13 +350,13 @@ function updateCurrentScoreDisplay() {
     };
     const fmtTarget = (val) => val && val !== '−' ? parseFloat(String(val).replace(',', '.')).toFixed(2).replace('.', ',') : '−';
 
-    document.getElementById('p1PlayedAvg').textContent = fmtAvg(state.player1);
-    document.getElementById('p1Highest').textContent = state.player1.highestSeries || 0;
-    document.getElementById('p1TargetAvg').textContent = fmtTarget(state.player1.fixedTSG || '−');
+    document.getElementById('p1PlayedAvg').textContent = fmtAvg(state.wit);
+    document.getElementById('p1Highest').textContent = state.wit.highestSeries || 0;
+    document.getElementById('p1TargetAvg').textContent = fmtTarget(state.wit.fixedTSG || '−');
 
-    document.getElementById('p2PlayedAvg').textContent = fmtAvg(state.player2);
-    document.getElementById('p2Highest').textContent = state.player2.highestSeries || 0;
-    document.getElementById('p2TargetAvg').textContent = fmtTarget(state.player2.fixedTSG || '−');
+    document.getElementById('p2PlayedAvg').textContent = fmtAvg(state.geel);
+    document.getElementById('p2Highest').textContent = state.geel.highestSeries || 0;
+    document.getElementById('p2TargetAvg').textContent = fmtTarget(state.geel.fixedTSG || '−');
 
     window.updateNodigBlokken();
 }
@@ -387,7 +387,7 @@ window.updateNodigBlokken = function() {
             box.style.setProperty('display', 'none', 'important');
         } else {
             box.style.removeProperty('display');
-            box.textContent = fmtNodig(nr === 1 ? state.player1 : state.player2, nr);
+            box.textContent = fmtNodig(nr === 1 ? state.wit : state.geel, nr);
         }
     });
 
@@ -396,7 +396,7 @@ window.updateNodigBlokken = function() {
         if (!box) return;
         box.classList.remove('gem-goed', 'gem-slecht');
         if (geenNodig) return;
-        const nr = p === state.player1 ? 1 : 2;
+        const nr = p === state.wit ? 1 : 2;
         const lopend = state.currentPlayer === nr && !state.matchEnded;
         const beurten = (p.turns ? p.turns.length : 0) + (lopend ? 1 : 0);
         const tsg = parseFloat(String(p.fixedTSG).replace(',', '.'));
@@ -405,8 +405,8 @@ window.updateNodigBlokken = function() {
         const tsgAfgerond = Math.round(tsg * 100) / 100;
         box.classList.add(gem >= tsgAfgerond ? 'gem-goed' : 'gem-slecht');
     };
-    kleurGem(state.player1, 'p1PlayedAvg');
-    kleurGem(state.player2, 'p2PlayedAvg');
+    kleurGem(state.wit, 'p1PlayedAvg');
+    kleurGem(state.geel, 'p2PlayedAvg');
 };
 
 let geluidGemute = false;
@@ -523,7 +523,7 @@ window.changeScore = function(delta) {
     // die uitsluiten, anders blokkeert elke klik volledig (0 - 0 = geen ruimte).
     const isKoningCatMatch = state.currentMatch && (state.currentMatch.cat === 'heren' || state.currentMatch.cat === 'dames');
     if (state.currentMatch && state.currentMatch.discipline === 'Tornooi' && !isKoningCatMatch) {
-        const p = state.currentPlayer === 1 ? state.player1 : state.player2;
+        const p = state.currentPlayer === 1 ? state.wit : state.geel;
         const maxAllowed = Math.max(0, p.target - p.score);
         newInput = Math.min(newInput, maxAllowed);
     }
@@ -542,11 +542,11 @@ window.changeScore = function(delta) {
     if (typeof backupMatchSilently === 'function' && state.currentMatch) {
         backupMatchSilently({
             matchId: state.currentMatch.id, player1: state.currentMatch.p1, player2: state.currentMatch.p2,
-            date: state.currentMatch.date, p1Score: state.player1.score, p2Score: state.player2.score,
-            p1Turns: [...state.player1.turns], p2Turns: [...state.player2.turns],
-            p1Target: state.player1.target, p2Target: state.player2.target,
-            p1Highest: state.player1.highestSeries, p2Highest: state.player2.highestSeries,
-            p1BeurtNummer: state.player1.beurtNummer, p2BeurtNummer: state.player2.beurtNummer,
+            date: state.currentMatch.date, p1Score: state.wit.score, p2Score: state.geel.score,
+            p1Turns: [...state.wit.turns], p2Turns: [...state.geel.turns],
+            p1Target: state.wit.target, p2Target: state.geel.target,
+            p1Highest: state.wit.highestSeries, p2Highest: state.geel.highestSeries,
+            p1BeurtNummer: state.wit.beurtNummer, p2BeurtNummer: state.geel.beurtNummer,
             currentPlayer: state.currentPlayer, isNabeurt: state.isNabeurt,
             isFirstPlayerInRound: state.isFirstPlayerInRound, turnNumber: state.turnNumber,
             firstToTarget: state.firstToTarget, completed: state.matchEnded,
@@ -607,12 +607,12 @@ window.addScore = function() {
     if (state.matchEnded) return;
 
     const score = state.currentInput;
-    const p = state.currentPlayer === 1 ? state.player1 : state.player2;
+    const p = state.currentPlayer === 1 ? state.wit : state.geel;
     const t = p.target;
 
     window.lastStateBeforeAdd = {
-        player1: { score: state.player1.score, turns: [...state.player1.turns], beurtNummer: state.player1.beurtNummer, highestSeries: state.player1.highestSeries },
-        player2: { score: state.player2.score, turns: [...state.player2.turns], beurtNummer: state.player2.beurtNummer, highestSeries: state.player2.highestSeries },
+        player1: { score: state.wit.score, turns: [...state.wit.turns], beurtNummer: state.wit.beurtNummer, highestSeries: state.wit.highestSeries },
+        player2: { score: state.geel.score, turns: [...state.geel.turns], beurtNummer: state.geel.beurtNummer, highestSeries: state.geel.highestSeries },
         currentPlayer: state.currentPlayer,
         turnNumber: state.turnNumber,
         isFirstPlayerInRound: state.isFirstPlayerInRound,
@@ -628,7 +628,7 @@ window.addScore = function() {
     p.beurtNummer++;
 
     // ✅ CHECK: Is dit de allereerste beurt van de match?
-    if (state.player1.turns.length === 1 && state.player2.turns.length === 0) {
+    if (state.wit.turns.length === 1 && state.geel.turns.length === 0) {
         if (!state.currentMatch.isReportedStarted) {
             state.currentMatch.isReportedStarted = true;
             updateMatchStatusOnServer(state.currentMatch.id, "gestart");
@@ -638,7 +638,7 @@ window.addScore = function() {
     // ✅ NIEUW: DAMES-COMPETITIE - Check op 20 beurten limiet
     if (state.currentMatch.discipline === "Dames") {
         // Beide spelers hebben 20 beurten gespeeld? Match eindigt!
-        if (state.player1.turns.length >= 20 && state.player2.turns.length >= 20) {
+        if (state.wit.turns.length >= 20 && state.geel.turns.length >= 20) {
             endMatch();
             return;
         }
@@ -655,7 +655,7 @@ window.addScore = function() {
         // ✅ NIEUW: tijdens een verlenging (bij een gelijke stand) is het
         // vereiste aantal beurten 5 i.p.v. de normale 15.
         const turnsNeeded = (state.koningExtensionRound && state.koningExtensionRound > 0) ? 5 : 15;
-        if (state.player1.turns.length >= turnsNeeded && state.player2.turns.length >= turnsNeeded) {
+        if (state.wit.turns.length >= turnsNeeded && state.geel.turns.length >= turnsNeeded) {
             endMatch();
             return;
         }
@@ -708,11 +708,11 @@ window.addScore = function() {
     if (typeof backupMatchSilently === 'function') {
         backupMatchSilently({
             matchId: state.currentMatch.id, player1: state.currentMatch.p1, player2: state.currentMatch.p2,
-            date: state.currentMatch.date, p1Score: state.player1.score, p2Score: state.player2.score,
-            p1Turns: [...state.player1.turns], p2Turns: [...state.player2.turns],
-            p1Target: state.player1.target, p2Target: state.player2.target,
-            p1Highest: state.player1.highestSeries, p2Highest: state.player2.highestSeries,
-            p1BeurtNummer: state.player1.beurtNummer, p2BeurtNummer: state.player2.beurtNummer,
+            date: state.currentMatch.date, p1Score: state.wit.score, p2Score: state.geel.score,
+            p1Turns: [...state.wit.turns], p2Turns: [...state.geel.turns],
+            p1Target: state.wit.target, p2Target: state.geel.target,
+            p1Highest: state.wit.highestSeries, p2Highest: state.geel.highestSeries,
+            p1BeurtNummer: state.wit.beurtNummer, p2BeurtNummer: state.geel.beurtNummer,
             currentPlayer: state.currentPlayer, isNabeurt: state.isNabeurt,
             isFirstPlayerInRound: state.isFirstPlayerInRound, turnNumber: state.turnNumber,
             firstToTarget: state.firstToTarget, completed: state.matchEnded
@@ -741,7 +741,7 @@ window.smartUndo = function() {
     // betekent dat speler 1 net speelde (binnen dezelfde ronde). Als TRUE,
     // speelde speler 2 net (en begon een nieuwe ronde).
     const laatsteSpelerNum = state.isFirstPlayerInRound ? 2 : 1;
-    const p = laatsteSpelerNum === 1 ? state.player1 : state.player2;
+    const p = laatsteSpelerNum === 1 ? state.wit : state.geel;
 
     if (!p.turns || p.turns.length === 0) {
         toonTijdelijkeMelding('Niets meer om terug te draaien voor deze match.', '#dc2626');
@@ -778,15 +778,15 @@ window.undoLastAdd = function() {
     if (!window.lastStateBeforeAdd) return;
     
     const s = window.lastStateBeforeAdd;
-    state.player1.score = s.player1.score;
-    state.player1.turns = [...s.player1.turns];
-    state.player1.beurtNummer = s.player1.beurtNummer;
-    state.player1.highestSeries = s.player1.highestSeries;
+    state.wit.score = s.player1.score;
+    state.wit.turns = [...s.player1.turns];
+    state.wit.beurtNummer = s.player1.beurtNummer;
+    state.wit.highestSeries = s.player1.highestSeries;
     
-    state.player2.score = s.player2.score;
-    state.player2.turns = [...s.player2.turns];
-    state.player2.beurtNummer = s.player2.beurtNummer;
-    state.player2.highestSeries = s.player2.highestSeries;
+    state.geel.score = s.player2.score;
+    state.geel.turns = [...s.player2.turns];
+    state.geel.beurtNummer = s.player2.beurtNummer;
+    state.geel.highestSeries = s.player2.highestSeries;
     
     state.currentPlayer = s.currentPlayer;
     state.isFirstPlayerInRound = s.isFirstPlayerInRound;
@@ -813,10 +813,10 @@ function endMatch() {
     // endMatch() (server-melding, samenvatting, ...) wordt dan niet uitgevoerd.
     const isKoningTieCheck = state.currentMatch && (state.currentMatch.cat === 'heren' || state.currentMatch.cat === 'dames');
     if (isKoningTieCheck) {
-        const avg1 = state.player1.turns.length > 0 ? state.player1.score / state.player1.turns.length : 0;
-        const avg2 = state.player2.turns.length > 0 ? state.player2.score / state.player2.turns.length : 0;
-        const tsg1 = parseFloat(String(state.player1.fixedTSG).replace(',', '.')) || 1;
-        const tsg2 = parseFloat(String(state.player2.fixedTSG).replace(',', '.')) || 1;
+        const avg1 = state.wit.turns.length > 0 ? state.wit.score / state.wit.turns.length : 0;
+        const avg2 = state.geel.turns.length > 0 ? state.geel.score / state.geel.turns.length : 0;
+        const tsg1 = parseFloat(String(state.wit.fixedTSG).replace(',', '.')) || 1;
+        const tsg2 = parseFloat(String(state.geel.fixedTSG).replace(',', '.')) || 1;
         const rendement1 = avg1 / tsg1;
         const rendement2 = avg2 / tsg2;
         // Afronden op 5 decimalen om floating-point-ruis te vermijden bij de gelijkheidscheck
@@ -825,8 +825,8 @@ function endMatch() {
 
         if (r1Rounded === r2Rounded) {
             state.koningExtensionRound = (state.koningExtensionRound || 0) + 1;
-            state.player1.score = 0; state.player1.turns = []; state.player1.beurtNummer = 1; state.player1.highestSeries = 0;
-            state.player2.score = 0; state.player2.turns = []; state.player2.beurtNummer = 1; state.player2.highestSeries = 0;
+            state.wit.score = 0; state.wit.turns = []; state.wit.beurtNummer = 1; state.wit.highestSeries = 0;
+            state.geel.score = 0; state.geel.turns = []; state.geel.beurtNummer = 1; state.geel.highestSeries = 0;
             state.matchEnded = false;
             state.currentPlayer = 1;
             state.isFirstPlayerInRound = true;
@@ -849,11 +849,11 @@ function endMatch() {
     if (typeof backupMatchSilently === 'function' && state.currentMatch) {
         backupMatchSilently({
             matchId: state.currentMatch.id, player1: state.currentMatch.p1, player2: state.currentMatch.p2,
-            date: state.currentMatch.date, p1Score: state.player1.score, p2Score: state.player2.score,
-            p1Turns: [...state.player1.turns], p2Turns: [...state.player2.turns],
-            p1Target: state.player1.target, p2Target: state.player2.target,
-            p1Highest: state.player1.highestSeries, p2Highest: state.player2.highestSeries,
-            p1BeurtNummer: state.player1.beurtNummer, p2BeurtNummer: state.player2.beurtNummer,
+            date: state.currentMatch.date, p1Score: state.wit.score, p2Score: state.geel.score,
+            p1Turns: [...state.wit.turns], p2Turns: [...state.geel.turns],
+            p1Target: state.wit.target, p2Target: state.geel.target,
+            p1Highest: state.wit.highestSeries, p2Highest: state.geel.highestSeries,
+            p1BeurtNummer: state.wit.beurtNummer, p2BeurtNummer: state.geel.beurtNummer,
             currentPlayer: state.currentPlayer, isNabeurt: state.isNabeurt,
             isFirstPlayerInRound: state.isFirstPlayerInRound, turnNumber: state.turnNumber,
             firstToTarget: state.firstToTarget, completed: true,
@@ -875,21 +875,21 @@ function endMatch() {
     // ✅ STUUR SIGNAAL NAAR SERVER DAT MATCH GESPEELD IS
     updateMatchStatusOnServer(state.currentMatch.id, "voltooid");
     
-    state.currentMatch.p1Score = state.player1.score;
-    state.currentMatch.p2Score = state.player2.score;
-    state.currentMatch.p1Turns = [...state.player1.turns];
-    state.currentMatch.p2Turns = [...state.player2.turns];
-    state.currentMatch.p1Highest = state.player1.highestSeries;
-    state.currentMatch.p2Highest = state.player2.highestSeries;
+    state.currentMatch.p1Score = state.wit.score;
+    state.currentMatch.p2Score = state.geel.score;
+    state.currentMatch.p1Turns = [...state.wit.turns];
+    state.currentMatch.p2Turns = [...state.geel.turns];
+    state.currentMatch.p1Highest = state.wit.highestSeries;
+    state.currentMatch.p2Highest = state.geel.highestSeries;
     
     // ✅ DAMES-COMPETITIE: Winner op basis van hoogste score + puntenverdeling (3-2-1)
     if (state.currentMatch.discipline === "Dames") {
-        if (state.player1.score > state.player2.score) {
+        if (state.wit.score > state.geel.score) {
             // Speler 1 wint
             state.currentMatch.winner = state.currentMatch.p1;
             state.currentMatch.p1MatchPoints = 3;
             state.currentMatch.p2MatchPoints = 1;
-        } else if (state.player2.score > state.player1.score) {
+        } else if (state.geel.score > state.wit.score) {
             // Speler 2 wint
             state.currentMatch.winner = state.currentMatch.p2;
             state.currentMatch.p1MatchPoints = 1;
@@ -904,10 +904,10 @@ function endMatch() {
         // ✅ NIEUW: KONING(IN)SPRIJSKAMP - winnaar via rendement (gespeeld
         // gemiddelde ÷ eigen TSG), niet via ruwe score. Hergebruikt dezelfde
         // formule als bij de vriendschappelijke fase-matchen.
-        const avg1 = state.player1.turns.length > 0 ? state.player1.score / state.player1.turns.length : 0;
-        const avg2 = state.player2.turns.length > 0 ? state.player2.score / state.player2.turns.length : 0;
-        const tsg1 = parseFloat(String(state.player1.fixedTSG).replace(',', '.')) || 1;
-        const tsg2 = parseFloat(String(state.player2.fixedTSG).replace(',', '.')) || 1;
+        const avg1 = state.wit.turns.length > 0 ? state.wit.score / state.wit.turns.length : 0;
+        const avg2 = state.geel.turns.length > 0 ? state.geel.score / state.geel.turns.length : 0;
+        const tsg1 = parseFloat(String(state.wit.fixedTSG).replace(',', '.')) || 1;
+        const tsg2 = parseFloat(String(state.geel.fixedTSG).replace(',', '.')) || 1;
         const rendement1 = avg1 / tsg1;
         const rendement2 = avg2 / tsg2;
         console.log(`👑 Koningsprijskamp - Rendement Speler 1: ${(rendement1 * 100).toFixed(1)}% (${avg1.toFixed(3)}/${tsg1})`);
@@ -915,7 +915,7 @@ function endMatch() {
         state.currentMatch.winner = rendement1 >= rendement2 ? state.currentMatch.p1 : state.currentMatch.p2;
     } else {
         // ✅ HEREN: Oude logica (wie haalt target)
-        state.currentMatch.winner = state.player1.score >= state.player1.target ? state.currentMatch.p1 : state.currentMatch.p2;
+        state.currentMatch.winner = state.wit.score >= state.wit.target ? state.currentMatch.p1 : state.currentMatch.p2;
     }
     
     if (typeof saveStateToStorage === 'function') saveStateToStorage();
@@ -1037,11 +1037,11 @@ window.startMatch = function() {
     const tsg1 = state.players.find(p => String(p.id) === String(originalP1ClubId))?.tsg || '−';
     const tsg2 = state.players.find(p => String(p.id) === String(originalP2ClubId))?.tsg || '−';
 
-    state.player1 = {
+    state.wit = {
         score: 0, turns: [], target: 0, beurtNummer: 1,
         highestSeries: 0, isWhite: false, fixedTSG: '−'
     };
-    state.player2 = {
+    state.geel = {
         score: 0, turns: [], target: 0, beurtNummer: 1,
         highestSeries: 0, isWhite: false, fixedTSG: '−'
     };
@@ -1059,13 +1059,13 @@ window.startMatch = function() {
         state.currentMatch.target1 = originalTarget2;
         state.currentMatch.target2 = originalTarget1;
 
-        state.player1.isWhite = true;
-        state.player1.target = state.currentMatch.target1;
-        state.player1.fixedTSG = tsg2;
+        state.wit.isWhite = true;
+        state.wit.target = state.currentMatch.target1;
+        state.wit.fixedTSG = tsg2;
 
-        state.player2.isWhite = false;
-        state.player2.target = state.currentMatch.target2;
-        state.player2.fixedTSG = tsg1;
+        state.geel.isWhite = false;
+        state.geel.target = state.currentMatch.target2;
+        state.geel.fixedTSG = tsg1;
 
         state.currentMatch.whitePlayer = 2;
     } else {
@@ -1076,13 +1076,13 @@ window.startMatch = function() {
         state.currentMatch.target1 = originalTarget1;
         state.currentMatch.target2 = originalTarget2;
 
-        state.player1.isWhite = true;
-        state.player1.target = state.currentMatch.target1;
-        state.player1.fixedTSG = tsg1;
+        state.wit.isWhite = true;
+        state.wit.target = state.currentMatch.target1;
+        state.wit.fixedTSG = tsg1;
 
-        state.player2.isWhite = false;
-        state.player2.target = state.currentMatch.target2;
-        state.player2.fixedTSG = tsg2;
+        state.geel.isWhite = false;
+        state.geel.target = state.currentMatch.target2;
+        state.geel.fixedTSG = tsg2;
 
         state.currentMatch.whitePlayer = 1;
     }
@@ -1277,8 +1277,8 @@ document.addEventListener('keydown', function(event) {
             // annuleren/verlaten, maar ENKEL als er nog geen enkel punt
             // ingegeven is (zelfde veiligheidsvoorwaarde als voorheen).
             if (state.currentMatch && !state.matchEnded) {
-                const p1T = state.player1.turns?.length || 0;
-                const p2T = state.player2.turns?.length || 0;
+                const p1T = state.wit.turns?.length || 0;
+                const p2T = state.geel.turns?.length || 0;
                 // ✅ FIX: ook checken of er al een niet-bevestigd cijfer
                 // staat (state.currentInput) — zodra er al iets ingetikt is,
                 // mag annuleren niet meer, ook al is er nog geen bevestigde
@@ -1784,8 +1784,8 @@ document.addEventListener('keydown', function(event) {
                 pageUpStartTime = null;
  
                 if (holdDuration >= 2000) {
-                    const p1T = state.player1.turns?.length || 0;
-                    const p2T = state.player2.turns?.length || 0;
+                    const p1T = state.wit.turns?.length || 0;
+                    const p2T = state.geel.turns?.length || 0;
                     if (p1T === 0 && p2T === 0) {
                         if (typeof window.showPage === 'function') window.showPage(1);
                     }
@@ -1813,11 +1813,11 @@ function renderMatchSummary() {
     
     // ✅ FIX: niet opnieuw op NAAM zoeken (onveilig — dezelfde speler kan
     // meerdere rijen hebben, bv. Vrijspel/Bandstoten/Driebanden, allemaal met
-    // dezelfde naam maar een andere TSG). state.player1/player2.fixedTSG is
+    // dezelfde naam maar een andere TSG). state.wit/player2.fixedTSG is
     // tijdens het starten van de match al correct, per club_id, toegewezen —
     // gebruik die rechtstreeks, geen nieuwe opzoeking nodig.
     const getTSG = (playerNum) => {
-        const p = playerNum === 1 ? state.player1 : state.player2;
+        const p = playerNum === 1 ? state.wit : state.geel;
         return p && p.fixedTSG ? p.fixedTSG : '−';
     };
 
@@ -1852,19 +1852,19 @@ function renderMatchSummary() {
     };
 
     const p1Name = state.currentMatch.p1;
-    const p1Score = state.player1.score;
-    const p1Turns = state.player1.turns.length;
-    const p1Highest = state.player1.highestSeries;
+    const p1Score = state.wit.score;
+    const p1Turns = state.wit.turns.length;
+    const p1Highest = state.wit.highestSeries;
     const p1Avg = calcAvg(p1Score, p1Turns);
-    const p1Target = state.player1.target;
+    const p1Target = state.wit.target;
     const p1TSG = getTSG(1);
 
     const p2Name = state.currentMatch.p2;
-    const p2Score = state.player2.score;
-    const p2Turns = state.player2.turns.length;
-    const p2Highest = state.player2.highestSeries;
+    const p2Score = state.geel.score;
+    const p2Turns = state.geel.turns.length;
+    const p2Highest = state.geel.highestSeries;
     const p2Avg = calcAvg(p2Score, p2Turns);
-    const p2Target = state.player2.target;
+    const p2Target = state.geel.target;
     const p2TSG = getTSG(2);
 
     // ✅ NIEUW: Check of dit een vriendschappelijke match is
@@ -1942,7 +1942,7 @@ function renderMatchSummary() {
             ${puntenBlok(1)}
             <div class="summary-turns-container">
                 <div class="summary-turns-title">📊 Alle Beurten</div>
-                ${renderTurnsHorizontal(state.player1.turns)}
+                ${renderTurnsHorizontal(state.wit.turns)}
             </div>
         </div>
     `;
@@ -1984,7 +1984,7 @@ function renderMatchSummary() {
             ${puntenBlok(2)}
             <div class="summary-turns-container">
                 <div class="summary-turns-title">📊 Alle Beurten</div>
-                ${renderTurnsHorizontal(state.player2.turns)}
+                ${renderTurnsHorizontal(state.geel.turns)}
             </div>
         </div>
     `;
@@ -4052,7 +4052,7 @@ window.endFriendlyMatch = function() {
     };
 
     // We mappen ook de spelers voor de statistieken op Pagina 6
-    state.player1 = {
+    state.wit = {
         score: ts.leftTotalScore,
         turns: [...ts.leftTurns],
         highestSeries: ts.leftHighestSeries,
@@ -4060,7 +4060,7 @@ window.endFriendlyMatch = function() {
         fixedTSG: fm.players[1].average ? fm.players[1].average.toFixed(3).replace('.', ',') : '−'
     };
 
-    state.player2 = {
+    state.geel = {
         score: ts.rightTotalScore,
         turns: [...ts.rightTurns],
         highestSeries: ts.rightHighestSeries,
@@ -5228,7 +5228,7 @@ window.updateAltCurrentInputDisplay = function() {
     const altRestEl = document.getElementById('altCurrentInputRest');
     if (!altInputEl || !altRestEl || !state.currentMatch) return;
 
-    const p = state.currentPlayer === 1 ? state.player1 : state.player2;
+    const p = state.currentPlayer === 1 ? state.wit : state.geel;
     const nogTeMaken = Math.max(0, p.target - p.score - state.currentInput);
 
     altInputEl.firstChild.textContent = state.currentInput;
@@ -5300,8 +5300,8 @@ window.updateAltScoreboard = function() {
     // hoogte als de beurtnummers — exact dezelfde 2 voorwaarden als op
     // pagina 5 (gewone nabeurt, en de Koning(in)sprijskamp-variant).
     const isKoningCatMatchAlt = state.currentMatch && (state.currentMatch.cat === 'heren' || state.currentMatch.cat === 'dames');
-    const isWhiteAlt = (state.currentPlayer === 1 && state.player1.isWhite) || (state.currentPlayer === 2 && state.player2.isWhite);
-    const currentBeurtAlt = state.currentPlayer === 1 ? state.player1.beurtNummer : state.player2.beurtNummer;
+    const isWhiteAlt = (state.currentPlayer === 1 && state.wit.isWhite) || (state.currentPlayer === 2 && state.geel.isWhite);
+    const currentBeurtAlt = state.currentPlayer === 1 ? state.wit.beurtNummer : state.geel.beurtNummer;
     const altNabeurtEl = document.getElementById('altNabeurt');
     if (altNabeurtEl) {
         if (state.isNabeurt || (isKoningCatMatchAlt && !isWhiteAlt && currentBeurtAlt === 15)) {
@@ -5317,25 +5317,25 @@ window.updateAltScoreboard = function() {
     // Zolang hij niet aan de beurt is (gedimd), tonen we daarom 1 minder —
     // de laatst voltooide beurt, consistent met wat speler 1 op dat moment toont.
     document.getElementById('altP2Turns').textContent = state.currentPlayer === 2
-        ? state.player2.beurtNummer
-        : state.player2.beurtNummer - 1;
+        ? state.geel.beurtNummer
+        : state.geel.beurtNummer - 1;
 
-    document.getElementById('altP1Score').innerHTML = `${state.player1.score}<span class="alt-score-target">/${state.player1.target}</span>`;
-    document.getElementById('altP2Score').innerHTML = `${state.player2.score}<span class="alt-score-target">/${state.player2.target}</span>`;
+    document.getElementById('altP1Score').innerHTML = `${state.wit.score}<span class="alt-score-target">/${state.wit.target}</span>`;
+    document.getElementById('altP2Score').innerHTML = `${state.geel.score}<span class="alt-score-target">/${state.geel.target}</span>`;
 
-    document.getElementById('altP1Highest').textContent = state.player1.highestSeries;
-    document.getElementById('altP2Highest').textContent = state.player2.highestSeries;
+    document.getElementById('altP1Highest').textContent = state.wit.highestSeries;
+    document.getElementById('altP2Highest').textContent = state.geel.highestSeries;
 
-    document.getElementById('altP1TSG').textContent = state.player1.fixedTSG || '';
-    document.getElementById('altP2TSG').textContent = state.player2.fixedTSG || '';
+    document.getElementById('altP1TSG').textContent = state.wit.fixedTSG || '';
+    document.getElementById('altP2TSG').textContent = state.geel.fixedTSG || '';
 
-    const gem1 = state.player1.turns.length > 0 ? (state.player1.score / state.player1.turns.length).toFixed(3) : '0.000';
-    const gem2 = state.player2.turns.length > 0 ? (state.player2.score / state.player2.turns.length).toFixed(3) : '0.000';
+    const gem1 = state.wit.turns.length > 0 ? (state.wit.score / state.wit.turns.length).toFixed(3) : '0.000';
+    const gem2 = state.geel.turns.length > 0 ? (state.geel.score / state.geel.turns.length).toFixed(3) : '0.000';
     document.getElementById('altP1Gem').textContent = gem1;
     document.getElementById('altP2Gem').textContent = gem2;
 
-    window.updateAltProgressBar(1, state.player1.score, state.player1.target);
-    window.updateAltProgressBar(2, state.player2.score, state.player2.target);
+    window.updateAltProgressBar(1, state.wit.score, state.wit.target);
+    window.updateAltProgressBar(2, state.geel.score, state.geel.target);
 
     // ✅ NIEUW: het middelste veld toont altijd "[huidig]/[nog te maken]",
     // voor de speler die momenteel aan de beurt is — "nog te maken" wordt

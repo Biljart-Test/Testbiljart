@@ -145,21 +145,21 @@ function herstelOnderbrokenMatch(backup) {
     }
 
     state.currentMatch = match;
-    state.player1.score = backup.p1Score;
-    state.player1.turns = backup.p1Turns || [];
-    state.player1.target = backup.p1Target || match.target1;
-    state.player1.highestSeries = backup.p1Highest || 0;
-    state.player1.beurtNummer = backup.p1BeurtNummer || 1;
+    state.wit.score = backup.p1Score;
+    state.wit.turns = backup.p1Turns || [];
+    state.wit.target = backup.p1Target || match.target1;
+    state.wit.highestSeries = backup.p1Highest || 0;
+    state.wit.beurtNummer = backup.p1BeurtNummer || 1;
     // ✅ FIX: isWhite was nooit meegenomen in de backup/herstel — daardoor
     // toonden beide spelers na herstel altijd het gele bal-icoontje, ongeacht
     // wie oorspronkelijk wit koos. Speler 1 is altijd wit (zie startMatch()).
-    state.player1.isWhite = true;
-    state.player2.score = backup.p2Score;
-    state.player2.turns = backup.p2Turns || [];
-    state.player2.target = backup.p2Target || match.target2;
-    state.player2.highestSeries = backup.p2Highest || 0;
-    state.player2.beurtNummer = backup.p2BeurtNummer || 1;
-    state.player2.isWhite = false;
+    state.wit.isWhite = true;
+    state.geel.score = backup.p2Score;
+    state.geel.turns = backup.p2Turns || [];
+    state.geel.target = backup.p2Target || match.target2;
+    state.geel.highestSeries = backup.p2Highest || 0;
+    state.geel.beurtNummer = backup.p2BeurtNummer || 1;
+    state.geel.isWhite = false;
     state.currentPlayer = backup.currentPlayer;
     state.isNabeurt = backup.isNabeurt;
     state.isFirstPlayerInRound = backup.isFirstPlayerInRound;
