@@ -57,19 +57,9 @@ window.renderCompetitionLeaderboard = function() {
     // 2. Bereken stats voor elke speler
     let leaderboard = players.map(p => calculatePlayerStatsFromAPI(p.id, p.name, currentCompDiscipline, currentCompCategory, allMatches));
 
-    // 3. Sorteer (Tie-breakers: 1. Comp Punten, 2. Coëfficiënt, 3. Hoogste Reeks)
-    leaderboard.sort((a, b) => {
-        // ✅ FIX: spelers die nog geen enkele match speelden (matchesPlayed=0)
-        // altijd onderaan zetten, ongeacht hun (dan toch altijd 0) MPTN —
-        // anders kon iemand op plaats 1 staan zonder ooit gespeeld te hebben.
-        const aHeeftGespeeld = a.matchesPlayed > 0;
-        const bHeeftGespeeld = b.matchesPlayed > 0;
-        if (aHeeftGespeeld !== bHeeftGespeeld) return bHeeftGespeeld ? 1 : -1;
-
-        if (b.totalCompPoints !== a.totalCompPoints) return b.totalCompPoints - a.totalCompPoints;
-        if (b.coefficient !== a.coefficient) return b.coefficient - a.coefficient;
-        return b.highestSeries - a.highestSeries;
-    });
+    // 3. Sorteer volgens de volgorde die het bestuur instelde op de planner (klassementspunten, coëfficiënt, hoogste reeks, ... bovenaan telt eerst).
+    // Spelers zonder gespeelde match staan altijd onderaan. Zelfde regels als de planner (klassementvolgorde.py).
+    leaderboard.sort(window.klassementVergelijking());
 
     // 4. Bouw de HTML tabel
         // ✅ NIEUW: bij Dames geen categorie tonen (consistent met de rest van de
@@ -583,6 +573,24 @@ window.switchCompView = function(view) {
  * Berekent stats voor een speler op basis van API match results
  * Werkt met de players array structuur van /api/match-results
  */
+// De volgorde waarop het klassement gerangschikt wordt komt van de planner (/api/club); zonder antwoord de standaard.
+window.klassementVergelijking = function() {
+    const STANDAARD = ['punten', 'coef', 'hoogste_reeks', 'gemiddelde', 'minste_matchen'];
+    let volgorde = (window.klassementVolgorde || []).filter(k => STANDAARD.includes(k));
+    if (!volgorde.includes('punten')) volgorde.unshift('punten');
+    STANDAARD.forEach(k => { if (!volgorde.includes(k)) volgorde.push(k); });
+    const r3 = v => Math.round((v || 0) * 1000) / 1000;   // de planner rekent op 3 decimalen: gelijk daar = gelijk hier
+    const waarde = (x, k) => k === 'punten' ? -x.totalCompPoints : k === 'coef' ? -r3(x.coefficient) : k === 'hoogste_reeks' ? -x.highestSeries
+        : k === 'gemiddelde' ? -r3(x.average) : x.matchesPlayed;   // minste_matchen: minder gespeeld = beter
+    return (a, b) => {
+        const ag = a.matchesPlayed > 0, bg = b.matchesPlayed > 0;
+        if (ag !== bg) return ag ? -1 : 1;
+        for (const k of volgorde) { const d = waarde(a, k) - waarde(b, k); if (d !== 0) return d; }
+        const na = String(a.name || '').toLowerCase(), nb = String(b.name || '').toLowerCase();
+        return na < nb ? -1 : na > nb ? 1 : 0;
+    };
+};
+
 window.calculatePlayerStatsFromAPI = function(playerId, playerName, discipline, category, allMatches) {
     // Filter matches voor deze speler in deze discipline/categorie
     const playerMatches = allMatches.filter(m => {
