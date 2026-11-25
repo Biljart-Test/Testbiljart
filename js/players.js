@@ -43,7 +43,7 @@ async function fetchPlayersFromAPI() {
                         target: parseInt(stat.target) || 50,
                         tsg: stat.tsg ? parseFloat(stat.tsg).toFixed(3).replace('.', ',') : '0,000',
                         pnt: parseInt(stat.target) || 50,
-                        mode: stat.mode || 'max -10%'   // hoe het voorlopige nieuwe gemiddelde meebeweegt (zoals in de planner)
+                        mode: stat.mode || 'max'   // hoe het voorlopige nieuwe gemiddelde meebeweegt (zoals in de planner)
                     });
                 });
             } else {

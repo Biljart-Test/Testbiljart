@@ -62,6 +62,19 @@ for i, (cid, vn, an, disc, cat) in enumerate([('2001','Anna','Alfa','Vrijspel','
     await opstarten();
     check('na opnieuw opstarten gebruikt de score-app de nieuwe volgorde', JSON.stringify(await app.evaluate(() => window.klassementVolgorde)) === '["gemiddelde","punten","coef","hoogste_reeks","minste_matchen"]');
     check('en het klassement sorteert er mee (gemiddelde eerst: A, C, B)', JSON.stringify(await app.evaluate(l => l.slice().sort(window.klassementVergelijking()).map(x => x.name), q)) === '["A","C","B"]');
+    console.log('4. De regel voor het nieuwe doel (mode) en het percentage van de planner');
+    const nieuwDoel = (mode, daling, gem) => app.evaluate(([mode, daling, gem]) => {
+      window.maxDaling = daling;
+      state.players = [{ id: 'm1', name: 'Mo Del', discipline: 'Vrijspel', category: 1, target: 40, tsg: '2,000', mode }];
+      const m = { discipline: 'Vrijspel', category: 1, winner_club_id: 'x', players: [{ club_id: 'm1', score: Math.round(gem * 100), beurten: 100, hoogste_reeks: 5 }, { club_id: 'm2', score: 10, beurten: 100 }] };
+      const r = calculatePlayerStatsFromAPI('m1', 'Mo Del', 'Vrijspel', 1, [m]);
+      return [Math.round(r.tsgvs * 1000) / 1000, r.ptnvs];
+    }, [mode, daling, gem]);
+    check('slecht jaar (gemiddelde 1,6; doel was 40): bij 10% van de planner naar 36', JSON.stringify(await nieuwDoel('max', 10, 1.6)) === '[1.8,36]', JSON.stringify(await nieuwDoel('max', 10, 1.6)));
+    check('bij 8% naar 37 (1,84) en bij 12% naar 36 (1,76): het percentage komt van de planner', JSON.stringify(await nieuwDoel('max', 8, 1.6)) === '[1.84,37]' && JSON.stringify(await nieuwDoel('max', 12, 1.6)) === '[1.76,36]');
+    check('"kan niet verminderen" (en de oude schrijfwijze "kleiner"): het doel blijft 40', JSON.stringify(await nieuwDoel('kan niet verminderen', 8, 1.6)) === '[2,40]' && JSON.stringify(await nieuwDoel('kleiner', 10, 1.6)) === '[2,40]');
+    check('de oude waarde "max -10%" volgt het percentage van de club (8%: 37)', JSON.stringify(await nieuwDoel('max -10%', 8, 1.6)) === '[1.84,37]');
+    check('de regel wordt in gewone taal getoond (max -8% / kan niet verminderen); zonder percentage van de planner 10', await app.evaluate(() => { window.maxDaling = 8; const a = [modeTekst('max'), modeTekst('K')]; window.maxDaling = undefined; return JSON.stringify(a.concat([modeTekst('max -10%')])); }) === '["max -8%","kan niet verminderen","max -10%"]');
     check('geen JavaScript-fouten', errs.length === 0, errs.join(' ; '));
   } catch (e) { check('test zonder onverwachte fout', false, String(e.stack || e).slice(0, 600)); }
   finally { if (browser) await browser.close(); await o.stop(); const bad = res.filter(x => !x).length; console.log(`\nResultaat: ${res.length - bad} van ${res.length} gecontroleerd en in orde${bad ? ', ' + bad + ' FOUT' : ''}.`); process.exit(bad ? 1 : 0); }

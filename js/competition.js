@@ -106,7 +106,7 @@ window.renderCompetitionLeaderboard = function() {
             <td>${p.highestSeries}</td>
             <td>${p.tsgvs.toFixed(3).replace('.', ',')}</td>
             <td>${p.ptnvs}</td>
-            <td>${p.mode}</td>
+            <td>${window.modeTekst(p.mode)}</td>
         </tr>`;
     });
 
@@ -591,6 +591,16 @@ window.klassementVergelijking = function() {
     };
 };
 
+// De regel voor het nieuwe doel (de "mode" in de spelerstats): 'max' = het doel zakt hoogstens x% (x van de planner, standaard 10),
+// alles wat met een k begint = 'kan niet verminderen'. Oudere waarden (max -10%, kleiner) blijven werken.
+window.maxDalingPercentage = function() {
+    const x = Number(window.maxDaling);
+    return (isFinite(x) && x >= 0 && x <= 100) ? x : 10;
+};
+window.modeTekst = function(mode) {
+    return String(mode || '').trim().toLowerCase().startsWith('k') ? 'kan niet verminderen' : 'max -' + window.maxDalingPercentage() + '%';
+};
+
 window.calculatePlayerStatsFromAPI = function(playerId, playerName, discipline, category, allMatches) {
     // Filter matches voor deze speler in deze discipline/categorie
     const playerMatches = allMatches.filter(m => {
@@ -647,7 +657,7 @@ window.calculatePlayerStatsFromAPI = function(playerId, playerName, discipline, 
 
     // Bereken TSGVS (Te Spelen Gemiddelde Volgend Seizoen)
     const playerInfo = state.players.find(p => p.id === playerId);
-    const mode = playerInfo?.mode || 'max -10%';
+    const mode = playerInfo?.mode || 'max';
     let tsgvs;
     let ptnvs;
     
@@ -664,8 +674,9 @@ window.calculatePlayerStatsFromAPI = function(playerId, playerName, discipline, 
             // "kan niet verminderen"
             tsgvs = average < tsg ? tsg : average;
         } else {
-            // "max -10%"
-            tsgvs = average < (tsg * 0.9) ? (tsg * 0.9) : average;
+            // "max": het nieuwe gemiddelde zakt hoogstens x% (instelling van de club bij Puntentelling, standaard 10)
+            const ondergrens = tsg * ((100 - window.maxDalingPercentage()) / 100);
+            tsgvs = average < ondergrens ? ondergrens : average;
         }
         
         // Bereken PTNVS (Punten Volgend Seizoen)
