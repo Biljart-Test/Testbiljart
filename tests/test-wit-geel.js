@@ -16,6 +16,8 @@ const GROEN = 'rgb(46, 204, 113)', ROOD = 'rgb(231, 76, 60)', GRIJS = 'rgb(189, 
   const oud = [...fs.readdirSync(path.join(REPO, 'js')).filter(f => f.endsWith('.js')).map(f => path.join(REPO, 'js', f)), path.join(REPO, 'index.html')]
     .filter(f => /state\.player[12]\b/.test(fs.readFileSync(f, 'utf8')));
   check('nergens in de app staat nog state.player1 of state.player2 (het is nu state.wit en state.geel)', oud.length === 0, oud.join(', '));
+  const oudRecord = fs.readdirSync(path.join(REPO, 'js')).filter(f => f.endsWith('.js')).filter(f => /\b(currentMatch|match|m)\.(p1|p2|target1|target2|p1_club_id|p2_club_id)\b|\bp[12]_club_id\b|\bp[12](Score|Turns|Highest)\b/.test(fs.readFileSync(path.join(REPO, 'js', f), 'utf8')));
+  check('nergens meer p1/p2/target1/target2/p1_club_id/p1Score in de wedstrijdgegevens (wit/geel voor de start eerste/tweede)', oudRecord.length === 0, oudRecord.join(', '));
   const o = await start(REPO); let browser;
   try {
     o.sql(`pass
@@ -50,14 +52,14 @@ for i, (cid, vn, an, disc, cat) in enumerate([('2001','Anna','Alfa','Vrijspel','
       await app.evaluate(([id, a, b]) => {
         const pa = state.players.find(p => p.id === a), pb = state.players.find(p => p.id === b);
         state.matches = state.matches.filter(m => m.id !== id);
-        state.matches.push({ id, date: '2026-11-23', time: '20:00', table: 1, p1: pa.name, p2: pb.name, referee: null, p1_club_id: a, p2_club_id: b, target1: pa.target, target2: pb.target,
-          discipline: 'Vrijspel', cat: '1', match_type: 'Speler', completed: false, whitePlayer: null, p1Score: 0, p2Score: 0, p1Turns: [], p2Turns: [], p1Highest: 0, p2Highest: 0 });
+        state.matches.push({ id, date: '2026-11-23', time: '20:00', table: 1, eerste: pa.name, tweede: pb.name, referee: null, eerste_club_id: a, tweede_club_id: b, eersteDoel: pa.target, tweedeDoel: pb.target,
+          discipline: 'Vrijspel', cat: '1', match_type: 'Speler', completed: false, whitePlayer: null, witScore: 0, geelScore: 0, witTurns: [], geelTurns: [], witHighest: 0, geelHighest: 0 });
         selectMatch(id);
       }, [id, a, b]);
       await app.waitForFunction(() => state.currentPage === 4);
       await app.evaluate(n => { selectWhitePlayer(n); startMatch(); }, witNr);
       await app.waitForFunction(() => state.currentPage === 5);
-      const begin = await app.evaluate(() => ({ wit: state.currentMatch.p1, geel: state.currentMatch.p2, witId: state.currentMatch.p1_club_id, geelId: state.currentMatch.p2_club_id,
+      const begin = await app.evaluate(() => ({ wit: state.currentMatch.wit, geel: state.currentMatch.geel, witId: state.currentMatch.wit_club_id, geelId: state.currentMatch.geel_club_id,
         witDoel: state.wit.target, geelDoel: state.geel.target, witIsWit: state.wit.isWhite, geelIsWit: state.geel.isWhite, aanDeBeurt: state.currentPlayer,
         links: document.querySelector('.player-card.player-white')?.innerText || '', rechts: document.querySelector('.player-card.player-yellow')?.innerText || '' }));
       let guard = 0;
@@ -98,6 +100,43 @@ for i, (cid, vn, an, disc, cat) in enumerate([('2001','Anna','Alfa','Vrijspel','
     r = await speel(2001, 2002, 2, 2, 1);
     const punten = await app.evaluate(() => [document.getElementById('summaryPunten1')?.textContent.trim(), document.getElementById('summaryPunten2')?.textContent.trim(), document.getElementById('summaryPlayer1')?.innerText, document.getElementById('summaryPlayer2')?.innerText]);
     check('het overzicht toont links de witte speler (Bert) met zijn punten en rechts Anna', /Bert/.test(punten[2]) && /Anna/.test(punten[3]) && punten[0] !== punten[1], JSON.stringify(punten));
+    console.log('5. Onderbroken match herstellen terwijl B (tweede in de planner) wit had');
+    await app.evaluate(() => showPage(1));
+    await app.evaluate(([a, b]) => {
+      const pa = state.players.find(p => p.id === a), pb = state.players.find(p => p.id === b);
+      const id = 'herstel-test';
+      state.matches = state.matches.filter(m => m.id !== id);
+      state.matches.push({ id, date: '2026-11-23', time: '20:00', table: 1, eerste: pa.name, tweede: pb.name, referee: null, eerste_club_id: a, tweede_club_id: b, eersteDoel: 20, tweedeDoel: 25,
+        discipline: 'Vrijspel', cat: '1', match_type: 'Speler', completed: false, whitePlayer: null, witScore: 0, geelScore: 0, witTurns: [], geelTurns: [], witHighest: 0, geelHighest: 0 });
+      selectMatch(id);
+    }, [2001, 2002]);
+    await app.waitForFunction(() => state.currentPage === 4);
+    await app.evaluate(() => { selectWhitePlayer(2); startMatch(); });
+    await app.waitForFunction(() => state.currentPage === 5);
+    for (let i = 0; i < 3; i++) await app.evaluate(() => { changeScore(state.currentPlayer === 1 ? 3 : 2); window.addScore(); });
+    const voor = await app.evaluate(() => ({ w: [state.wit.score, state.wit.turns.length, state.wit.target], g: [state.geel.score, state.geel.turns.length, state.geel.target], cp: state.currentPlayer }));
+    const backup = await app.evaluate(() => JSON.parse(localStorage.getItem('biljart_match_backup') || 'null'));
+    check('de back-up kent wit en geel met hun doel (Bert wit met doel 25, Anna geel met doel 20)', backup && backup.wit === 'Bert Beta' && backup.geel === 'Anna Alfa' && backup.witDoel === 25 && backup.geelDoel === 20, JSON.stringify(backup).slice(0, 300));
+    await app.evaluate(() => { state.wit = { score: 0, turns: [], target: 0, beurtNummer: 1, highestSeries: 0, isWhite: false, fixedTSG: '-' }; state.geel = { score: 0, turns: [], target: 0, beurtNummer: 1, highestSeries: 0, isWhite: false, fixedTSG: '-' }; state.currentMatch = null; });
+    await app.evaluate(b => herstelOnderbrokenMatch(b), backup);
+    const na = await app.evaluate(() => ({ w: [state.wit.score, state.wit.turns.length, state.wit.target], g: [state.geel.score, state.geel.turns.length, state.geel.target], cp: state.currentPlayer, witIsWit: state.wit.isWhite, geelIsWit: state.geel.isWhite, naam: state.currentMatch && state.currentMatch.wit, id: state.currentMatch && state.currentMatch.wit_club_id }));
+    check('na herstel: dezelfde scores, beurten en doelen bij dezelfde speler, Bert (2002) is nog wit', JSON.stringify([na.w, na.g, na.cp]) === JSON.stringify([voor.w, voor.g, voor.cp]) && na.witIsWit === true && na.geelIsWit === false && na.naam === 'Bert Beta' && na.id === 2002, JSON.stringify([voor, na]));
+    check('het doel van wit is 25 (dat van Bert) en van geel 20 (dat van Anna)', voor.w[2] === 25 && voor.g[2] === 20, JSON.stringify(voor));
+
+    console.log('6. Overzichten van matchen (actief en afgewerkt)');
+    await app.evaluate(() => showPage(1));
+    const lijsten = await app.evaluate(() => {
+      state.matches = [
+        { id: 'lijst-1', date: '2026-11-24', discipline: 'Vrijspel', cat: '1', eerste: 'Eerste Speler', tweede: 'Tweede Speler', eersteDoel: 21, tweedeDoel: 22, eerste_club_id: 1, tweede_club_id: 2, completed: false, witScore: 0, geelScore: 0, witTurns: [], geelTurns: [] },
+        { id: 'lijst-2', date: '2026-11-24', discipline: 'Vrijspel', cat: '1', wit: 'Witte Speler', geel: 'Gele Speler', witDoel: 30, geelDoel: 31, wit_club_id: 3, geel_club_id: 4, completed: true, witScore: 30, geelScore: 5, witTurns: [30], geelTurns: [5], winner: 'Witte Speler' }
+      ];
+      state.currentMatchesTab = 'active'; loadActiveMatches(); const actief = document.getElementById('tabContentActive').innerText;
+      state.currentMatchesTab = 'completed'; loadCompletedMatches(); const klaar = document.getElementById('tabContentCompleted').innerText;
+      return { actief, klaar };
+    });
+    check('actieve matchen: de spelers staan in de volgorde van de planner met hun doelen (21 - 22)', /Eerste Speler/.test(lijsten.actief) && /Tweede Speler/.test(lijsten.actief) && /21 - 22/.test(lijsten.actief), lijsten.actief);
+    check('afgewerkte matchen: wit en geel met hun doel en eindscore (30 - 5), winnaar Witte Speler', /Witte Speler/.test(lijsten.klaar) && /Gele Speler/.test(lijsten.klaar) && /30 - 31/.test(lijsten.klaar) && /30 - 5/.test(lijsten.klaar) && /Winnaar: Witte Speler/.test(lijsten.klaar), lijsten.klaar);
+
     check('geen JavaScript-fouten', errs.length === 0, errs.join(' ; '));
   } catch (e) { check('test zonder onverwachte fout', false, String(e.stack || e).slice(0, 600)); }
   finally { if (browser) await browser.close(); await o.stop(); const bad = res.filter(x => !x).length; console.log(`\nResultaat: ${res.length - bad} van ${res.length} gecontroleerd en in orde${bad ? ', ' + bad + ' FOUT' : ''}.`); process.exit(bad ? 1 : 0); }

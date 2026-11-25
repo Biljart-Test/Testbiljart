@@ -61,12 +61,12 @@ async function setup(ctx) {
 }
 
 function fakeMatch(id) {
-  return { id, p1: 'Testspeler A', p2: 'Testspeler B', p1_club_id: 90001, p2_club_id: 90002, date: '2026-11-22',
-    discipline: 'Libre', cat: 3, p1Score: 30, p2Score: 12, p1Turns: [10, 20], p2Turns: [12], p1Highest: 20, p2Highest: 12, completed: true };
+  return { id, wit: 'Testspeler A', geel: 'Testspeler B', wit_club_id: 90001, geel_club_id: 90002, date: '2026-11-22',
+    discipline: 'Libre', cat: 3, witScore: 30, geelScore: 12, witTurns: [10, 20], geelTurns: [12], witHighest: 20, geelHighest: 12, completed: true };
 }
 function fakeBackup(id) {
-  return { matchId: id, completed: true, player1: 'Testspeler A', player2: 'Testspeler B', date: '2026-11-22', discipline: 'Libre', cat: 3,
-    p1_club_id: 90001, p2_club_id: 90002, p1Score: 30, p2Score: 12, p1Turns: [10, 20], p2Turns: [12], p1Highest: 20, p2Highest: 12 };
+  return { matchId: id, completed: true, wit: 'Testspeler A', geel: 'Testspeler B', date: '2026-11-22', discipline: 'Libre', cat: 3,
+    wit_club_id: 90001, geel_club_id: 90002, witScore: 30, geelScore: 12, witTurns: [10, 20], geelTurns: [12], witHighest: 20, geelHighest: 12 };
 }
 const reset = () => { log.serverPosts.length = 0; log.piDeletes.length = 0; };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -175,7 +175,7 @@ function check(name, ok, extra) { results.push(ok); console.log((ok ? '  OK   ' 
     serverUp = true; reset(); pi.backups = {}; pi.pending = {};
     const ctx = await browser.newContext(); await setup(ctx);
     const page = await ctx.newPage(); await page.goto(base); await sleep(600);
-    const zonder = fakeMatch(undefined); delete zonder.id; zonder.p1_club_id = 90002; zonder.p2_club_id = 90001;
+    const zonder = fakeMatch(undefined); delete zonder.id; zonder.wit_club_id = 90002; zonder.geel_club_id = 90001;
     await page.evaluate(m => window.syncMatchToAPI(m), zonder);
     await sleep(500);
     console.log('Test 6: een match zonder id');

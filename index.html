@@ -102,14 +102,14 @@
         <div id="matchEndedAlert" class="match-ended" style="display: none;"></div>
 
         <div class="scoring-row-container">
-            <div class="score-cell needed-cell" id="p1NeededCell">
-                <div class="cell-value" id="p1NeededVal">0</div>
+            <div class="score-cell needed-cell" id="witNeededCell">
+                <div class="cell-value" id="witNeededVal">0</div>
             </div>
-            <div class="score-cell current-turn-cell" id="p1CurrentCell">
-                <div class="cell-value" id="p1CurrentVal">0</div>
+            <div class="score-cell current-turn-cell" id="witCurrentCell">
+                <div class="cell-value" id="witCurrentVal">0</div>
             </div>
-            <div class="score-cell total-cell" id="p1TotalCell">
-                <div class="cell-value" id="p1TotalVal">0</div>
+            <div class="score-cell total-cell" id="witTotalCell">
+                <div class="cell-value" id="witTotalVal">0</div>
             </div>
             
             <!-- ✅ AANGEPAST: Klikbaar gemaakt voor 'Einde Beurt' -->
@@ -117,31 +117,31 @@
                 <!-- De inhoud (B1, 'Einde beurt? Klik hier') wordt hier automatisch door JavaScript ingevuld -->
             </div>
             
-            <div class="score-cell total-cell" id="p2TotalCell">
-                <div class="cell-value" id="p2TotalVal">0</div>
+            <div class="score-cell total-cell" id="geelTotalCell">
+                <div class="cell-value" id="geelTotalVal">0</div>
             </div>
-            <div class="score-cell current-turn-cell" id="p2CurrentCell">
-                <div class="cell-value" id="p2CurrentVal">0</div>
+            <div class="score-cell current-turn-cell" id="geelCurrentCell">
+                <div class="cell-value" id="geelCurrentVal">0</div>
             </div>
-            <div class="score-cell needed-cell" id="p2NeededCell">
-                <div class="cell-value" id="p2NeededVal">0</div>
+            <div class="score-cell needed-cell" id="geelNeededCell">
+                <div class="cell-value" id="geelNeededVal">0</div>
             </div>
         </div>
 
         <div class="score-controls">
             <button class="score-btn plus-btn" onclick="changeScore(1)">+</button>
             <div class="stat-group left-group">
-                <div class="stat-box" id="p1PlayedAvg">0,00</div>
-                <div class="stat-box" id="p1NodigAvg">−</div>
-                <div class="stat-box" id="p1Highest">0</div>
-                <div class="stat-box" id="p1TargetAvg">−</div>
+                <div class="stat-box" id="witPlayedAvg">0,00</div>
+                <div class="stat-box" id="witNodigAvg">−</div>
+                <div class="stat-box" id="witHighest">0</div>
+                <div class="stat-box" id="witTargetAvg">−</div>
             </div>
             <button class="score-btn minus-btn" onclick="changeScore(-1)">−</button>
             <div class="stat-group right-group">
-                <div class="stat-box" id="p2PlayedAvg">0,00</div>
-                <div class="stat-box" id="p2NodigAvg">−</div>
-                <div class="stat-box" id="p2Highest">0</div>                
-                <div class="stat-box" id="p2TargetAvg">−</div>
+                <div class="stat-box" id="geelPlayedAvg">0,00</div>
+                <div class="stat-box" id="geelNodigAvg">−</div>
+                <div class="stat-box" id="geelHighest">0</div>                
+                <div class="stat-box" id="geelTargetAvg">−</div>
             </div>
             <button class="score-btn undo-btn-bottom" id="bottomUndoBtn" onclick="window.undoLastAdd()">↩️</button>
         </div>

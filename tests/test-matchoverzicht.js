@@ -43,8 +43,8 @@ for i, (cid, vn, an, disc, cat) in enumerate([('2001','Anna','Alfa','Vrijspel','
       nr++; const id = `${a}_${b}_2026-11-23_${nr}`;
       await app.evaluate(([id, a, b, disc, cat]) => {
         const pa = state.players.find(p => p.id === a && p.discipline === disc), pb = state.players.find(p => p.id === b && p.discipline === disc);
-        state.matches.push({ id, date: '2026-11-23', time: '20:00', table: 1, p1: pa.name, p2: pb.name, referee: null, p1_club_id: a, p2_club_id: b, target1: pa.target, target2: pb.target,
-          discipline: disc, cat, match_type: 'Speler', completed: false, whitePlayer: null, p1Score: 0, p2Score: 0, p1Turns: [], p2Turns: [], p1Highest: 0, p2Highest: 0 });
+        state.matches.push({ id, date: '2026-11-23', time: '20:00', table: 1, eerste: pa.name, tweede: pb.name, referee: null, eerste_club_id: a, tweede_club_id: b, eersteDoel: pa.target, tweedeDoel: pb.target,
+          discipline: disc, cat, match_type: 'Speler', completed: false, whitePlayer: null, witScore: 0, geelScore: 0, witTurns: [], geelTurns: [], witHighest: 0, geelHighest: 0 });
         selectMatch(id);
       }, [id, a, b, disc, cat]);
       await app.waitForFunction(() => state.currentPage === 4);

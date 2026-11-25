@@ -103,13 +103,13 @@ async function behandelEenBackup(backup) {
             if (typeof window.syncMatchToAPI === 'function') {
                 const matchDataVoorSync = {
                     id: backup.matchId,
-                    p1: backup.player1, p2: backup.player2,
+                    wit: backup.wit, geel: backup.geel,
                     date: backup.date,
                     discipline: backup.discipline, cat: backup.cat,
-                    p1_club_id: backup.p1_club_id, p2_club_id: backup.p2_club_id,
-                    p1Score: backup.p1Score, p2Score: backup.p2Score,
-                    p1Turns: backup.p1Turns, p2Turns: backup.p2Turns,
-                    p1Highest: backup.p1Highest, p2Highest: backup.p2Highest
+                    wit_club_id: backup.wit_club_id, geel_club_id: backup.geel_club_id,
+                    witScore: backup.witScore, geelScore: backup.geelScore,
+                    witTurns: backup.witTurns, geelTurns: backup.geelTurns,
+                    witHighest: backup.witHighest, geelHighest: backup.geelHighest
                 };
                 await window.syncMatchToAPI(matchDataVoorSync);
             }
@@ -145,20 +145,20 @@ function herstelOnderbrokenMatch(backup) {
     }
 
     state.currentMatch = match;
-    state.wit.score = backup.p1Score;
-    state.wit.turns = backup.p1Turns || [];
-    state.wit.target = backup.p1Target || match.target1;
-    state.wit.highestSeries = backup.p1Highest || 0;
-    state.wit.beurtNummer = backup.p1BeurtNummer || 1;
+    state.wit.score = backup.witScore;
+    state.wit.turns = backup.witTurns || [];
+    state.wit.target = backup.witDoel || match.witDoel;
+    state.wit.highestSeries = backup.witHighest || 0;
+    state.wit.beurtNummer = backup.witBeurtNummer || 1;
     // ✅ FIX: isWhite was nooit meegenomen in de backup/herstel — daardoor
     // toonden beide spelers na herstel altijd het gele bal-icoontje, ongeacht
     // wie oorspronkelijk wit koos. Speler 1 is altijd wit (zie startMatch()).
     state.wit.isWhite = true;
-    state.geel.score = backup.p2Score;
-    state.geel.turns = backup.p2Turns || [];
-    state.geel.target = backup.p2Target || match.target2;
-    state.geel.highestSeries = backup.p2Highest || 0;
-    state.geel.beurtNummer = backup.p2BeurtNummer || 1;
+    state.geel.score = backup.geelScore;
+    state.geel.turns = backup.geelTurns || [];
+    state.geel.target = backup.geelDoel || match.geelDoel;
+    state.geel.highestSeries = backup.geelHighest || 0;
+    state.geel.beurtNummer = backup.geelBeurtNummer || 1;
     state.geel.isWhite = false;
     state.currentPlayer = backup.currentPlayer;
     state.isNabeurt = backup.isNabeurt;

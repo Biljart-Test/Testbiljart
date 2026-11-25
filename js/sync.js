@@ -83,12 +83,12 @@ window.syncMatchToAPI = async function(match) {
     // 1. Bepaal de winnaar op basis van de score
     // ✅ FIX: bij een exact gelijkspel (mogelijk bij Dames) is er géén winnaar;
     // voorheen werd dan onterecht speler 2 als winnaar doorgestuurd omdat
-    // `p1Score > p2Score` onwaar is bij gelijke scores.
+    // `witScore > geelScore` onwaar is bij gelijke scores.
     let winnerClubId = null;
-    if (match.p1Score > match.p2Score) {
-        winnerClubId = match.p1_club_id;
-    } else if (match.p2Score > match.p1Score) {
-        winnerClubId = match.p2_club_id;
+    if (match.witScore > match.geelScore) {
+        winnerClubId = match.wit_club_id;
+    } else if (match.geelScore > match.witScore) {
+        winnerClubId = match.geel_club_id;
     }
     // gelijk → winnerClubId blijft null (gelijkspel)
     
@@ -99,7 +99,7 @@ window.syncMatchToAPI = async function(match) {
     // de kern van de "voltooid maar toont Bezig"-problemen die we vandaag
     // meermaals tegenkwamen.
     // Zonder id: hetzelfde formaat als overal (laagste-hoogste club_id), nooit meer met underscore en datum
-    const matchId = match.id || match.match_id || `${Math.min(parseInt(match.p1_club_id), parseInt(match.p2_club_id))}-${Math.max(parseInt(match.p1_club_id), parseInt(match.p2_club_id))}`;
+    const matchId = match.id || match.match_id || `${Math.min(parseInt(match.wit_club_id), parseInt(match.geel_club_id))}-${Math.max(parseInt(match.wit_club_id), parseInt(match.geel_club_id))}`;
 
     // 3. Bouw de payload
     const payload = {
@@ -116,20 +116,20 @@ window.syncMatchToAPI = async function(match) {
         winner_club_id: winnerClubId,
         players: [
             {
-                club_id: match.p1_club_id,
-                score: match.p1Score,
-                beurten: match.p1Turns.length,
-                gemiddelde: match.p1Turns.length > 0 ? parseFloat((match.p1Score / match.p1Turns.length).toFixed(3)) : 0,
-                hoogste_reeks: match.p1Highest || 0,
-                turns_detail: match.p1Turns || []
+                club_id: match.wit_club_id,
+                score: match.witScore,
+                beurten: match.witTurns.length,
+                gemiddelde: match.witTurns.length > 0 ? parseFloat((match.witScore / match.witTurns.length).toFixed(3)) : 0,
+                hoogste_reeks: match.witHighest || 0,
+                turns_detail: match.witTurns || []
             },
             {
-                club_id: match.p2_club_id,
-                score: match.p2Score,
-                beurten: match.p2Turns.length,
-                gemiddelde: match.p2Turns.length > 0 ? parseFloat((match.p2Score / match.p2Turns.length).toFixed(3)) : 0,
-                hoogste_reeks: match.p2Highest || 0,
-                turns_detail: match.p2Turns || []
+                club_id: match.geel_club_id,
+                score: match.geelScore,
+                beurten: match.geelTurns.length,
+                gemiddelde: match.geelTurns.length > 0 ? parseFloat((match.geelScore / match.geelTurns.length).toFixed(3)) : 0,
+                hoogste_reeks: match.geelHighest || 0,
+                turns_detail: match.geelTurns || []
             }
         ]
     };
@@ -299,8 +299,8 @@ window.restoreCompletedMatchesFromAPI = async function() {
             const exists = state.matches.some(m =>
                 m.completed &&
                 m.date === date &&
-                ((String(m.p1_club_id) === c1 && String(m.p2_club_id) === c2) ||
-                 (String(m.p1_club_id) === c2 && String(m.p2_club_id) === c1))
+                ((String(m.wit_club_id) === c1 && String(m.geel_club_id) === c2) ||
+                 (String(m.wit_club_id) === c2 && String(m.geel_club_id) === c1))
             );
             if (exists) return;
 
@@ -321,21 +321,21 @@ window.restoreCompletedMatchesFromAPI = async function() {
             state.matches.push({
                 id: `${Math.min(+c1, +c2)}-${Math.max(+c1, +c2)}`,
                 date: date,
-                p1: p1Name,
-                p2: p2Name,
-                p1_club_id: parseInt(c1),
-                p2_club_id: parseInt(c2),
-                target1: pl1 ? pl1.target : 0,
-                target2: pl2 ? pl2.target : 0,
+                wit: p1Name,
+                geel: p2Name,
+                wit_club_id: parseInt(c1),
+                geel_club_id: parseInt(c2),
+                witDoel: pl1 ? pl1.target : 0,
+                geelDoel: pl2 ? pl2.target : 0,
                 discipline: r.discipline,
                 cat: parseInt(r.category) || r.category,
                 completed: true,
-                p1Score: pd1.score,
-                p2Score: pd2.score,
-                p1Turns: [],   // niet beschikbaar via de API
-                p2Turns: [],
-                p1Highest: pd1.hoogste_reeks || 0,
-                p2Highest: pd2.hoogste_reeks || 0,
+                witScore: pd1.score,
+                geelScore: pd2.score,
+                witTurns: [],   // niet beschikbaar via de API
+                geelTurns: [],
+                witHighest: pd1.hoogste_reeks || 0,
+                geelHighest: pd2.hoogste_reeks || 0,
                 winner: winnerName,
                 restoredFromServer: true
             });
@@ -360,8 +360,8 @@ window.restoreCompletedMatchesFromAPI = async function() {
  */
 window.syncTournamentMatchToAPI = async function(match) {
     let winnerClubId = null;
-    if (match.p1Score > match.p2Score) winnerClubId = match.p1_club_id;
-    else if (match.p2Score > match.p1Score) winnerClubId = match.p2_club_id;
+    if (match.witScore > match.geelScore) winnerClubId = match.wit_club_id;
+    else if (match.geelScore > match.witScore) winnerClubId = match.geel_club_id;
 
     const payload = {
         match_id: match.id,
@@ -371,8 +371,8 @@ window.syncTournamentMatchToAPI = async function(match) {
         status: "voltooid",
         winner_club_id: winnerClubId,
         players: [
-            { club_id: match.p1_club_id, score: match.p1Score, beurten: match.p1Turns.length, hoogste_reeks: match.p1Highest || 0, turns_detail: match.p1Turns || [] },
-            { club_id: match.p2_club_id, score: match.p2Score, beurten: match.p2Turns.length, hoogste_reeks: match.p2Highest || 0, turns_detail: match.p2Turns || [] }
+            { club_id: match.wit_club_id, score: match.witScore, beurten: match.witTurns.length, hoogste_reeks: match.witHighest || 0, turns_detail: match.witTurns || [] },
+            { club_id: match.geel_club_id, score: match.geelScore, beurten: match.geelTurns.length, hoogste_reeks: match.geelHighest || 0, turns_detail: match.geelTurns || [] }
         ]
     };
 
@@ -484,14 +484,14 @@ window.restoreTournamentMatchesFromAPI = async function() {
             state.matches.push({
                 id: r.match_id,
                 date: r.played_date,
-                p1: p1Name, p2: p2Name,
-                p1_club_id: parseInt(c1), p2_club_id: parseInt(c2),
-                target1: pl1 ? pl1.target : 0, target2: pl2 ? pl2.target : 0,
+                wit: p1Name, geel: p2Name,
+                wit_club_id: parseInt(c1), geel_club_id: parseInt(c2),
+                witDoel: pl1 ? pl1.target : 0, geelDoel: pl2 ? pl2.target : 0,
                 discipline: r.discipline, cat: r.category,
                 completed: true,
-                p1Score: pd1.score, p2Score: pd2.score,
-                p1Turns: [], p2Turns: [],
-                p1Highest: pd1.hoogste_reeks || 0, p2Highest: pd2.hoogste_reeks || 0,
+                witScore: pd1.score, geelScore: pd2.score,
+                witTurns: [], geelTurns: [],
+                witHighest: pd1.hoogste_reeks || 0, geelHighest: pd2.hoogste_reeks || 0,
                 winner: winnerName,
                 restoredFromServer: true
             });

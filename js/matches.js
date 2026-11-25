@@ -76,24 +76,24 @@ async function fetchMatchesFromAPI() {
                 date: apiMatch.match_date,
                 time: apiMatch.match_time || '',
                 table: apiMatch.table_nr || 1,
-                p1: p1Name,
-                p2: p2Name,
+                eerste: p1Name,
+                tweede: p2Name,
                 referee: refName,
-                p1_club_id: parseInt(p1Data.club_id),
-                p2_club_id: parseInt(p2Data.club_id),
-                target1: target1,
-                target2: target2,
+                eerste_club_id: parseInt(p1Data.club_id),
+                tweede_club_id: parseInt(p2Data.club_id),
+                eersteDoel: target1,
+                tweedeDoel: target2,
                 discipline: apiMatch.discipline,
                 cat: window.leesCategorie(apiMatch.category),
                 match_type: apiMatch.match_type || 'Regular',
                 completed: false,
                 whitePlayer: null,
-                p1Score: 0,
-                p2Score: 0,
-                p1Turns: [],
-                p2Turns: [],
-                p1Highest: 0,
-                p2Highest: 0,
+                witScore: 0,
+                geelScore: 0,
+                witTurns: [],
+                geelTurns: [],
+                witHighest: 0,
+                geelHighest: 0,
                 synced_at: new Date().toISOString()
             });
         });
@@ -191,10 +191,10 @@ window.loadFilteredMatches = function() {
                 onmouseout="this.style.transform='scale(1) translateY(0)'; this.style.borderColor='#2c3e50'; this.style.borderWidth='3px'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.3)'; this.style.background='#34495e';">
                 
                 <h3 style="font-size: 2.15rem; margin-bottom: 15px; line-height: 1.3; color: #ffffff; font-weight: 800;">
-                    ${m.p1} <span style="color:#f1c40f; font-size: 1.6rem; vertical-align: middle; margin: 0 8px;">⚔️</span><br>${m.p2}
+                    ${m.eerste} <span style="color:#f1c40f; font-size: 1.6rem; vertical-align: middle; margin: 0 8px;">⚔️</span><br>${m.tweede}
                 </h3>
                 <p class="match-info" style="font-size: 1.6rem; line-height: 1.5; margin: 0; color: #ecf0f1;">
-                    🎯 <strong>${m.discipline} - Cat. ${m.cat}</strong> - <strong style="color: #ffffff; font-size: 1.8rem;">${m.target1} - ${m.target2}</strong>
+                    🎯 <strong>${m.discipline} - Cat. ${m.cat}</strong> - <strong style="color: #ffffff; font-size: 1.8rem;">${m.eersteDoel} - ${m.tweedeDoel}</strong>
                     ${refLine}
                 </p>
             </div>`;
@@ -251,7 +251,7 @@ window.selectMatch = function(id) {
     // Update titel op Pagina 4
     const titleEl = document.getElementById('matchTitleSelect');
     if (titleEl) {
-        titleEl.textContent = `${match.p1} ⚔️ ${match.p2}`;
+        titleEl.textContent = `${match.eerste} ⚔️ ${match.tweede}`;
     }
     
     console.log("🚀 Doorsturen naar Pagina 4 (Kies Witte Bal)...");
@@ -290,7 +290,7 @@ function loadActiveMatches() {
     sortedDates.forEach(date => {
         html += `<div style="margin-bottom: 20px;"><h3 style="color: #3498db; border-bottom: 1px solid #34495e; padding-bottom: 5px;">📅 ${formatDateDisplay(date)} (${byDate[date].length} matchen)</h3>`;
         byDate[date].forEach(m => {
-            html += `<div class="match-card" style="cursor: default;"><button class="delete-match-btn" onclick="deleteMatch(${m.id})" title="Verwijderen">×</button><h3>${m.discipline} - Cat. ${m.cat} <span class="status-badge status-pending">In afwachting</span></h3><p class="match-info"><strong>${m.p1}</strong> vs <strong>${m.p2}</strong><br>🎯 Te maken punten: ${m.target1} - ${m.target2}<br>📅 Datum: ${formatDateDisplay(m.date)}</p><div class="match-actions"><button onclick="selectMatch(${m.id})" class="action-btn-small" style="background: #2ecc71;">▶️ Speel Match</button><button onclick="editMatch(${m.id})" class="action-btn-small" style="background: #3498db;">✏️ Bewerk</button></div></div>`;
+            html += `<div class="match-card" style="cursor: default;"><button class="delete-match-btn" onclick="deleteMatch(${m.id})" title="Verwijderen">×</button><h3>${m.discipline} - Cat. ${m.cat} <span class="status-badge status-pending">In afwachting</span></h3><p class="match-info"><strong>${m.eerste}</strong> vs <strong>${m.tweede}</strong><br>🎯 Te maken punten: ${m.eersteDoel} - ${m.tweedeDoel}<br>📅 Datum: ${formatDateDisplay(m.date)}</p><div class="match-actions"><button onclick="selectMatch(${m.id})" class="action-btn-small" style="background: #2ecc71;">▶️ Speel Match</button><button onclick="editMatch(${m.id})" class="action-btn-small" style="background: #3498db;">✏️ Bewerk</button></div></div>`;
         });
         html += `</div>`;
     });
@@ -316,12 +316,12 @@ function loadCompletedMatches() {
             let winner = m.winner;
             if (!winner) {
                 if (m.discipline === "Dames") {
-                    winner = m.p1Score > m.p2Score ? m.p1 : (m.p2Score > m.p1Score ? m.p2 : "Gelijk");
+                    winner = m.witScore > m.geelScore ? m.wit : (m.geelScore > m.witScore ? m.geel : "Gelijk");
                 } else {
-                    winner = m.p1Score >= m.target1 ? m.p1 : m.p2;
+                    winner = m.witScore >= m.witDoel ? m.wit : m.geel;
                 }
             }
-            html += `<div class="match-card completed" style="cursor: default;"><button class="delete-match-btn" onclick="deleteMatch(${m.id})" title="Verwijderen">×</button><h3>${m.discipline} - Cat. ${m.cat} <span class="status-badge status-completed">Voltooid</span></h3><p class="match-info"><strong>${m.p1}</strong> vs <strong>${m.p2}</strong><br>🎯 Te maken punten: ${m.target1} - ${m.target2}<br>📊 Eindscore: ${m.p1Score || 0} - ${m.p2Score || 0}<br>🏆 Winnaar: ${winner}<br>📅 Datum: ${formatDateDisplay(m.date)}</p></div>`;
+            html += `<div class="match-card completed" style="cursor: default;"><button class="delete-match-btn" onclick="deleteMatch(${m.id})" title="Verwijderen">×</button><h3>${m.discipline} - Cat. ${m.cat} <span class="status-badge status-completed">Voltooid</span></h3><p class="match-info"><strong>${m.wit}</strong> vs <strong>${m.geel}</strong><br>🎯 Te maken punten: ${m.witDoel} - ${m.geelDoel}<br>📊 Eindscore: ${m.witScore || 0} - ${m.geelScore || 0}<br>🏆 Winnaar: ${winner}<br>📅 Datum: ${formatDateDisplay(m.date)}</p></div>`;
         });
         html += `</div>`;
     });
@@ -332,7 +332,7 @@ function deleteMatch(matchId) {
     const idx = state.matches.findIndex(m => m.id === matchId);
     if (idx !== -1) {
         const m = state.matches[idx];
-        if (confirm(`Match verwijderen?\n${m.p1} vs ${m.p2}`)) {
+        if (confirm(`Match verwijderen?\n${m.wit} vs ${m.geel}`)) {
             state.matches.splice(idx, 1);
             saveStateToStorage(); 
             loadMatchesTabContent();
@@ -448,9 +448,9 @@ function createManualMatch() {
     
     const newId = state.matches.length > 0 ? Math.max(...state.matches.map(m => m.id)) + 1 : 1;
     state.matches.push({
-        id: newId, date: state.selectedDate, p1: state.newMatch.player1.name, p2: state.newMatch.player2.name,
-        target1: state.newMatch.target1, target2: state.newMatch.target2, discipline: state.selectedGameType, cat: state.selectedCategory,
-        completed: false, whitePlayer: null, p1Score: 0, p2Score: 0, p1Turns: [], p2Turns: [], p1Highest: 0, p2Highest: 0
+        id: newId, date: state.selectedDate, eerste: state.newMatch.player1.name, tweede: state.newMatch.player2.name,
+        eersteDoel: state.newMatch.target1, tweedeDoel: state.newMatch.target2, discipline: state.selectedGameType, cat: state.selectedCategory,
+        completed: false, whitePlayer: null, witScore: 0, geelScore: 0, witTurns: [], geelTurns: [], witHighest: 0, geelHighest: 0
     });
     saveStateToStorage();
     alert(`✅ Nieuwe match aangemaakt:\n${state.newMatch.player1.name} vs ${state.newMatch.player2.name}`);
@@ -498,8 +498,8 @@ window.fetchTournamentMatchesFromAPI = async function() {
                     date: apiMatch.match_date,
                     time: apiMatch.match_time || '',
                     table: apiMatch.table_nr || 1,
-                    p1: team1Names,
-                    p2: team2Names,
+                    eerste: team1Names,
+                    tweede: team2Names,
                     referee: null,
                     discipline: apiMatch.discipline,
                     cat: apiMatch.category,
@@ -510,10 +510,10 @@ window.fetchTournamentMatchesFromAPI = async function() {
                         team2: team2Players.map(p => ({ club_id: parseInt(p.club_id), name: lookupName(p.club_id) }))
                     },
                     completed: false,
-                    target1: window.spelDoel('dubbeltje'), target2: window.spelDoel('dubbeltje'),
-                    p1Score: 0, p2Score: 0,
-                    p1Turns: [], p2Turns: [],
-                    p1Highest: 0, p2Highest: 0,
+                    eersteDoel: window.spelDoel('dubbeltje'), tweedeDoel: window.spelDoel('dubbeltje'),
+                    witScore: 0, geelScore: 0,
+                    witTurns: [], geelTurns: [],
+                    witHighest: 0, geelHighest: 0,
                     synced_at: new Date().toISOString()
                 });
                 added++;
@@ -529,21 +529,21 @@ window.fetchTournamentMatchesFromAPI = async function() {
                 date: apiMatch.match_date,
                 time: apiMatch.match_time || '',
                 table: apiMatch.table_nr || 1,
-                p1: player1 ? player1.name : `ONBEKEND (ID: ${p1Data.club_id})`,
-                p2: player2 ? player2.name : `ONBEKEND (ID: ${p2Data.club_id})`,
+                eerste: player1 ? player1.name : `ONBEKEND (ID: ${p1Data.club_id})`,
+                tweede: player2 ? player2.name : `ONBEKEND (ID: ${p2Data.club_id})`,
                 referee: null,
-                p1_club_id: parseInt(p1Data.club_id),
-                p2_club_id: parseInt(p2Data.club_id),
-                target1: player1 ? player1.target : 0,
-                target2: player2 ? player2.target : 0,
+                eerste_club_id: parseInt(p1Data.club_id),
+                tweede_club_id: parseInt(p2Data.club_id),
+                eersteDoel: player1 ? player1.target : 0,
+                tweedeDoel: player2 ? player2.target : 0,
                 discipline: apiMatch.discipline,
                 cat: apiMatch.category,
                 match_type: apiMatch.match_type || 'Speler',
                 completed: false,
                 whitePlayer: null,
-                p1Score: 0, p2Score: 0,
-                p1Turns: [], p2Turns: [],
-                p1Highest: 0, p2Highest: 0,
+                witScore: 0, geelScore: 0,
+                witTurns: [], geelTurns: [],
+                witHighest: 0, geelHighest: 0,
                 synced_at: new Date().toISOString()
             });
             added++;
