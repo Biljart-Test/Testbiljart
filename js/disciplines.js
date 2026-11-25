@@ -13,7 +13,7 @@
         driebanden: { afk: 'DB', badge: 'badge-db', kleur: '#e74c3c', icoon: '💥', sub: '3 Banden' },
         dames:      { afk: 'D',  badge: 'badge-dames', kleur: '#e84393', icoon: '🌸', sub: '' }
     };
-    const NEUTRAAL = { badge: 'badge-vs', kleur: '#95a5a6', icoon: '🎱', sub: '' };
+    const NEUTRAAL = { badge: 'badge-vs', kleur: '#95a5a6', icoon: '⚪', sub: '' };
     let lijst = STANDAARD.slice();
     let koppelingen = [];
 
