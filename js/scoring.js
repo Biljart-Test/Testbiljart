@@ -100,7 +100,8 @@ function updateScoringPage() {
             
             // ✅ DAMES: 20 beurten tonen (4 rijen van 5), HEREN: 56 beurten tonen
             const isDames = window.isSpeciaal(state.currentMatch.discipline);
-            const speciaalBeurten = isDames ? window.speciaalSpel(state.currentMatch.discipline).beurten : 0;
+            let speciaalBeurten = isDames ? window.speciaalSpel(state.currentMatch.discipline).beurten : 0;
+            if (isDames && speciaalBeurten === 0) speciaalBeurten = Math.max(20, Math.ceil((turns.length + 1) / 5) * 5);      // geen maximum: de lijst groeit mee
             const minBeurten = isDames ? speciaalBeurten : 56;
             const totalToShow = Math.max(minBeurten, turns.length);
             const highest = player.highestSeries || 0;
@@ -640,8 +641,8 @@ window.addScore = function() {
     // Speciale competitie: check op het maximum aantal beurten (instelling van de planner, standaard 20)
     if (window.isSpeciaal(state.currentMatch.discipline)) {
         // Beide spelers hebben het maximum aantal beurten gespeeld? Match eindigt!
-        const maxBeurten = window.speciaalSpel(state.currentMatch.discipline).beurten;
-        if (state.wit.turns.length >= maxBeurten && state.geel.turns.length >= maxBeurten) {
+        const maxBeurten = window.speciaalSpel(state.currentMatch.discipline).beurten;      // 0 = geen maximum
+        if (maxBeurten > 0 && state.wit.turns.length >= maxBeurten && state.geel.turns.length >= maxBeurten) {
             endMatch();
             return;
         }
@@ -1839,7 +1840,8 @@ function renderMatchSummary() {
     const witTurns = state.wit.turns.length;
     const witHighest = state.wit.highestSeries;
     const witAvg = calcAvg(witScore, witTurns);
-    const witDoel = state.wit.target;
+    const geenDoel = window.isSpeciaal(state.currentMatch.discipline) && state.wit.target >= window.GEEN_DOEL;      // een competitie zonder doel toont een streepje
+    const witDoel = geenDoel ? '–' : state.wit.target;
     const witTSG = getTSG(1);
 
     const geelNaam = state.currentMatch.geel;
@@ -1847,7 +1849,7 @@ function renderMatchSummary() {
     const geelTurns = state.geel.turns.length;
     const geelHighest = state.geel.highestSeries;
     const geelAvg = calcAvg(geelScore, geelTurns);
-    const geelDoel = state.geel.target;
+    const geelDoel = geenDoel ? '–' : state.geel.target;
     const geelTSG = getTSG(2);
 
     // ✅ NIEUW: Check of dit een vriendschappelijke match is
@@ -5112,8 +5114,8 @@ window.toonSpecialeSpelersKeuze = async function(competitie) {
             referee: null,
             eerste_club_id: parseInt(s1.club_id),
             tweede_club_id: parseInt(s2.club_id),
-            eersteDoel: window.speciaalSpel(competitie).doel,       // het doel van deze competitie (planner), standaard 20
-            tweedeDoel: window.speciaalSpel(competitie).doel,
+            eersteDoel: window.speciaalSpel(competitie).doel || window.GEEN_DOEL,       // het doel van deze competitie (planner), standaard 20; zonder doel een doel dat nooit bereikt wordt
+            tweedeDoel: window.speciaalSpel(competitie).doel || window.GEEN_DOEL,
             discipline: competitie,
             cat: 0,
             match_type: 'Regular',

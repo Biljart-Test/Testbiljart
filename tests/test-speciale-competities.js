@@ -132,6 +132,35 @@ for i, (cid, vn, an, disc, cat) in enumerate([('2001','Anna','Alfa','Vrijspel','
     const rijen = await app.evaluate(() => document.querySelectorAll('.turn-row').length);
     check('de lijst met beurten toont voor een competitie met 12 beurten per speler 3 groepjes (5 + 5 + 2), dus 24 plaatsen voor twee spelers, geen vaste 20', groepen === 6 && rijen === 24, JSON.stringify([groepen, rijen]));
     await app.evaluate(() => showPage(1));
+    console.log('7. Zonder doel, en zonder maximum aantal beurten');
+    await app.evaluate(() => showPage(1));
+    instelling('speciale_regels', JSON.stringify({ Dames: { doel: 0, beurten: 6 }, Veteranen: { doel: 8, beurten: 0 } }));
+    zetCompetities(['Dames', 'Veteranen']); await opstarten();
+    check('de app kent "geen doel" (Dames 0 en 6) en "geen maximum" (Veteranen 8 en 0); allebei 0 wordt 20 en 20', JSON.stringify(await app.evaluate(() => [window.speciaalSpel('Dames'), window.speciaalSpel('Veteranen')])) === '[{"doel":0,"beurten":6},{"doel":8,"beurten":0}]');
+    const spelKeuze = async (naam) => {
+      wisUitslagen(); await codeIntypen('4711'); await app.waitForSelector('#speciaalKeuzeOverlay');
+      await app.click(`#speciaalKeuzeLijst button[data-competitie=${naam}]`); await app.waitForSelector('#speciaalSpelersLijst button', { timeout: 8000 });
+      await app.locator('#speciaalSpelersLijst button').nth(0).click(); await app.locator('#speciaalSpelersLijst button').nth(1).click(); await app.click('#speciaalStartBtn');
+      await app.waitForFunction(() => state.currentPage === 4); await app.evaluate(() => { selectWhitePlayer(1); startMatch(); }); await app.waitForFunction(() => state.currentPage === 5);
+    };
+    await spelKeuze('Dames');
+    check('zonder doel: de match heeft geen bereikbaar doel (hij kan dus niet vroeg eindigen)', await app.evaluate(() => state.wit.target >= window.GEEN_DOEL && state.geel.target >= window.GEEN_DOEL));
+    for (let i = 0; i < 5; i++) await app.evaluate(() => { changeScore(state.currentPlayer === 1 ? 60 : 10); window.addScore(); });
+    check('na enorme scores (60 per beurt) is de match na 5 beurten per speler nog niet voorbij: er is geen doel', !(await app.evaluate(() => state.matchEnded)) && await app.evaluate(() => state.wit.turns.length === 3 && state.geel.turns.length === 2), await app.evaluate(() => [state.wit.turns.length, state.geel.turns.length, state.wit.score]));
+    let g = 0;
+    while (!(await app.evaluate(() => state.matchEnded)) && g++ < 40) await app.evaluate(() => { changeScore(state.currentPlayer === 1 ? 60 : 10); window.addScore(); });
+    check('de match eindigt pas als beide spelers 6 beurten gespeeld hebben; wit (de meeste punten) wint', await app.evaluate(() => state.wit.turns.length === 6 && state.geel.turns.length === 6 && state.currentMatch.winner === state.currentMatch.wit), await app.evaluate(() => [state.wit.turns.length, state.geel.turns.length, state.currentMatch.winner]));
+    await app.waitForFunction(() => state.currentPage === 6, null, { timeout: 15000 });
+    check('in het overzicht staat bij het doel een streepje (geen 99999)', !(await app.locator('#page6, body').first().innerText()).includes('99999'));
+    await app.evaluate(() => showPage(1));
+    await spelKeuze('Veteranen');
+    check('zonder maximum: de match gaat gewoon door voorbij 20 beurten (30 beurten gespeeld, nog geen einde bij een laag doel van 8: 0 punten gescoord)', await (async () => { for (let i = 0; i < 60; i++) await app.evaluate(() => { window.addScore(); }); return !(await app.evaluate(() => state.matchEnded)) && await app.evaluate(() => state.wit.turns.length === 30 && state.geel.turns.length === 30); })());
+    const groepenGroei = await app.evaluate(() => document.querySelectorAll('.turn-group').length);
+    check('de lijst met beurten groeit mee: 30 gespeelde beurten en ruimte voor de volgende = 7 groepjes van 5 per speler, dus 14 (niet vast 8)', groepenGroei === 14, groepenGroei);
+    for (let i = 0; i < 8; i++) { if (await app.evaluate(() => state.matchEnded)) break; await app.evaluate(() => { if (state.currentPlayer === 1) changeScore(2); window.addScore(); }); }
+    check('zodra wit zijn doel (8 punten) haalt, eindigt de match (met nabeurt voor geel)', await app.evaluate(() => state.matchEnded && state.wit.score === 8), await app.evaluate(() => [state.matchEnded, state.wit.score, state.wit.turns.length, state.geel.turns.length]));
+    await app.waitForFunction(() => state.currentPage === 6, null, { timeout: 15000 });
+    await app.evaluate(() => showPage(1));
     console.log('5. Geen speciale competities');
     zetCompetities([]); await opstarten();
     check('zonder speciale competities is de knop verborgen, ook met een code', !(await knopZichtbaar()));

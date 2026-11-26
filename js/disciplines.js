@@ -24,13 +24,18 @@
         if (Array.isArray(nieuw)) speciaal = nieuw.map(String).filter(function(d) { return d.trim() !== ''; });
         if (regels && typeof regels === 'object') speciaalRegels = regels;
     };
-    // De spelregels van een speciale competitie: {doel, beurten}; zonder gegevens van de planner 20 en 20 (zoals Dames bij KPBC)
+    // De spelregels van een speciale competitie: {doel, beurten}; zonder gegevens van de planner 20 en 20 (zoals Dames bij KPBC).
+    window.GEEN_DOEL = 99999;     // intern 'doel' van een competitie zonder doel: nooit bereikbaar
     window.speciaalSpel = function(naam) {
         const s = String(naam || '').toLowerCase();
         const sleutel = Object.keys(speciaalRegels).find(function(k) { return k.toLowerCase() === s; });
         const r = sleutel ? speciaalRegels[sleutel] : {};
-        const g = function(w) { const n = Math.floor(Number(w)); return isFinite(n) && n >= 1 && n <= 500 ? n : 20; };
-        return { doel: g(r.doel), beurten: g(r.beurten) };
+        const g = function(w) { const n = Math.floor(Number(w)); return isFinite(n) && n >= 0 && n <= 500 ? n : 20; };
+        const spel = { doel: g(r.doel), beurten: g(r.beurten) };
+        // doel 0 = geen doel (iedereen speelt het aantal beurten; wie de meeste punten heeft wint); beurten 0 = geen maximum.
+        // Allebei 0 kan niet (de match zou nooit eindigen): dan de standaard.
+        if (spel.doel === 0 && spel.beurten === 0) { spel.doel = 20; spel.beurten = 20; }
+        return spel;
     };
     window.speciaalLijst = function() { return speciaal.slice(); };
     window.isSpeciaal = function(naam) {
