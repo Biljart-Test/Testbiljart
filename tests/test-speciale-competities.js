@@ -161,6 +161,26 @@ for i, (cid, vn, an, disc, cat) in enumerate([('2001','Anna','Alfa','Vrijspel','
     check('zodra wit zijn doel (8 punten) haalt, eindigt de match (met nabeurt voor geel)', await app.evaluate(() => state.matchEnded && state.wit.score === 8), await app.evaluate(() => [state.matchEnded, state.wit.score, state.wit.turns.length, state.geel.turns.length]));
     await app.waitForFunction(() => state.currentPage === 6, null, { timeout: 15000 });
     await app.evaluate(() => showPage(1));
+    console.log('8. De nabeurt: enkel als de speler met de witte bal het eerst zijn doel haalt');
+    await app.evaluate(() => showPage(1));
+    instelling('speciale_regels', JSON.stringify({ Dames: { doel: 6, beurten: 0 }, Veteranen: { doel: 6, beurten: 0 } }));
+    zetCompetities(['Dames', 'Veteranen']); await opstarten();
+    await spelKeuze('Dames');
+    // wit haalt het doel eerst (3 beurten van 2 punten): geel krijgt nog een nabeurt
+    for (let i = 0; i < 2; i++) await app.evaluate(() => { changeScore(2); window.addScore(); window.addScore(); });      // wit 2 punten, geel 0
+    await app.evaluate(() => { changeScore(2); window.addScore(); });          // de derde beurt van wit: 6 punten = het doel
+    check('wit haalt als eerste het doel (6): de match is nog niet voorbij maar geel krijgt nog een nabeurt', await app.evaluate(() => state.wit.score === 6 && state.isNabeurt === true && state.currentPlayer === 2 && !state.matchEnded && state.wit.turns.length === 3 && state.geel.turns.length === 2), await app.evaluate(() => [state.wit.score, state.isNabeurt, state.currentPlayer, state.matchEnded, state.wit.turns.length, state.geel.turns.length]));
+    await app.evaluate(() => { changeScore(1); window.addScore(); });
+    check('na de nabeurt van geel is de match gedaan, met evenveel beurten (3 - 3)', await app.evaluate(() => state.matchEnded && state.wit.turns.length === 3 && state.geel.turns.length === 3), await app.evaluate(() => [state.matchEnded, state.wit.turns.length, state.geel.turns.length]));
+    await app.waitForFunction(() => state.currentPage === 6, null, { timeout: 15000 });
+    await app.evaluate(() => showPage(1));
+    await spelKeuze('Dames');
+    // geel haalt het doel eerst: wit scoort telkens 1, geel 3 -> geel heeft 6 na 2 beurten, wit 2
+    await app.evaluate(() => { for (let i = 0; i < 2; i++) { changeScore(1); window.addScore(); if (state.matchEnded) break; changeScore(3); window.addScore(); if (state.matchEnded) break; } });
+    check('geel haalt als eerste het doel (6): de match is meteen gedaan, zonder nabeurt (wit had al evenveel beurten, 2 - 2)', await app.evaluate(() => state.matchEnded && state.geel.score === 6 && state.wit.turns.length === 2 && state.geel.turns.length === 2 && state.isNabeurt !== true), await app.evaluate(() => [state.matchEnded, state.geel.score, state.wit.turns.length, state.geel.turns.length, state.isNabeurt]));
+    await app.waitForFunction(() => state.currentPage === 6, null, { timeout: 15000 });
+    check('en de winnaar is geel (6 tegen 2)', await app.evaluate(() => state.currentMatch.winner === state.currentMatch.geel), await app.evaluate(() => [state.currentMatch.winner, state.currentMatch.wit, state.currentMatch.geel]));
+    await app.evaluate(() => showPage(1));
     console.log('5. Geen speciale competities');
     zetCompetities([]); await opstarten();
     check('zonder speciale competities is de knop verborgen, ook met een code', !(await knopZichtbaar()));
