@@ -120,7 +120,7 @@
             window.puntenReferentie = d.referentiebeurten || null;   // referentiebeurten per discipline (puntentelling van het bestuur)
             if (typeof window.zetDisciplines === 'function') window.zetDisciplines(d.disciplines, d.koppelingen);   // de disciplines van de club
             window.beheerCode = d.beheer_code || '';
-            if (typeof window.zetSpeciale === 'function') window.zetSpeciale(d.speciale_competities);   // de speciale competities van de club (bv. Dames)
+            if (typeof window.zetSpeciale === 'function') window.zetSpeciale(d.speciale_competities, d.speciale_regels);   // de speciale competities van de club (bv. Dames)
             window.speciaalCode = d.speciale_code || d.dames_code || '';             // één code voor alle speciale competities
             const speciaalKnop = document.getElementById('speciaalKnop'); if (speciaalKnop) speciaalKnop.style.display = (window.speciaalCode && window.speciaalLijst().length) ? '' : 'none';
             const beheer = document.querySelector('.header-buttons .upload-btn'); if (beheer) beheer.style.display = window.beheerCode ? '' : 'none';

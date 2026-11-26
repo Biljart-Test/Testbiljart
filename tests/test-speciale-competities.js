@@ -90,6 +90,48 @@ for i, (cid, vn, an, disc, cat) in enumerate([('2001','Anna','Alfa','Vrijspel','
     check('met maar één speciale competitie gaat het meteen naar de spelerskeuze (Dames: Theta Hilde, Iota Ine)', await app.locator('#speciaalKeuzeOverlay h2').innerText().then(t => t.includes('Dames')) && JSON.stringify((await app.$$eval('#speciaalSpelersLijst button', b => b.map(x => x.textContent))).sort()) === JSON.stringify(['Iota Ine', 'Theta Hilde']));
     await app.click('#speciaalAnnuleerBtn');
 
+    console.log('6. Spelregels per speciale competitie (doel en maximum aantal beurten van de planner)');
+    await app.evaluate(() => showPage(1));
+    instelling('speciale_regels', JSON.stringify({ Dames: { doel: 5, beurten: 12 }, Veteranen: { doel: 30, beurten: 25 } }));
+    zetCompetities(['Dames', 'Veteranen']); await opstarten();
+    check('de app kent de spelregels van de planner (Veteranen 30 punten en 25 beurten, Dames 5 en 12)', JSON.stringify(await app.evaluate(() => [window.speciaalSpel('Veteranen'), window.speciaalSpel('dames'), window.speciaalSpel('Onbekend')])) === '[{"doel":30,"beurten":25},{"doel":5,"beurten":12},{"doel":20,"beurten":20}]', JSON.stringify(await app.evaluate(() => [window.speciaalSpel('Veteranen'), window.speciaalSpel('dames'), window.speciaalSpel('Onbekend')])));
+    const wisUitslagen = () => o.sql(`c.execute("DELETE FROM match_results")`);      // anders zijn de twee spelers 'al tegen elkaar geweest' en blijft de startknop uit
+    async function speelCompetitie(naam, aantalKliks) {
+      wisUitslagen();
+      await codeIntypen('4711');
+      await app.waitForSelector('#speciaalKeuzeOverlay');
+      await app.click(`#speciaalKeuzeLijst button[data-competitie=${naam}]`);
+      await app.waitForSelector('#speciaalSpelersLijst button', { timeout: 8000 });
+      await app.locator('#speciaalSpelersLijst button').nth(0).click(); await app.locator('#speciaalSpelersLijst button').nth(1).click();
+      await app.click('#speciaalStartBtn');
+      await app.waitForFunction(() => state.currentPage === 4, null, { timeout: 8000 });
+      const doel = await app.evaluate(() => [state.currentMatch.eersteDoel, state.currentMatch.tweedeDoel]);
+      await app.evaluate(() => { selectWhitePlayer(1); startMatch(); });
+      await app.waitForFunction(() => state.currentPage === 5);
+      const witDoel = await app.evaluate(() => state.wit.target);
+      let guard = 0;
+      while (!(await app.evaluate(() => state.matchEnded)) && guard++ < 200) await app.evaluate(() => { if (state.currentPlayer === 1) changeScore(1); window.addScore(); });
+      const beurten = await app.evaluate(() => [state.wit.turns.length, state.geel.turns.length, state.wit.score]);
+      return { doel, witDoel, beurten };
+    }
+    let r6 = await speelCompetitie('Veteranen');
+    check('Veteranen: het doel van de match is 30 (niet 20) en de match loopt tot 25 beurten per speler (de witte speler haalt 30 punten niet eerder)', JSON.stringify(r6.doel) === '[30,30]' && r6.witDoel === 30 && r6.beurten[0] === 25 && r6.beurten[1] === 25, JSON.stringify(r6));
+    await app.waitForFunction(() => state.currentPage === 6, null, { timeout: 15000 });
+    await app.evaluate(() => showPage(1));
+    r6 = await speelCompetitie('Dames');
+    check('Dames met doel 5 en 12 beurten: de match eindigt zodra wit 5 punten haalt (met een nabeurt voor geel), na 5 beurten per speler', JSON.stringify(r6.doel) === '[5,5]' && r6.witDoel === 5 && r6.beurten[0] === 5 && r6.beurten[1] === 5 && r6.beurten[2] === 5, JSON.stringify(r6));
+    await app.waitForFunction(() => state.currentPage === 6, null, { timeout: 15000 });
+    await app.evaluate(() => showPage(1));
+    wisUitslagen(); instelling('speciale_regels', JSON.stringify({ Dames: { doel: 100, beurten: 12 }, Veteranen: { doel: 30, beurten: 25 } })); await opstarten();
+    await codeIntypen('4711'); await app.waitForSelector('#speciaalKeuzeOverlay');
+    await app.click('#speciaalKeuzeLijst button[data-competitie=Dames]'); await app.waitForSelector('#speciaalSpelersLijst button', { timeout: 8000 });
+    await app.locator('#speciaalSpelersLijst button').nth(0).click(); await app.locator('#speciaalSpelersLijst button').nth(1).click(); await app.click('#speciaalStartBtn');
+    await app.waitForFunction(() => state.currentPage === 4); await app.evaluate(() => { selectWhitePlayer(1); startMatch(); }); await app.waitForFunction(() => state.currentPage === 5);
+    await app.evaluate(() => { for (let i = 0; i < 3; i++) { if (state.currentPlayer === 1) changeScore(1); window.addScore(); if (state.currentPlayer === 2) window.addScore(); } });
+    const groepen = await app.evaluate(() => document.querySelectorAll('.turn-group').length);
+    const rijen = await app.evaluate(() => document.querySelectorAll('.turn-row').length);
+    check('de lijst met beurten toont voor een competitie met 12 beurten per speler 3 groepjes (5 + 5 + 2), dus 24 plaatsen voor twee spelers, geen vaste 20', groepen === 6 && rijen === 24, JSON.stringify([groepen, rijen]));
+    await app.evaluate(() => showPage(1));
     console.log('5. Geen speciale competities');
     zetCompetities([]); await opstarten();
     check('zonder speciale competities is de knop verborgen, ook met een code', !(await knopZichtbaar()));

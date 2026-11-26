@@ -47,7 +47,8 @@ function verwacht(sys, instellingen) {
     const s = SPELERS.find(x => x[0] === id); const disc = s[3];
     const tsg = parseFloat(s[6].replace(',', '.')); const gem = u.punten / u.beurten;
     const tsgvs = s[7].startsWith('k') ? (gem < tsg ? tsg : gem) : (gem < tsg * 0.9 ? tsg * 0.9 : gem);
-    u.ptnvs = disc === 'Dames' ? 1 : Math.ceil(tsgvs * (p.ref[disc] || 20));
+    const minimum = ({ Vrijspel: 20, Bandstoten: 15, Driebanden: 13 })[disc] || 0;      // het minimum doel per discipline (standaard van de planner): wie eronder zou vallen, krijgt het minimum
+    u.ptnvs = disc === 'Dames' ? 1 : Math.max(Math.ceil(tsgvs * (p.ref[disc] || 20)), minimum);
   }
   return uit;
 }

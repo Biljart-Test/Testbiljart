@@ -100,18 +100,20 @@ function updateScoringPage() {
             
             // ✅ DAMES: 20 beurten tonen (4 rijen van 5), HEREN: 56 beurten tonen
             const isDames = window.isSpeciaal(state.currentMatch.discipline);
-            const minBeurten = isDames ? 20 : 56;
+            const speciaalBeurten = isDames ? window.speciaalSpel(state.currentMatch.discipline).beurten : 0;
+            const minBeurten = isDames ? speciaalBeurten : 56;
             const totalToShow = Math.max(minBeurten, turns.length);
             const highest = player.highestSeries || 0;
             let html = '';
             
             // ✅ DAMES: Groepeer per 5 beurten (4 rijen van 5)
             if (isDames) {
-                for (let group = 0; group < 4; group++) {
+                for (let group = 0; group < Math.ceil(speciaalBeurten / 5); group++) {
                     html += '<div class="turn-group">';
                     
                     for (let i = 1; i <= 5; i++) {
                         const turnIndex = (group * 5) + i;
+                        if (turnIndex > speciaalBeurten) break;       // het laatste groepje kan korter zijn (bv. 12 beurten = 5 + 5 + 2)
                         const isPlayed = turnIndex <= turns.length;
                         let scoreDisplay = '−';
                         let classes = 'turn-row';
@@ -635,10 +637,11 @@ window.addScore = function() {
         }
     }
 
-    // ✅ NIEUW: DAMES-COMPETITIE - Check op 20 beurten limiet
+    // Speciale competitie: check op het maximum aantal beurten (instelling van de planner, standaard 20)
     if (window.isSpeciaal(state.currentMatch.discipline)) {
-        // Beide spelers hebben 20 beurten gespeeld? Match eindigt!
-        if (state.wit.turns.length >= 20 && state.geel.turns.length >= 20) {
+        // Beide spelers hebben het maximum aantal beurten gespeeld? Match eindigt!
+        const maxBeurten = window.speciaalSpel(state.currentMatch.discipline).beurten;
+        if (state.wit.turns.length >= maxBeurten && state.geel.turns.length >= maxBeurten) {
             endMatch();
             return;
         }
@@ -5109,8 +5112,8 @@ window.toonSpecialeSpelersKeuze = async function(competitie) {
             referee: null,
             eerste_club_id: parseInt(s1.club_id),
             tweede_club_id: parseInt(s2.club_id),
-            eersteDoel: 20,
-            tweedeDoel: 20,
+            eersteDoel: window.speciaalSpel(competitie).doel,       // het doel van deze competitie (planner), standaard 20
+            tweedeDoel: window.speciaalSpel(competitie).doel,
             discipline: competitie,
             cat: 0,
             match_type: 'Regular',

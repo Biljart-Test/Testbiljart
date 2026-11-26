@@ -19,8 +19,18 @@
     // Speciale competities (bv. Dames): een aparte competitie zonder categorieën, met eigen punten, die op speelavonden gespeeld wordt.
     // De lijst komt van de planner (/api/club); zolang die niet geantwoord heeft: Dames (zoals bij KPBC).
     let speciaal = [DAMES];
-    window.zetSpeciale = function(nieuw) {
+    let speciaalRegels = {};       // per speciale competitie: doel (punten) en hoogste aantal beurten per speler, van de planner
+    window.zetSpeciale = function(nieuw, regels) {
         if (Array.isArray(nieuw)) speciaal = nieuw.map(String).filter(function(d) { return d.trim() !== ''; });
+        if (regels && typeof regels === 'object') speciaalRegels = regels;
+    };
+    // De spelregels van een speciale competitie: {doel, beurten}; zonder gegevens van de planner 20 en 20 (zoals Dames bij KPBC)
+    window.speciaalSpel = function(naam) {
+        const s = String(naam || '').toLowerCase();
+        const sleutel = Object.keys(speciaalRegels).find(function(k) { return k.toLowerCase() === s; });
+        const r = sleutel ? speciaalRegels[sleutel] : {};
+        const g = function(w) { const n = Math.floor(Number(w)); return isFinite(n) && n >= 1 && n <= 500 ? n : 20; };
+        return { doel: g(r.doel), beurten: g(r.beurten) };
     };
     window.speciaalLijst = function() { return speciaal.slice(); };
     window.isSpeciaal = function(naam) {
